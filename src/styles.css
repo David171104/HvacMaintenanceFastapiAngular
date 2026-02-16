@@ -386,10 +386,28 @@ html {
 }
 
 
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 15px 20px;
+  }
+
+  .main-hero-text h1 {
+    font-size: 2rem;
+  }
+
+  .main-hero-cta {
+    flex-direction: column;
+  }
+}
 
 
-
-/* CONTENEDOR */
+/* =====================================================
+  USER CONTAINER
+===================================================== */
 
 .users-container {
   padding: 60px 40px;
@@ -491,23 +509,111 @@ html {
 
 
 
-/* =====================================================
-   RESPONSIVE
-===================================================== */
+/* CONTENEDOR */
+
+.services-container {
+  padding: 60px 40px;
+  min-height: 100vh;
+  background: #0f172a;
+  color: white;
+}
+
+/* HEADER */
+
+.services-header {
+  margin-bottom: 40px;
+}
+
+.services-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.services-subtitle {
+  color: #94a3b8;
+}
+
+/* TABLA */
+
+.services-table-wrapper {
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* HEADER TABLA */
+
+.services-table thead {
+  background: rgba(255,255,255,0.05);
+}
+
+.services-table th {
+  padding: 18px;
+  text-align: left;
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* FILAS */
+
+.services-table td {
+  padding: 18px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.services-table tbody tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* ESTADOS */
+
+.services-status {
+  font-weight: 600;
+}
+
+/* pendiente */
+
+.services-status-pending {
+  color: #f59e0b;
+}
+
+/* asignado */
+
+.services-status-assigned {
+  color: #00eaff;
+}
+
+/* completado */
+
+.services-status-completed {
+  color: #22c55e;
+}
+
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
-  .navbar-container {
-    padding: 15px 20px;
+  .services-container {
+    padding: 40px 20px;
   }
 
-  .main-hero-text h1 {
-    font-size: 2rem;
-  }
-
-  .main-hero-cta {
-    flex-direction: column;
+  .services-table th,
+  .services-table td {
+    padding: 12px;
+    font-size: 14px;
   }
 }
+
+
 
 
 /* =====================================================
