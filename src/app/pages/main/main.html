@@ -2,159 +2,167 @@
 <app-navbar></app-navbar>
 
 <!-- MAIN CONTENT -->
-<main>
+<main class="main-container">
 
-  <section class="hero">
-    <div class="hero-overlay">
-      <div class="page-container hero-content">
-        <div class="hero-text">
-          <h1>Climatización Total</h1>
+  <section class="main-hero">
+    <div class="main-hero-overlay">
+      <div class="page-container main-hero-content">
+        <div class="main-hero-text">
+
+          <h1 class="main-gradient-text">Climatización Total</h1>
+
           <p>
             Innovación, eficiencia y tecnología en sistemas de aire acondicionado.
             Monitorea y optimiza tus equipos los 365 días del año.
           </p>
 
-          <div class="hero-cta">
-            <a href="#servicios" class="btn-primary">Ver servicios</a>
-            <a href="/login" class="btn-outline">Ir al panel</a>
+          <div class="main-hero-cta">
+            <a href="#servicios" class="main-btn-primary">Ver servicios</a>
+            <a href="/login" class="main-btn-outline">Ir al panel</a>
           </div>
 
-          <div class="hero-meta">
+          <div class="main-hero-meta">
             Monitoreo en tiempo real · Reportes de consumo
           </div>
+
         </div>
       </div>
     </div>
   </section>
 
-  <section class="about section-dark" id="servicios">
+  <section class="main-section main-section-dark" id="servicios">
     <div class="page-container">
-      <h2 class="section-title">¿Quiénes Somos?</h2>
-      <p class="section-text">
+      <h2 class="main-section-title">¿Quiénes Somos?</h2>
+      <p class="main-section-text">
         Somos especialistas en soluciones integrales de climatización con enfoque en
-        <strong>tecnología IoT y eficiencia energética</strong>. Ofrecemos instalación,
-        mantenimiento y monitoreo digital de aires acondicionados, con estándares de
-        calidad orientados a la industria moderna.
+        <strong>tecnología IoT y eficiencia energética</strong>.
       </p>
     </div>
   </section>
 
-  <section class="stats section-alt">
-    <div class="page-container stats-grid">
-      <div class="stat">
-        <h3>+10</h3>
-        <p>Años de experiencia</p>
-      </div>
-      <div class="stat">
-        <h3>+500</h3>
-        <p>Clientes satisfechos</p>
-      </div>
-      <div class="stat">
-        <h3>+1000</h3>
-        <p>Equipos instalados</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="tech section-dark">
+    <!-- SERVICIOS -->
+  <section class="main-section main-section-dark" id="servicios">
     <div class="page-container">
-      <h2 class="section-title">Tecnología y Rendimiento</h2>
-      <p class="section-text">
-        Implementamos soluciones que reducen el consumo energético hasta un
-        <strong>30%</strong> gracias a sensores inteligentes, análisis de datos y un
-        mantenimiento predictivo basado en métricas reales de operación.
+
+      <h2 class="main-section-title">Nuestros Servicios</h2>
+
+      <p class="main-section-text">
+        Ofrecemos soluciones completas en climatización con tecnología avanzada,
+        monitoreo inteligente y mantenimiento especializado para maximizar el
+        rendimiento de tus equipos.
       </p>
 
-      <div class="cards">
-        <div class="card">
-          <h3>Control Inteligente</h3>
+      <div class="main-services-grid">
+
+        <div class="main-service-card">
+          <h3>Instalación Profesional</h3>
           <p>
-            Monitoreo, alertas y ajustes óptimos para mantener tus ambientes dentro
-            del rango de confort definido.
+            Instalación de sistemas de aire acondicionado con estándares de calidad,
+            eficiencia energética y configuración optimizada.
           </p>
         </div>
-        <div class="card">
-          <h3>Eficiencia Energética</h3>
+
+        <div class="main-service-card">
+          <h3>Mantenimiento Preventivo</h3>
           <p>
-            Estrategias y equipos diseñados para ofrecer el máximo rendimiento con el
-            menor consumo posible.
+            Revisiones periódicas para evitar fallas, reducir costos operativos y
+            prolongar la vida útil de los equipos.
           </p>
         </div>
-        <div class="card">
+
+        <div class="main-service-card">
+          <h3>Monitoreo Inteligente IoT</h3>
+          <p>
+            Control en tiempo real de temperatura, consumo y estado de los sistemas
+            mediante sensores inteligentes.
+          </p>
+        </div>
+
+        <div class="main-service-card">
           <h3>Diagnóstico Avanzado</h3>
           <p>
-            Evaluaciones precisas mediante sistemas digitales para verificar
-            temperatura, humedad, flujo de aire y consumo eléctrico.
+            Análisis digital del rendimiento del sistema para detectar fallas y
+            optimizar el funcionamiento.
           </p>
         </div>
+
       </div>
+
     </div>
   </section>
 
-  <section class="team section-alt">
+
+  <!-- CONTACTO -->
+  <section class="main-section main-section-alt" id="contacto">
     <div class="page-container">
-      <h2 class="section-title">Nuestro Equipo</h2>
-      <div class="members">
-        <div class="member">
-          <div class="avatar"></div>
-          <h3>David Altamar</h3>
-          <p>Técnico en Refrigeración y Climatización</p>
+
+      <h2 class="main-section-title">  <i class="fa-solid fa-envelope"></i> Contáctanos</h2>
+
+      <p class="main-section-text">
+        ¿Tienes dudas o necesitas asesoría en climatización?
+        Nuestro equipo está listo para ayudarte.
+      </p>
+
+      <div class="main-contact-container">
+
+        <!-- FORMULARIO -->
+        <form class="main-contact-form">
+
+          <div class="main-form-group">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" />
+          </div>
+
+          <div class="main-form-group">
+            <label>Email</label>
+            <input type="email" placeholder="correo@email.com" />
+          </div>
+
+          <div class="main-form-group">
+            <label>Mensaje</label>
+            <textarea rows="5" placeholder="Escribe tu mensaje"></textarea>
+          </div>
+
+          <button type="submit" class="main-btn-primary">
+            Enviar mensaje
+          </button>
+
+        </form>
+
+        <!-- INFO CONTACTO -->
+        <div class="main-contact-info">
+
+          <div class="main-contact-item">
+            <h3> <i class="fa-solid fa-location-dot"></i>  Ubicación</h3>
+            <p>Bucaramanga, Santander — Colombia</p>
+          </div>
+
+          <div class="main-contact-item">
+            <h3> <i class="fa-solid fa-phone"></i>  Teléfono</h3>
+            <p>+57 300 000 0000</p>
+          </div>
+
+          <div class="main-contact-item">
+            <h3><i class="fa-solid fa-envelope-circle-check"></i> Email</h3>
+            <p>contacto@climatizaciontotal.com</p>
+          </div>
+
+          <div class="main-contact-item">
+            <h3><i class="fa-solid fa-clock"></i> Horario</h3>
+            <p>Lunes — Viernes | 8:00 AM — 6:00 PM</p>
+          </div>
+
         </div>
-        <div class="member">
-          <div class="avatar"></div>
-          <h3>Bryan Cantillo</h3>
-          <p>Especialista IoT y Sensores</p>
-        </div>
-        <div class="member">
-          <div class="avatar"></div>
-          <h3>Jonathan Soto</h3>
-          <p>Supervisor de Mantenimiento y Monitoreo</p>
-        </div>
+
       </div>
+
     </div>
   </section>
 
-  <section class="reviews section-dark">
-    <div class="page-container">
-      <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
-      <div class="review-cards">
-        <div class="review">
-          <p>
-            “Excelente servicio, mi aire quedó como nuevo y el monitoreo ayuda a
-            saber cuándo darle mantenimiento.”
-          </p>
-          <h4>- Andrés Martínez</h4>
-        </div>
-        <div class="review">
-          <p>
-            “Muy profesionales y organizados. La plataforma nos permite ver el
-            estado de todos los equipos en un solo lugar.”
-          </p>
-          <h4>- Laura Ríos</h4>
-        </div>
-        <div class="review">
-          <p>
-            “Ideal para sistemas industriales, ahora tenemos control real del
-            consumo y de las fallas criticas.”
-          </p>
-          <h4>- Ricardo Torres</h4>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="gallery section-alt">
-    <div class="page-container">
-      <h2 class="section-title">Proyectos Recientes</h2>
-      <div class="images">
-        <div class="img" style="background-image: url('/1.jpg')"></div>
-        <div class="img" style="background-image: url('/3.avif')"></div>
-        <div class="img" style="background-image: url('/4.jpg')"></div>
-      </div>
-    </div>
-  </section>
 
 </main>
+
+
 
 <!-- FOOTER -->
 <app-footer></app-footer>

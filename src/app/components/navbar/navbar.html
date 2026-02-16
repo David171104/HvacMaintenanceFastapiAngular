@@ -1,12 +1,26 @@
-<nav class="navbar">
-  <div class="nav-left">
-    <a href="#" class="nav-link">Inicio</a>
-    <a href="#" class="nav-link">Servicios</a>
-    <a href="#" class="nav-link">Contacto</a>
+<nav class="navbar-container">
+  <div class="navbar-left">
+    <a href="#" class="navbar-link">Inicio</a>
+    <a routerLink="/" fragment="servicios" class="navbar-link">Servicios</a>
+    <a routerLink="/" fragment="contacto" class="navbar-link">Contacto</a>
   </div>
 
-  <div class="nav-right">
-    <button type="button" class="btn btn-outline" (click)="goToRegister()">Crear cuenta</button>
-    <a href="#" class="btn btn-primary">Ingresar</a>
+  <div class="navbar-right">
+    <button
+      type="button"
+      class="navbar-btn navbar-btn-outline"
+      (click)="goToRegister()"
+    >
+      Crear cuenta
+    </button>
+
+    
+    <button
+      type="button"
+      class="main-btn-primary"
+      (click)="goToLogin()"
+    >
+      Ingresar
+    </button>
   </div>
 </nav>
