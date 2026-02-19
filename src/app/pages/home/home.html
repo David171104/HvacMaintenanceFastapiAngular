@@ -1,0 +1,55 @@
+<!-- NAVBAR ADMIN -->
+<nav class="navbar-container">
+  <div class="navbar-left">
+    <a class="navbar-link">Panel Admin</a>
+  </div>
+
+  <div class="navbar-right">
+    <button class="navbar-btn navbar-btn-outline" (click)="logout()">
+      Cerrar sesión
+    </button>
+  </div>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="admin-container">
+
+  <div class="admin-header">
+    <h1 class="admin-title">
+      Bienvenido <span class="admin-gradient">Administrador</span>
+    </h1>
+    <p class="admin-subtitle">
+      Gestiona usuarios, servicios y el sistema desde este panel.
+    </p>
+  </div>
+
+  <!-- CARDS DASHBOARD -->
+  <div class="admin-cards">
+
+    <div class="admin-card">
+      <h3>Usuarios</h3>
+      <p>Gestionar clientes y técnicos registrados.</p>
+      <button class="admin-btn" routerLink="/users">
+        Ver usuarios
+    </button>
+    </div>
+
+    <div class="admin-card">
+      <h3>Servicios</h3>
+      <p>Administrar servicios pendientes y completados.</p>
+      <button class="admin-btn" routerLink="/services">
+        Ver servicios
+    </button>
+    </div>
+
+    <div class="admin-card">
+      <h3>Reportes</h3>
+      <p>Revisar estadísticas y rendimiento del sistema.</p>
+      <button class="admin-btn" routerLink="/reports">
+        Ver reportes
+      </button>
+    </div>
+
+  </div>
+
+</div>

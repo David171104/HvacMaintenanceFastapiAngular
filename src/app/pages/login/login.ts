@@ -19,8 +19,18 @@ export class LoginComponent {
   constructor(private router: Router) {}
 
   onSubmit() {
-    console.log("Login:", this.loginData);
-    alert("Login demo 🚀");
+    const fixedEmail = 'admin@demo.com';
+    const fixedPassword = '123456';
+
+    if (
+      this.loginData.email === fixedEmail &&
+      this.loginData.password === fixedPassword
+    ) {
+      alert('Login exitoso 🚀');
+      this.router.navigate(['/home']); // o la ruta que tengas
+    } else {
+      alert('Correo o contraseña incorrectos ❌');
+    }
   }
 
   goToRegister() {
