@@ -6,8 +6,9 @@ import { RegisterComponent } from './pages/register/register';
 import { Users } from './pages/users/users';
 import { Services } from './pages/services/services';
 import { LoginComponent } from './pages/login/login';
-import { ReportsComponent } from './pages/reports/reports';
+import { Reports } from './pages/reports/reports';
 import { HomeComponent } from './pages/home/home';
+import { LecturasComponent } from './pages/lecturas/lecturas.component';
 
 
 export const routes: Routes = [
@@ -18,7 +19,8 @@ export const routes: Routes = [
     { path: 'users', component: Users },
     { path: 'services', component: Services },
     { path: 'home', component: HomeComponent },
-    { path: 'reports', component: ReportsComponent },
+    { path: 'reports', component: Reports },
+    { path: 'lecturas', component: LecturasComponent },
     { path: '**', component:Notfound}
 
 

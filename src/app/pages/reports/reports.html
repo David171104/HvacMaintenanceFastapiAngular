@@ -3,7 +3,7 @@
   <!-- HEADER -->
   <div class="admin-header">
     <h1 class="admin-title">
-      Gestión de <span class="admin-gradient">Reportes</span>
+      Gestión de Reportes
     </h1>
     <p class="admin-subtitle">
       Estadísticas y administración del sistema
@@ -33,29 +33,43 @@
         </button>
       </li>
 
+
       <li class="nav-item">
+        <button class="nav-link"
+          data-bs-toggle="tab"
+          data-bs-target="#lecturas"
+          type="button">
+            Lecturas
+        </button>
+      </li>
+      <!-- <li class="nav-item">
         <button class="nav-link"
                 data-bs-toggle="tab"
                 data-bs-target="#nuevo"
                 type="button">
           Nuevo
         </button>
-      </li>
+      </li> -->
     </ul>
 
     <!-- Tab Content -->
       <div class="tab-content">
 
-      <div class="tab-pane fade show active" id="home">
-        <app-estadisticas></app-estadisticas>
+      <div class="tab-pane fade show active" id="estadisticas">
+        <app-statistics></app-statistics>
       </div>
 
-      <div class="tab-pane fade" id="profile">
-        <app-listausuario></app-listausuario>
+      <div class="tab-pane fade" id="listado">
+        <app-user-list></app-user-list>
+      </div>
+
+      <div class="tab-pane fade" id="lecturas">
+            <app-lecturascomponent></app-lecturascomponent>
+
       </div>
 
       <div class="tab-pane fade" id="contact">
-        <app-nuevousuario></app-nuevousuario>
+        <!-- <app-nuevousuario></app-nuevousuario> -->
       </div>
 
       </div>

@@ -1,0 +1,29 @@
+<div class="stats-container">
+
+  <h2 class="stats-title"> <i class="fa-solid fa-chart-line"></i> Dashboard Estadísticas</h2>
+
+  <div class="stats-grid">
+
+    <div class="stats-card temp">
+      <h3><i class="fa-solid fa-temperature-half"></i> Temperatura Promedio</h3>
+      <p>{{ stats.temperaturaPromedio }} °C</p>
+    </div>
+
+    <div class="stats-card hum">
+      <h3><i class="fa-solid fa-droplet"></i> Humedad Promedio</h3>
+      <p>{{ stats.humedadPromedio }} %</p>
+    </div>
+
+    <div class="stats-card corr">
+      <h3><i class="fa-solid fa-bolt"></i> Consumo Promedio</h3>
+      <p>{{ stats.consumoPromedio }} A</p>
+    </div>
+
+    <div class="stats-card total">
+      <h3><i class="fa-solid fa-chart-column"></i> Total Lecturas</h3>
+      <p>{{ stats.totalLecturas }}</p>
+    </div>
+
+  </div>
+
+</div>

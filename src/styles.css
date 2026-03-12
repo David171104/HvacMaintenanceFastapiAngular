@@ -409,6 +409,10 @@ html {
   USER CONTAINER
 ===================================================== */
 
+/* =====================================================
+  USER CONTAINER
+===================================================== */
+
 .users-container {
   padding: 60px 40px;
   min-height: 100vh;
@@ -441,9 +445,16 @@ html {
   border: 1px solid rgba(255,255,255,0.08);
 }
 
+/* 🔥 FIX PRINCIPAL — quitar fondo blanco */
 .users-table {
   width: 100%;
   border-collapse: collapse;
+  background: transparent; /* importante */
+}
+
+.users-table th,
+.users-table td {
+  background: transparent; /* evita blanco en celdas */
 }
 
 /* HEADER TABLA */
@@ -467,6 +478,7 @@ html {
 .users-table td {
   padding: 18px;
   border-top: 1px solid rgba(255,255,255,0.05);
+  color: white; /* por si bootstrap mete color negro */
 }
 
 /* HOVER */
@@ -506,8 +518,6 @@ html {
     font-size: 14px;
   }
 }
-
-
 
 /* CONTENEDOR */
 
@@ -680,3 +690,157 @@ html {
     font-size: 0.85rem;
   }
 }
+
+.lecturas-dashboard {
+  padding: 24px;
+  background: #0f172a;
+  min-height: 100vh;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+.lecturas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.lecturas-header button {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* CARDS */
+.lecturas-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.lecturas-card {
+  background: #1e293b;
+  border-radius: 14px;
+  padding: 18px;
+  border-left: 6px solid;
+}
+
+.lecturas-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.lecturas-card p {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.lecturas-temp { border-color: #ef4444; }
+.lecturas-hum { border-color: #06b6d4; }
+.lecturas-corr { border-color: #f59e0b; }
+.lecturas-fecha { border-color: #8b5cf6; }
+
+/* TABLA */
+.lecturas-table-container {
+  background: #1e293b;
+  padding: 18px;
+  border-radius: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #334155;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+tbody tr:hover {
+  background: #334155;
+}
+
+/* ESTADOS */
+.lecturas-loading { color: #38bdf8; }
+.lecturas-error { color: #ef4444; }
+.lecturas-empty { color: #94a3b8; }
+
+
+.stats-container {
+  padding: 20px;
+}
+
+.stats-title {
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 16px;
+}
+
+.stats-card {
+  /* background: white; */
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  border-left: 6px solid;
+}
+
+.stats-card h3 {
+  margin: 0 0 8px 0;
+  color: #ffff;
+}
+
+.stats-card p {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.temp { border-left-color: #ef4444; }
+.hum { border-left-color: #06b6d4; }
+.corr { border-left-color: #f59e0b; }
+.total { border-left-color: #2563eb; }
+
+
+.users-container {
+  padding: 20px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+thead {
+  background: #2563eb;
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* tbody tr:hover {
+  background: #ffff;
+} */
