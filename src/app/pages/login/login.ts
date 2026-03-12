@@ -139,7 +139,7 @@ export class LoginComponent implements OnInit {
         if (role === 1) {
           this.router.navigateByUrl('/home');
         } else if (role === 2) {
-          this.router.navigateByUrl('/techinnician-home');
+          this.router.navigateByUrl('/tecnic-home');
         } else if (role === 3){
           this.router.navigateByUrl('/client-home');
         }else{

@@ -9,6 +9,9 @@ import { LoginComponent } from './pages/login/login';
 import { Reports } from './pages/reports/reports';
 import { HomeComponent } from './pages/home/home';
 import { LecturasComponent } from './pages/lecturas/lecturas.component';
+import { ClientHome } from './pages/client-home/client-home';
+import { TecnicHome } from './pages/tecnic-home/tecnic-home';
+import { ClientServices } from './pages/client-services/client-services';
 
 
 export const routes: Routes = [
@@ -21,7 +24,9 @@ export const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'reports', component: Reports },
     { path: 'lecturas', component: LecturasComponent },
+    { path: 'client-home', component: ClientHome },
+    { path: 'tecnic-home', component: TecnicHome },
+    { path: 'client-services', component: ClientServices },
     { path: '**', component:Notfound}
-
 
 ];

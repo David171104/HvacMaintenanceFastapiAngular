@@ -1,0 +1,81 @@
+/* =====================================================
+   TECHNIC HOME
+===================================================== */
+
+.technic-container {
+  padding: 80px 40px;
+  min-height: 100vh;
+  background: var(--dark-bg);
+  color: white;
+}
+
+/* HEADER */
+
+.technic-header {
+  margin-bottom: 50px;
+}
+
+.technic-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.technic-gradient {
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.technic-subtitle {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* CARDS */
+
+.technic-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.technic-card {
+  background: var(--dark-surface);
+  padding: 30px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: var(--transition);
+}
+
+.technic-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent-color);
+}
+
+.technic-card h3 {
+  margin-bottom: 15px;
+  color: var(--accent-color);
+}
+
+.technic-card p {
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+/* BOTON */
+
+.technic-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.technic-btn:hover {
+  background: var(--primary-hover);
+}

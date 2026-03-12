@@ -102,7 +102,7 @@ export class App implements OnInit {
         this.router.navigateByUrl('/home');
       }
       else if (roles.includes("Tecnico")) {
-        this.router.navigateByUrl('/techinnician-home');
+        this.router.navigateByUrl('/tecnic-home');
       }
       else if (roles.includes("Cliente")){
         this.router.navigateByUrl('/client-home');
