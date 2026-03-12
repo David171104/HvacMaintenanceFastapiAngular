@@ -17,11 +17,15 @@
       <div class="form-group">
         <button type="submit">Ingresar</button>
       </div>
-
+      
     </form>
+    <button type="submit" class="btn-microsoft" (click)="loginMicrosoft($event)">
+      <i class="fab fa-microsoft"></i>
+      Ingresar con Microsoft 365
+    </button>
 
     <div style="margin-top: 20px;">
-      <button type="button" (click)="goToRegister()">Crear cuenta</button>
+      <button type="button"  (click)="logoutMicrosoft()">Crear cuenta</button>
     </div>
 
   </div>

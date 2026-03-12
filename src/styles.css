@@ -844,3 +844,47 @@ th, td {
 /* tbody tr:hover {
   background: #ffff;
 } */
+/* BOTON MICROSOFT */
+.btn-microsoft {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  background: rgba(255,255,255,0.05);
+   color: #000;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ICONO */
+.btn-microsoft i {
+  font-size: 18px;
+  color: #00d4ff;
+}
+
+/* HOVER elegante */
+.btn-microsoft:hover {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: #00d4ff;
+  transform: translateY(-1px);
+}
+
+/* CLICK */
+.btn-microsoft:active {
+  transform: scale(0.98);
+}
+
+.btn-microsoft i {
+  font-size: 18px;
+  color: #000; /* negro */
+}

@@ -8,9 +8,20 @@ REM Activar entorno virtual
 call myvenv\Scripts\activate
 
 REM Iniciar servidor FastAPI
-start cmd /k "uvicorn app.app:app --reload --port 8001"
 
-timeout /t 3 > nul
+
+echo ===============================
+echo FastAPI puerto 8000
+echo ===============================
+start "FASTAPI-8000" cmd /k "uvicorn app.main:app --reload --port 8000"
+
+
+timeout /t 2 > nul
+
+echo ===============================
+echo FastAPI puerto 8001
+echo ===============================
+start "FASTAPI-8001" cmd /k "uvicorn app.app:app --reload --port 8001"
 
 echo ===============================
 echo Iniciando servidor Angular...
