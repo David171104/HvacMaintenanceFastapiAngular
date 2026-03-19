@@ -22,7 +22,11 @@
 }
 
 .client-gradient {
-  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -32,13 +36,9 @@
   font-size: 16px;
 }
 
-/* CARDS */
-
-.client-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
+/* =====================================================
+   CARD CONTENEDOR
+===================================================== */
 
 .client-card {
   background: var(--dark-surface);
@@ -49,21 +49,12 @@
 }
 
 .client-card:hover {
-  transform: translateY(-8px);
   border-color: var(--accent-color);
 }
 
-.client-card h3 {
-  margin-bottom: 15px;
-  color: var(--accent-color);
-}
-
-.client-card p {
-  color: #cbd5e1;
-  margin-bottom: 20px;
-}
-
-/* BOTÓN */
+/* =====================================================
+   BOTONES
+===================================================== */
 
 .client-btn {
   background: var(--primary-color);
@@ -80,32 +71,84 @@
   background: var(--primary-hover);
 }
 
-/* TABLA */
+/* =====================================================
+   TABLA SERVICIOS (ANTES LECTURAS)
+===================================================== */
+
+.table-container {
+  padding: 16px 0;
+  overflow-x: auto;
+}
+
+/* tabla base */
 
 .user-table {
   width: 100%;
   border-collapse: collapse;
   color: white;
+  font-size: 14px;
+}
+
+/* encabezado */
+
+.user-table thead {
+  background: #334155; /* azul gris oscuro */
 }
 
 .user-table th {
   text-align: left;
   padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
   color: var(--accent-color);
+  border-bottom: 1px solid #334155;
 }
+
+/* filas */
 
 .user-table td {
   padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: #cbd5e1;
 }
 
+/* hover fila */
+
+.user-table tbody tr {
+  transition: var(--transition);
+}
+
+.user-table tbody tr:hover {
+  background: #334155;
+}
+
+/* fila vacía */
+
+.user-table tbody td[colspan] {
+  text-align: center;
+  color: #94a3b8;
+  padding: 25px;
+}
+
+/* =====================================================
+   RESPONSIVE TABLE
+===================================================== */
+
+@media (max-width: 768px) {
+  .user-table th,
+  .user-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-container {
+    padding: 60px 20px;
+  }
+}
 
 /* =====================================================
    MODAL SOLICITAR SERVICIO
 ===================================================== */
-
-/* FONDO OSCURO */
 
 .modal-backdrop{
   position: fixed;
@@ -113,54 +156,41 @@
   left:0;
   width:100%;
   height:100%;
-
   background: rgba(0,0,0,0.65);
-
   z-index: 9999;
 }
-
-/* CAJA DEL MODAL CENTRADA */
 
 .modal{
   position: fixed;
   top:50%;
   left:50%;
   transform: translate(-50%, -50%);
-
   width:420px;
   max-width:90%;
-
   background: var(--dark-surface);
   border-radius: var(--radius);
   border:1px solid rgba(255,255,255,0.08);
-
   padding:30px;
-
   display:flex;
   flex-direction:column;
   gap:12px;
-
   animation: modalFade .2s ease;
 }
-
-/* TITULO */
 
 .modal h3{
   color: var(--accent-color);
   margin-bottom:10px;
 }
 
-/* INPUTS */
+/* inputs */
 
 .modal input,
 .modal select{
   padding:10px;
   border-radius:var(--radius);
   border:1px solid rgba(255,255,255,0.08);
-
   background: var(--dark-bg);
   color:white;
-
   outline:none;
 }
 
@@ -169,7 +199,7 @@
   border-color: var(--accent-color);
 }
 
-/* BOTONES */
+/* acciones */
 
 .modal-actions{
   display:flex;
@@ -178,7 +208,7 @@
   margin-top:15px;
 }
 
-/* BOTÓN CANCELAR */
+/* cancelar */
 
 .cancel-btn{
   background: transparent;
@@ -194,7 +224,7 @@
   border-color: var(--accent-color);
 }
 
-/* ANIMACIÓN */
+/* animación */
 
 @keyframes modalFade{
   from{

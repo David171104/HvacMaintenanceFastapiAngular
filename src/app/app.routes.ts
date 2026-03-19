@@ -27,6 +27,7 @@ export const routes: Routes = [
     { path: 'client-home', component: ClientHome },
     { path: 'tecnic-home', component: TecnicHome },
     { path: 'client-services', component: ClientServices },
+  
     { path: '**', component:Notfound}
 
 ];
