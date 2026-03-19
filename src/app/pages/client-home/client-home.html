@@ -1,0 +1,55 @@
+<!-- NAVBAR CLIENTE -->
+<nav class="navbar-container">
+  <div class="navbar-left">
+    <a class="navbar-link">Panel Cliente</a>
+  </div>
+
+  <div class="navbar-right">
+    <button class="navbar-btn navbar-btn-outline" (click)="logout()">
+      Cerrar sesión
+    </button>
+  </div>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="client-container">
+
+  <div class="client-header">
+    <h1 class="client-title">
+      Bienvenido <span class="client-gradient">Cliente</span>
+    </h1>
+    <p class="client-subtitle">
+      Gestiona tus servicios y revisa el estado de tus solicitudes.
+    </p>
+  </div>
+
+  <!-- CARDS CLIENTE -->
+  <div class="client-cards">
+
+    <div class="client-card">
+      <h3>Solicitar servicio</h3>
+      <p>Crea una nueva solicitud de soporte o mantenimiento.</p>
+        <button class="client-btn" routerLink="/client-services">
+        Solicitar servicio
+        </button>
+    </div>
+
+    <div class="client-card">
+      <h3>Mis servicios</h3>
+      <p>Consulta el estado de tus servicios solicitados.</p>
+      <button class="client-btn" >
+        Ver servicios
+      </button>
+    </div>
+
+    <div class="client-card">
+      <h3>Perfil</h3>
+      <p>Actualiza tu información personal y datos de contacto.</p>
+      <button class="client-btn" href="#">
+        Ver perfil
+      </button>
+    </div>
+
+  </div>
+
+</div>

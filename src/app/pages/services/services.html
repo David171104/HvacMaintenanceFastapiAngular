@@ -9,7 +9,19 @@
 
   <div class="services-table-wrapper">
 
-    <table class="services-table">
+    <!-- ERROR -->
+    <p class="services-error" *ngIf="error">{{ error }}</p>
+
+    <!-- LOADING -->
+    <div class="services-state" *ngIf="loading">
+      ⏳ Cargando servicios...
+    </div>
+
+    <!-- TABLA -->
+    <table
+      class="services-table"
+      *ngIf="!loading && services.length > 0"
+    >
 
       <thead>
         <tr>
@@ -26,50 +38,35 @@
 
       <tbody>
 
-        <!-- EJEMPLOS (luego conectas backend) -->
+        <tr
+          *ngFor="let service of services; trackBy: trackById"
+        >
+          <td>#{{ service.id }}</td>
+          <td>{{ service.client_name }}</td>
+          <td>{{ service.technician_name || '—' }}</td>
+          <td>{{ service.service_type }}</td>
+          <td>{{ service.request_date }}</td>
+          <td>{{ service.request_time }}</td>
+          <td>{{ service.address }}</td>
 
-        <tr>
-          <td>#001</td>
-          <td>Carlos Gómez</td>
-          <td>—</td>
-          <td>Mantenimiento AC</td>
-          <td>15/02/2026</td>
-          <td>09:00 AM</td>
-          <td>Girón, Santander</td>
-          <td class="services-status services-status-pending">
-            Pendiente
-          </td>
-        </tr>
-
-        <tr>
-          <td>#002</td>
-          <td>Laura Martínez</td>
-          <td>Juan Pérez</td>
-          <td>Instalación</td>
-          <td>16/02/2026</td>
-          <td>02:00 PM</td>
-          <td>Bucaramanga</td>
-          <td class="services-status services-status-assigned">
-            Asignado a técnico
-          </td>
-        </tr>
-
-        <tr>
-          <td>#003</td>
-          <td>Pedro Sánchez</td>
-          <td>Ana Torres</td>
-          <td>Reparación</td>
-          <td>14/02/2026</td>
-          <td>11:30 AM</td>
-          <td>Floridablanca</td>
-          <td class="services-status services-status-completed">
-            Completado
+          <td>
+            <span [class]="getStatusClass(service.current_status)">
+              {{ service.current_status }}
+            </span>
           </td>
         </tr>
 
       </tbody>
 
     </table>
+
+    <!-- SIN DATOS -->
+    <div
+      class="services-state"
+      *ngIf="!loading && services.length === 0"
+    >
+      📭 No hay servicios registrados
+    </div>
 
   </div>
 

@@ -2,7 +2,9 @@
 
   <div class="lecturas-header">
     <h1><i class="fa-solid fa-tower-broadcast"></i> Dashboard IoT</h1>
-    <button (click)="cargarDatos()">Actualizar</button>
+    <button class="lecturas-btn" (click)="cargarDatos()">
+      <i class="fa-solid fa-rotate-right"></i> Actualizar
+    </button>
   </div>
 
   <p class="lecturas-loading" *ngIf="loading">Cargando datos...</p>
@@ -10,35 +12,28 @@
 
   <!-- TARJETAS -->
   <div class="lecturas-cards" *ngIf="ultimaLectura">
-
     <div class="lecturas-card lecturas-temp">
       <h3><i class="fa-solid fa-temperature-half"></i> Temperatura</h3>
       <p>{{ ultimaLectura.temperatura }} °C</p>
     </div>
-
     <div class="lecturas-card lecturas-hum">
-      <h3> <i class="fa-solid fa-droplet"></i> Humedad</h3>
+      <h3><i class="fa-solid fa-droplet"></i> Humedad</h3>
       <p>{{ ultimaLectura.humedad }} %</p>
     </div>
-
     <div class="lecturas-card lecturas-corr">
       <h3><i class="fa-solid fa-bolt"></i> Corriente</h3>
       <p>{{ ultimaLectura.corriente }} A</p>
     </div>
-
     <div class="lecturas-card lecturas-fecha">
-      <h3> <i class="fa-solid fa-clock"></i> Última lectura</h3>
+      <h3><i class="fa-solid fa-clock"></i> Última lectura</h3>
       <p>{{ formatearFecha(ultimaLectura.fecha_hora) }}</p>
       <small>ID: {{ ultimaLectura.id }}</small>
     </div>
-
   </div>
 
   <!-- TABLA -->
   <div class="lecturas-table-container">
-
     <h2>Últimas lecturas</h2>
-
     <table *ngIf="lecturas.length > 0">
       <thead>
         <tr>
@@ -49,7 +44,6 @@
           <th>Corriente</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let lectura of lecturas">
           <td>{{ lectura.id }}</td>
@@ -60,11 +54,9 @@
         </tr>
       </tbody>
     </table>
-
     <p *ngIf="!loading && lecturas.length === 0" class="lecturas-empty">
       No hay lecturas disponibles
     </p>
-
   </div>
 
 </div>

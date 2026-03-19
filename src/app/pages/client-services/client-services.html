@@ -1,0 +1,104 @@
+<div class="client-container">
+
+  <div class="client-header">
+    <h1 class="client-title">
+      Mis <span class="client-gradient">Servicios</span>
+    </h1>
+
+    <p class="client-subtitle">
+      Aquí puedes ver todos los servicios que has solicitado.
+    </p>
+  </div>
+
+  <div class="client-card">
+
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+
+      <h3>Lista de Servicios</h3>
+
+        <button class="client-btn" (click)="solicitarServicio()">
+        Solicitar Servicio
+        </button>
+
+    </div>
+
+    <table class="user-table">
+
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Tipo</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td colspan="6" style="text-align:center;">
+            Sin servicios aún
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+<div *ngIf="showModal" class="modal-backdrop">
+
+  <div class="modal">
+
+    <h3>Solicitar Servicio</h3>
+
+    <label>Fecha del servicio *</label>
+    <input
+      type="date"
+      [(ngModel)]="formData.request_date"
+      required
+    />
+
+    <label>Hora del servicio *</label>
+    <input
+      type="time"
+      [(ngModel)]="formData.request_time"
+      min="08:00"
+      max="17:00"
+      required
+    />
+
+    <label>Tipo de servicio *</label>
+    <select [(ngModel)]="formData.service_type">
+      <option value="Correctivo">Correctivo</option>
+      <option value="Preventivo">Preventivo</option>
+    </select>
+
+    <label>Dirección *</label>
+    <input
+      type="text"
+      placeholder="Dirección del servicio"
+      [(ngModel)]="formData.address"
+      required
+    />
+
+        <div class="modal-actions">
+
+        <button class="client-btn" (click)="guardarServicio()">
+            Guardar
+        </button>
+
+        <button class="cancel-btn" (click)="cerrarModal()">
+            Cancelar
+        </button>
+
+        </div>
+
+  </div>
+
+</div>

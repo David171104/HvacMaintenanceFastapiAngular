@@ -691,69 +691,286 @@ html {
   }
 }
 
+/* =====================================================
+  LECTURAS DASHBOARD
+===================================================== */
 .lecturas-dashboard {
-  padding: 24px;
-  background: #0f172a;
+  padding: 40px 32px;
+  background: transparent;
   min-height: 100vh;
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-/* HEADER */
+/* =====================================================
+  HEADER
+===================================================== */
 .lecturas-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 32px;
 }
 
-.lecturas-header button {
-  background: #3b82f6;
-  border: none;
-  color: white;
-  padding: 10px 16px;
+.lecturas-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lecturas-header h1 i {
+  color: #00eaff;
+  font-size: 20px;
+}
+
+.lecturas-btn {
+  background: rgba(0, 234, 255, 0.1);
+  border: 1px solid rgba(0, 234, 255, 0.25);
+  color: #00eaff;
+  padding: 9px 18px;
   border-radius: 10px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 0.2px;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
-/* CARDS */
-.lecturas-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
+.lecturas-btn:hover {
+  background: rgba(0, 234, 255, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 234, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.lecturas-btn:active {
+  transform: scale(0.97);
+}
+
+/* =====================================================
+  ESTADOS
+===================================================== */
+.lecturas-loading,
+.lecturas-error,
+.lecturas-empty {
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
   margin-bottom: 20px;
 }
 
+.lecturas-loading {
+  color: #67e8f9;
+  background: rgba(0, 234, 255, 0.06);
+  border: 1px solid rgba(0, 234, 255, 0.12);
+}
+
+.lecturas-error {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.15);
+}
+
+.lecturas-empty {
+  color: #475569;
+  text-align: center;
+  padding: 32px;
+}
+
+/* =====================================================
+  CARDS
+===================================================== */
+.lecturas-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .lecturas-card {
-  background: #1e293b;
-  border-radius: 14px;
-  padding: 18px;
-  border-left: 6px solid;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 20px;
+  border-left: 3px solid;
+  transition: transform 0.2s ease, background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lecturas-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.lecturas-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .lecturas-card h3 {
-  margin: 0 0 8px;
-  font-size: 0.9rem;
-  color: #94a3b8;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .lecturas-card p {
-  font-size: 1.5rem;
-  margin: 0;
-  font-weight: bold;
+  font-size: 28px;
+  margin: 0 0 4px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #f1f5f9;
 }
 
-.lecturas-temp { border-color: #ef4444; }
-.lecturas-hum { border-color: #06b6d4; }
-.lecturas-corr { border-color: #f59e0b; }
-.lecturas-fecha { border-color: #8b5cf6; }
+.lecturas-card small {
+  font-size: 11px;
+  color: #334155;
+}
 
-/* TABLA */
+/* ACENTO POR TIPO */
+.lecturas-temp {
+  border-left-color: #f87171;
+}
+.lecturas-temp h3 i { color: #f87171; }
+
+.lecturas-hum {
+  border-left-color: #00eaff;
+}
+.lecturas-hum h3 i { color: #00eaff; }
+
+.lecturas-corr {
+  border-left-color: #fbbf24;
+}
+.lecturas-corr h3 i { color: #fbbf24; }
+
+.lecturas-fecha {
+  border-left-color: #a78bfa;
+}
+.lecturas-fecha h3 i { color: #a78bfa; }
+.lecturas-fecha p {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+/* =====================================================
+  TABLA CONTAINER
+===================================================== */
 .lecturas-table-container {
-  background: #1e293b;
-  padding: 18px;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.2),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lecturas-table-container h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0 0 20px;
+  letter-spacing: 0.1px;
+}
+
+/* =====================================================
+  TABLA
+===================================================== */
+.lecturas-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.lecturas-table-container thead {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lecturas-table-container th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  color: #475569;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.lecturas-table-container td {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.lecturas-table-container tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.lecturas-table-container tbody tr {
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lecturas-table-container tbody tr:hover {
+  background: rgba(0, 234, 255, 0.05);
+  box-shadow: inset 3px 0 0 rgba(0, 234, 255, 0.4);
+}
+
+.lecturas-table-container tbody tr:hover td {
+  color: #e2e8f0;
+}
+
+/* =====================================================
+  RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+  .lecturas-dashboard {
+    padding: 24px 16px;
+  }
+
+  .lecturas-header h1 {
+    font-size: 18px;
+  }
+
+  .lecturas-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lecturas-table-container {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .lecturas-table-container th,
+  .lecturas-table-container td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lecturas-cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 table {
@@ -844,3 +1061,202 @@ th, td {
 /* tbody tr:hover {
   background: #ffff;
 } */
+/* BOTON MICROSOFT */
+.btn-microsoft {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  background: rgba(255,255,255,0.05);
+   color: #000;
+
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ICONO */
+.btn-microsoft i {
+  font-size: 18px;
+  color: #00d4ff;
+}
+
+/* HOVER elegante */
+.btn-microsoft:hover {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: #00d4ff;
+  transform: translateY(-1px);
+}
+
+/* CLICK */
+.btn-microsoft:active {
+  transform: scale(0.98);
+}
+
+.btn-microsoft i {
+  font-size: 18px;
+  color: #000; /* negro */
+}
+
+
+/* =====================================================
+  CONTAINER
+===================================================== */
+.admin-container {
+  padding: 64px 48px;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #0f172a 0%, #020617 100%);
+  color: white;
+  font-family: "Inter", sans-serif;
+}
+
+/* =====================================================
+  HEADER
+===================================================== */
+.admin-header {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.admin-subtitle {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* =====================================================
+  CARD CONTENEDOR
+===================================================== */
+.admin-card {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.2),
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* =====================================================
+  TABS — reemplaza Bootstrap completamente
+===================================================== */
+.admin-tabs {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 0;
+}
+
+.admin-tab-item {
+  margin: 0;
+}
+
+.admin-tab-link {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 0.1px;
+  margin-bottom: -1px;
+}
+
+.admin-tab-link:hover {
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.admin-tab-link.active,
+.admin-tab-link.show {
+  color: #00eaff;
+  border-bottom: 2px solid #00eaff;
+  background: rgba(0, 234, 255, 0.05);
+}
+
+/* =====================================================
+  TAB CONTENT
+===================================================== */
+.admin-tab-content {
+  padding-top: 8px;
+}
+
+.admin-tab-content .tab-pane {
+  animation: fadeInTab 0.25s ease;
+}
+
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+  RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 40px 20px;
+  }
+
+  .admin-title {
+    font-size: 24px;
+  }
+
+  .admin-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .admin-tabs {
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .admin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-tab-link {
+    padding: 10px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}

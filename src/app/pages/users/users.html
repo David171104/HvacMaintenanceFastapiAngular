@@ -2,50 +2,57 @@
 
   <div class="users-header">
     <h1 class="users-title">Lista de usuarios</h1>
-    <p class="users-subtitle">
-      Gestión y control de usuarios del sistema
-    </p>
+    <p class="users-subtitle">Gestión y control de usuarios del sistema</p>
   </div>
+
+  <p class="users-error" *ngIf="error">{{ error }}</p>
 
   <div class="users-table-wrapper">
 
-    <table class="users-table">
+    <!-- LOADING -->
+    <div class="users-state" *ngIf="loading">
+      <span class="users-state-icon">⏳</span>
+      <p>Cargando usuarios...</p>
+    </div>
 
+    <!-- TABLA -->
+    <table
+      class="users-table"
+      *ngIf="!loading && usuarios.length > 0"
+    >
       <thead>
         <tr>
           <th>Nombre</th>
           <th>Apellido</th>
-          <th>Tipo ID</th>
-          <th>Número ID</th>
+          <th>Número identificación</th>
           <th>Correo</th>
           <th>Rol</th>
         </tr>
       </thead>
 
       <tbody>
-
-        <!-- Ejemplo datos (luego lo conectas a backend) -->
-        <tr>
-          <td>Juan</td>
-          <td>Pérez</td>
-          <td>Cédula</td>
-          <td>1098765432</td>
-          <td>juan@email.com</td>
-          <td class="users-role users-role-client">Cliente</td>
+        <tr
+          *ngFor="let user of usuarios; trackBy: trackById"
+        >
+          <td>{{ user.name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.document_number }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span [class]="getRoleClass(user.role_id)">
+              {{ getRole(user.role_id) }}
+            </span>
+          </td>
         </tr>
-
-        <tr>
-          <td>Ana</td>
-          <td>Martínez</td>
-          <td>Cédula</td>
-          <td>1012345678</td>
-          <td>ana@email.com</td>
-          <td class="users-role users-role-tech">Técnico</td>
-        </tr>
-
       </tbody>
-
     </table>
+
+    <!-- EMPTY -->
+    <div class="users-state"
+         *ngIf="!loading && usuarios.length === 0">
+      <span class="users-state-icon">📭</span>
+      <p>No hay usuarios registrados</p>
+    </div>
 
   </div>
 
