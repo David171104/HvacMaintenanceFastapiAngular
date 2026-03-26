@@ -277,6 +277,50 @@ export class Services implements OnInit {
     });
   }
 
+  formatearHora(hora: any): string {
+  if (!hora) return '';
+
+  let hours = 0;
+  let minutes = 0;
+
+  if (typeof hora === 'number') {
+    hours = Math.floor(hora / 3600);
+    minutes = Math.floor((hora % 3600) / 60);
+  }
+
+  if (typeof hora === 'string') {
+    const parts = hora.split(':');
+    hours = Number(parts[0]);
+    minutes = Number(parts[1]);
+  }
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours === 0 ? 12 : hours;
+
+  return `${this.pad(hours)}:${this.pad(minutes)} ${ampm}`;
+}
+
+formatearFecha(fecha: string): string {
+  if (!fecha) return '';
+
+  const date = new Date(fecha);
+
+  const formatted = date.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  return formatted.replace(/^\d{2} (\w+)/, (match, month) => {
+    return match.replace(month, month.charAt(0).toUpperCase() + month.slice(1));
+  });
+}
+
+pad(value: number): string {
+  return value < 10 ? '0' + value : value.toString();
+}
+
   /* ===============================
      TRACK BY (performance)
   =============================== */

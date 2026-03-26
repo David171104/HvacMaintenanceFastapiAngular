@@ -51,8 +51,8 @@
           <td>{{ service.client_name }}</td>
           <td>{{ service.technician_name || '—' }}</td>
           <td>{{ service.service_type }}</td>
-          <td>{{ service.request_date }}</td>
-          <td>{{ service.request_time }}</td>
+          <td>{{ formatearFecha(service.request_date) }}</td>
+          <td>{{ formatearHora(service.request_time) }}</td>
           <td>{{ service.address }}</td>
 
           <td [innerHTML]="getStatusHTML(service.current_status)"></td>
