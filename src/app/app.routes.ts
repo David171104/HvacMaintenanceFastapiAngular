@@ -12,6 +12,7 @@ import { LecturasComponent } from './pages/lecturas/lecturas.component';
 import { ClientHome } from './pages/client-home/client-home';
 import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
+import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
 
 
 export const routes: Routes = [
@@ -27,6 +28,7 @@ export const routes: Routes = [
     { path: 'client-home', component: ClientHome },
     { path: 'tecnic-home', component: TecnicHome },
     { path: 'client-services', component: ClientServices },
+    { path: 'techniccian-services', component: TechniccianServices },
   
     { path: '**', component:Notfound}
 
