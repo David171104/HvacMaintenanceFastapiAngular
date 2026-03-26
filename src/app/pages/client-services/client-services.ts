@@ -15,12 +15,14 @@ import {
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
+
+
 @Component({
   selector: 'app-client-services',
   standalone: true,
   templateUrl: './client-services.html',
   styleUrls: ['./client-services.css'],
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, SidebarComponent],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, SidebarComponent]
 })
 export class ClientServices {
   private readonly fb = inject(FormBuilder);

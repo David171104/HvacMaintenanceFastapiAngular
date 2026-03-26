@@ -33,7 +33,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar';
   standalone: true,
 
   // 👇 IMPORTANTE
-  imports: [NgIf, NgFor, SidebarComponent],
+  imports: [NgIf, NgFor, SidebarComponent,ReactiveFormsModule],
 
   templateUrl: './lecturas.component.html',
   styleUrls: ['./lecturas.component.css'],
