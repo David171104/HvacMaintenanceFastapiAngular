@@ -19,7 +19,7 @@ interface User {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent, FormsModule],
   templateUrl: './users.html',
   styleUrls: ['./users.css'],
   
