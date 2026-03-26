@@ -20,7 +20,7 @@ def get_services_by_technician(technician_id: int, token_data: dict = Depends(ve
     return response  
 
 @router.put("/services/{service_id}/complete")
-def complete_service(service_id: int, token_data: dict = Depends(verify_token)):
+def complete_service(service_id: int):
     response = techniccianController.complete_service(service_id)
     return response
 

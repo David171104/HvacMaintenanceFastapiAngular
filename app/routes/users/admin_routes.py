@@ -44,7 +44,7 @@ async def get_users():
 
 
 @router.get("/users/technicians/all")
-def get_all_technicians(token_data: dict = Depends(verify_token)):
+def get_all_technicians():
     response = adminController.get_all_technicians()
     return response
 
