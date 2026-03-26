@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { getStatusLabel } from '../../shared/service-status.util';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 /* ===============================
    INTERFACES
@@ -38,7 +39,7 @@ interface Technician {
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './services.html',
   styleUrls: ['./services.css'],
 })
