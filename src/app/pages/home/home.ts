@@ -1,19 +1,24 @@
-import { Component } from '@angular/core';
-import { Router, RouterModule  } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
+  imports: [CommonModule, RouterLink, SidebarComponent],
   templateUrl: './home.html',
-  styleUrl: './home.css',
-  imports: [RouterModule]
+  styleUrls: ['./home.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
-  constructor(private router: Router) {}
+  userName = '';
+  userLastName = '';
+  userRole = '';
 
-  logout() {
-    localStorage.removeItem('isAdmin');
-    this.router.navigate(['/login']);
+  ngOnInit(): void {
+    this.userName = localStorage.getItem('userName') || '';
+    this.userLastName = localStorage.getItem('userLastName') || '';
+    this.userRole = localStorage.getItem('userRole') || '';
   }
 }

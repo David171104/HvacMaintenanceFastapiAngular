@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-client-services',
   templateUrl: './client-services.html',
   styleUrls: ['./client-services.css'],
-  imports: [RouterModule, FormsModule, CommonModule]
+  imports: [RouterModule, FormsModule, CommonModule, SidebarComponent]
 })
 export class ClientServices {
 

@@ -37,6 +37,10 @@ body {
   line-height: 1.6;
 }
 
+body.sidebar-collapsed .home-content {
+  margin-left: 84px !important;
+}
+
 .page-container {
   max-width: 1200px;
   margin: auto;

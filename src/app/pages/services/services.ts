@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 interface Service {
   id: number;
@@ -16,7 +17,7 @@ interface Service {
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './services.html',
   styleUrls: ['./services.css'],
 })

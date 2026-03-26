@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 interface User {
   id: number;
@@ -15,9 +16,10 @@ interface User {
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './users.html',
   styleUrls: ['./users.css'],
+  
 })
 export class Users implements OnInit {
 

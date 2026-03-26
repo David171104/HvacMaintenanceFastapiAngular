@@ -136,13 +136,28 @@ export class LoginComponent implements OnInit {
         // ✅ redirección según rol
         const role = response.user.role_id;
 
+        // 🔥 MAPEAR ROL A TEXTO
+        const roleMap: { [key: number]: string } = {
+          1: 'administrador',
+          2: 'tecnico',
+          3: 'cliente'
+        };
+
+        const roleText = roleMap[role] || '';
+
+        // ✅ GUARDAR DATOS PARA SIDEBAR
+        localStorage.setItem('userRole', roleText);
+        localStorage.setItem('userName', response.user.name);
+        localStorage.setItem('userLastName', response.user.last_name);
+
+        // 🔄 REDIRECCIÓN (tu lógica original)
         if (role === 1) {
           this.router.navigateByUrl('/home');
         } else if (role === 2) {
           this.router.navigateByUrl('/tecnic-home');
         } else if (role === 3){
           this.router.navigateByUrl('/client-home');
-        }else{
+        } else {
           this.router.navigateByUrl('/');
         }
       },

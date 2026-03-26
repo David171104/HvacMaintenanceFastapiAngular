@@ -2,13 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgIf, NgFor } from '@angular/common';
 import { Lectura, LecturasService } from '../../services/lecturas/lecturas.service';
 import { Subscription, interval } from 'rxjs';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-lecturascomponent',
   standalone: true,
 
   // 👇 IMPORTANTE
-  imports: [NgIf, NgFor],
+  imports: [NgIf, NgFor, SidebarComponent],
 
   templateUrl: './lecturas.component.html',
   styleUrls: ['./lecturas.component.css']

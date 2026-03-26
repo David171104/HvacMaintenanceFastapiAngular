@@ -1,0 +1,50 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-top">
+    <div class="brand" *ngIf="!isCollapsed">
+      <div class="brand-icon">✳</div>
+      <div class="brand-text">
+        <h2>ClimaTech</h2>
+        <span>IOT PLATFORM</span>
+      </div>
+    </div>
+
+    <div class="brand-collapsed" *ngIf="isCollapsed">
+      <div class="brand-icon">✳</div>
+    </div>
+
+    <button class="toggle-btn" type="button" (click)="toggleSidebar()">
+      {{ isCollapsed ? '»' : '«' }}
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of navItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      class="nav-item"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label" *ngIf="!isCollapsed">
+        {{ item.label }}
+      </span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" type="button" (click)="logout()">
+      <div class="user-box">
+        <div class="avatar">
+          {{ getUserInitials() }}
+        </div>
+
+        <div class="user-info" *ngIf="!isCollapsed">
+          <strong>{{ userName }} {{ userLastName }}</strong>
+          <span>{{ userRole | titlecase }}</span>
+        </div>
+
+        <div class="dots" *ngIf="!isCollapsed">⋮</div>
+      </div>
+    </button>
+  </div>
+</aside>

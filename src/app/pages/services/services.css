@@ -1,0 +1,13 @@
+.home-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.home-content {
+  margin-left: 260px;
+  width: 100%;
+  padding: 40px;
+  background: var(--dark-bg);
+  color: white;
+  transition: margin-left 0.3s ease;
+}

@@ -1,73 +1,79 @@
-<div class="services-container">
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
 
-  <div class="services-header">
-    <h1 class="services-title">Gestión de Servicios</h1>
-    <p class="services-subtitle">
-      Control y seguimiento de solicitudes de servicio
-    </p>
-  </div>
+  <main class="home-content">
 
-  <div class="services-table-wrapper">
+    <div class="services-container">
 
-    <!-- ERROR -->
-    <p class="services-error" *ngIf="error">{{ error }}</p>
+      <div class="services-header">
+        <h1 class="services-title">Gestión de Servicios</h1>
+        <p class="services-subtitle">
+          Control y seguimiento de solicitudes de servicio
+        </p>
+      </div>
 
-    <!-- LOADING -->
-    <div class="services-state" *ngIf="loading">
-      ⏳ Cargando servicios...
-    </div>
+      <div class="services-table-wrapper">
 
-    <!-- TABLA -->
-    <table
-      class="services-table"
-      *ngIf="!loading && services.length > 0"
-    >
+        <!-- ERROR -->
+        <p class="services-error" *ngIf="error">{{ error }}</p>
 
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Técnico</th>
-          <th>Tipo de Servicio</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
+        <!-- LOADING -->
+        <div class="services-state" *ngIf="loading">
+          ⏳ Cargando servicios...
+        </div>
 
-      <tbody>
-
-        <tr
-          *ngFor="let service of services; trackBy: trackById"
+        <!-- TABLA -->
+        <table
+          class="services-table"
+          *ngIf="!loading && services.length > 0"
         >
-          <td>#{{ service.id }}</td>
-          <td>{{ service.client_name }}</td>
-          <td>{{ service.technician_name || '—' }}</td>
-          <td>{{ service.service_type }}</td>
-          <td>{{ service.request_date }}</td>
-          <td>{{ service.request_time }}</td>
-          <td>{{ service.address }}</td>
 
-          <td>
-            <span [class]="getStatusClass(service.current_status)">
-              {{ service.current_status }}
-            </span>
-          </td>
-        </tr>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Técnico</th>
+              <th>Tipo de Servicio</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Dirección</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
 
-      </tbody>
+          <tbody>
 
-    </table>
+            <tr *ngFor="let service of services; trackBy: trackById">
+              <td>#{{ service.id }}</td>
+              <td>{{ service.client_name }}</td>
+              <td>{{ service.technician_name || '—' }}</td>
+              <td>{{ service.service_type }}</td>
+              <td>{{ service.request_date }}</td>
+              <td>{{ service.request_time }}</td>
+              <td>{{ service.address }}</td>
 
-    <!-- SIN DATOS -->
-    <div
-      class="services-state"
-      *ngIf="!loading && services.length === 0"
-    >
-      📭 No hay servicios registrados
+              <td>
+                <span [class]="getStatusClass(service.current_status)">
+                  {{ service.current_status }}
+                </span>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+        <!-- SIN DATOS -->
+        <div
+          class="services-state"
+          *ngIf="!loading && services.length === 0"
+        >
+          📭 No hay servicios registrados
+        </div>
+
+      </div>
+
     </div>
 
-  </div>
-
+  </main>
 </div>

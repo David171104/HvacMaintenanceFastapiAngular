@@ -1,63 +1,63 @@
-<div class="admin-container">
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
 
-  <!-- HEADER -->
-  <div class="admin-header">
-    <h1 class="admin-title">Gestión de Reportes</h1>
-    <p class="admin-subtitle">Estadísticas y administración del sistema</p>
-  </div>
+  <main class="home-content">
+    <div class="admin-container">
 
-  <!-- CARD CONTENEDOR -->
-  <div class="admin-card">
-
-    <!-- Nav Tabs -->
-    <ul class="admin-tabs" role="tablist">
-      <li class="admin-tab-item">
-        <button class="admin-tab-link active"
-                data-bs-toggle="tab"
-                data-bs-target="#estadisticas"
-                type="button">
-          Estadísticas
-        </button>
-      </li>
-      <li class="admin-tab-item">
-        <button class="admin-tab-link"
-                data-bs-toggle="tab"
-                data-bs-target="#listado"
-                type="button">
-          Listado
-        </button>
-      </li>
-      <li class="admin-tab-item">
-        <button class="admin-tab-link"
-                data-bs-toggle="tab"
-                data-bs-target="#lecturas"
-                type="button">
-          Lecturas
-        </button>
-      </li>
-    </ul>
-
-    <!-- Tab Content -->
-    <div class="tab-content admin-tab-content">
-
-      <div class="tab-pane fade show active" id="estadisticas">
-        <app-statistics></app-statistics>
+      <div class="admin-header">
+        <h1 class="admin-title">Gestión de Reportes</h1>
+        <p class="admin-subtitle">Estadísticas y administración del sistema</p>
       </div>
 
-      <div class="tab-pane fade" id="listado">
-        <app-user-list></app-user-list>
-      </div>
+      <div class="admin-card">
 
-      <div class="tab-pane fade" id="lecturas">
-        <app-lecturascomponent></app-lecturascomponent>
-      </div>
+        <ul class="admin-tabs" role="tablist">
+          <li class="admin-tab-item">
+            <button class="admin-tab-link active"
+                    data-bs-toggle="tab"
+                    data-bs-target="#estadisticas"
+                    type="button">
+              Estadísticas
+            </button>
+          </li>
+          <li class="admin-tab-item">
+            <button class="admin-tab-link"
+                    data-bs-toggle="tab"
+                    data-bs-target="#listado"
+                    type="button">
+              Listado
+            </button>
+          </li>
+          <li class="admin-tab-item">
+            <button class="admin-tab-link"
+                    data-bs-toggle="tab"
+                    data-bs-target="#lecturas"
+                    type="button">
+              Lecturas
+            </button>
+          </li>
+        </ul>
 
-      <div class="tab-pane fade" id="contact">
-        <!-- <app-nuevousuario></app-nuevousuario> -->
+        <div class="tab-content admin-tab-content">
+          <div class="tab-pane fade show active" id="estadisticas">
+            <app-statistics></app-statistics>
+          </div>
+
+          <div class="tab-pane fade" id="listado">
+            <app-user-list></app-user-list>
+          </div>
+
+          <div class="tab-pane fade" id="lecturas">
+            <app-lecturascomponent></app-lecturascomponent>
+          </div>
+
+          <div class="tab-pane fade" id="contact">
+            <!-- <app-nuevousuario></app-nuevousuario> -->
+          </div>
+        </div>
+
       </div>
 
     </div>
-
-  </div>
-
+  </main>
 </div>
