@@ -1,59 +1,127 @@
 <div class="users-container">
 
   <div class="users-header">
-    <h1 class="users-title">Lista de usuarios</h1>
-    <p class="users-subtitle">Gestión y control de usuarios del sistema</p>
+    <div>
+      <h1 class="users-title">Lista de usuarios</h1>
+      <p class="users-subtitle">
+        Gestión y control de usuarios del sistema
+      </p>
+    </div>
+
+    <button class="create-btn" (click)="openCreateModal()">
+      Crear Usuario
+    </button>
   </div>
 
-  <p class="users-error" *ngIf="error">{{ error }}</p>
+  @if (error) {
+    <p class="users-error">{{ error }}</p>
+  }
 
   <div class="users-table-wrapper">
 
-    <!-- LOADING -->
-    <div class="users-state" *ngIf="loading">
-      <span class="users-state-icon">⏳</span>
-      <p>Cargando usuarios...</p>
-    </div>
+    @if (loading) {
+      <div class="users-state">⏳ Cargando usuarios...</div>
+    }
 
-    <!-- TABLA -->
-    <table
-      class="users-table"
-      *ngIf="!loading && usuarios.length > 0"
-    >
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Número identificación</th>
-          <th>Correo</th>
-          <th>Rol</th>
-        </tr>
-      </thead>
+    @if (!loading && usuarios.length > 0) {
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr
-          *ngFor="let user of usuarios; trackBy: trackById"
-        >
-          <td>{{ user.name }}</td>
-          <td>{{ user.last_name }}</td>
-          <td>{{ user.document_number }}</td>
-          <td>{{ user.email }}</td>
-          <td>
-            <span [class]="getRoleClass(user.role_id)">
-              {{ getRole(user.role_id) }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <tbody>
+          @for (user of usuarios; track user.id) {
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.last_name }}</td>
+              <td>{{ user.document_number }}</td>
+              <td>{{ user.email }}</td>
 
-    <!-- EMPTY -->
-    <div class="users-state"
-         *ngIf="!loading && usuarios.length === 0">
-      <span class="users-state-icon">📭</span>
-      <p>No hay usuarios registrados</p>
+              <td>
+                <span [class]="getRoleClass(user.role_id)">
+                  {{ getRole(user.role_id) }}
+                </span>
+              </td>
+
+              <td class="actions">
+                <button class="edit-btn"
+                        (click)="openEditModal(user)">
+                  Editar
+                </button>
+
+                <button class="delete-btn"
+                        (click)="deleteUser(user)">
+                  Eliminar
+                </button>
+              </td>
+
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+  </div>
+</div>
+
+
+@if (showModal) {
+<div class="modal-backdrop" (click)="closeModal()">
+
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <!-- BOTON X -->
+    <button class="modal-close" (click)="closeModal()">✕</button>
+
+    <h3 class="modal-title">
+      {{ isCreating ? 'Crear Usuario' : 'Editar Usuario' }}
+    </h3>
+
+    <label>Nombre *</label>
+    <input [(ngModel)]="selectedUser.name">
+
+    <label>Apellido</label>
+    <input [(ngModel)]="selectedUser.last_name">
+
+    <label>Email *</label>
+    <input [(ngModel)]="selectedUser.email">
+
+    <label>Documento *</label>
+    <input [(ngModel)]="selectedUser.document_number">
+
+    <label>Edad *</label>
+    <input [(ngModel)]="selectedUser.age">
+
+    <label>Rol *</label>
+    <select [(ngModel)]="selectedUser.role_id">
+      @for (role of roles; track role.id) {
+        <option [value]="role.id">{{ role.name }}</option>
+      }
+    </select>
+
+    @if (isCreating) {
+      <label>Contraseña *</label>
+      <input [(ngModel)]="selectedUser.password" type="password">
+    }
+
+    <div class="modal-actions">
+      <button class="save-btn" (click)="saveChanges()">
+        Guardar
+      </button>
+
+      <button class="cancel-btn" (click)="closeModal()">
+        Cancelar
+      </button>
     </div>
 
   </div>
 
 </div>
+}

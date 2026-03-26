@@ -24,16 +24,16 @@ async def get_users():
     return response
 
 @router.post("/users/admin-create_user")
-async def create_user(user: User, token_data: dict = Depends(verify_token)):
+async def create_user(user: User):
     return adminController.create_user(user)
 
 @router.put("/users/update_user/{user_id}") 
-async def update_user(user_id: int, user: User, token_data: dict = Depends(verify_token)):
+async def update_user(user_id: int, user: User):
     response = adminController.update_user(user_id, user)
     return response
 
 @router.delete("/users/delete/{user_id}")
-async def delete_user(user_id: int, token_data: dict = Depends(verify_token)):
+async def delete_user(user_id: int):
     return adminController.delete_user(user_id)
  
 
