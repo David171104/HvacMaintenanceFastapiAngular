@@ -5,12 +5,13 @@
 
     <div class="services-container">
 
-      <div class="services-header">
-        <h1 class="services-title">Gestión de Servicios</h1>
-        <p class="services-subtitle">
-          Control y seguimiento de solicitudes de servicio
-        </p>
-      </div>
+  <!-- HEADER -->
+  <div class="services-header">
+    <h1 class="services-title">Gestión de Servicios</h1>
+    <p class="services-subtitle">
+      Control y seguimiento de solicitudes de servicio
+    </p>
+  </div>
 
       <div class="services-table-wrapper">
 
@@ -22,58 +23,123 @@
           ⏳ Cargando servicios...
         </div>
 
-        <!-- TABLA -->
-        <table
-          class="services-table"
-          *ngIf="!loading && services.length > 0"
-        >
+    <!-- TABLA -->
+    <table
+      class="services-table"
+      *ngIf="!loading && services.length > 0"
+    >
 
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Cliente</th>
-              <th>Técnico</th>
-              <th>Tipo de Servicio</th>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Dirección</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Técnico</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
 
           <tbody>
 
-            <tr *ngFor="let service of services; trackBy: trackById">
-              <td>#{{ service.id }}</td>
-              <td>{{ service.client_name }}</td>
-              <td>{{ service.technician_name || '—' }}</td>
-              <td>{{ service.service_type }}</td>
-              <td>{{ service.request_date }}</td>
-              <td>{{ service.request_time }}</td>
-              <td>{{ service.address }}</td>
+        <tr *ngFor="let service of services; trackBy: trackById">
 
-              <td>
-                <span [class]="getStatusClass(service.current_status)">
-                  {{ service.current_status }}
-                </span>
-              </td>
-            </tr>
+          <td>#{{ service.id }}</td>
+          <td>{{ service.client_name }}</td>
+          <td>{{ service.technician_name || '—' }}</td>
+          <td>{{ service.service_type }}</td>
+          <td>{{ service.request_date }}</td>
+          <td>{{ service.request_time }}</td>
+          <td>{{ service.address }}</td>
 
-          </tbody>
+          <td [innerHTML]="getStatusHTML(service.current_status)"></td>
 
-        </table>
+          <td class="actions">
 
-        <!-- SIN DATOS -->
-        <div
-          class="services-state"
-          *ngIf="!loading && services.length === 0"
-        >
-          📭 No hay servicios registrados
-        </div>
+            <button
+  *ngIf="service.current_status === 'pending'"
+  class="assign-btn"
+  (click)="openAssignModal(service)">
+  Asignar técnico
+</button>
 
-      </div>
+            <button
+              *ngIf="service.current_status === 'assigned'"
+              class="complete-btn"
+              (click)="confirmComplete(service)"
+              >
+              Marcar como completado
+            </button>
+
+            
+
+          </td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+
+<!-- =====================================================
+                     MODAL TECNICOS
+===================================================== -->
+
+<div class="modal-backdrop" *ngIf="showModal">
+
+  <div class="modal">
+
+    <h2 class="modal-title">
+      Seleccionar Técnico
+    </h2>
+
+    <!-- LOADING -->
+    <div *ngIf="loadingTechnicians">
+      Cargando técnicos...
+    </div>
+
+    <!-- LISTA TECNICOS -->
+    <label>Seleccione un técnico:</label>
+
+    <select
+      [(ngModel)]="selectedTechnicianId"
+      *ngIf="!loadingTechnicians"
+    >
+      <option [ngValue]="null">-- Seleccionar --</option>
+
+      <option
+        *ngFor="let tech of technicians"
+        [ngValue]="tech.id"
+      >
+        {{ tech.name }} {{ tech.last_name }}
+      </option>
+    </select>
+
+
+    <!-- BOTONES -->
+    <div class="modal-actions">
+
+      <button
+        class="cancel-btn"
+        (click)="closeModal()">
+        Cancelar
+      </button>
+
+      <button
+        class="save-btn"
+        [disabled]="!selectedTechnicianId"
+        (click)="assignTechnician(selectedTechnicianId)">
+        Asignar Técnico
+      </button>
 
     </div>
 
-  </main>
+  </div>
+
 </div>

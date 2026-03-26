@@ -1,7 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
+import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { getStatusLabel } from '../../shared/service-status.util';
+
+/* ===============================
+   INTERFACES
+================================ */
 
 interface Service {
   id: number;
@@ -14,45 +25,81 @@ interface Service {
   current_status: string;
 }
 
+interface Technician {
+  id: number;
+  name: string;
+  last_name: string;
+}
+
+/* ===============================
+   COMPONENT
+================================ */
+
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './services.html',
   styleUrls: ['./services.css'],
 })
 export class Services implements OnInit {
 
+  /* ===============================
+     DATA
+  =============================== */
+
   services: Service[] = [];
+  technicians: Technician[] = [];
+
   loading = true;
+  loadingTechnicians = false;
   error = '';
 
-  private apiUrl = 'http://localhost:8000/users/services/all';
+  /* ===============================
+     MODAL STATE
+  =============================== */
+
+  showModal = false;
+  selectedServiceId: number | null = null;
+  selectedTechnicianId: number | null = null;
+
+  /* ===============================
+     API URLS
+  =============================== */
+
+  private servicesUrl =
+    'http://localhost:8000/users/services/all';
+
+  private techniciansUrl =
+    'http://localhost:8000/users/technicians/all';
 
   constructor(
     private http: HttpClient,
     private cd: ChangeDetectorRef
   ) {}
 
+  /* ===============================
+     INIT
+  =============================== */
+
   ngOnInit(): void {
     this.getServices();
   }
 
   /* ===============================
-     OBTENER SERVICIOS
+     GET SERVICES
   =============================== */
 
   getServices() {
 
     this.loading = true;
 
-    this.http.get<any>(this.apiUrl)
+    this.http.get<any>(this.servicesUrl)
       .subscribe({
         next: (response) => {
 
           console.log('Servicios API:', response);
 
-          // 🔥 nueva referencia para Angular
           this.services = [...(response.resultado ?? [])];
 
           this.loading = false;
@@ -60,11 +107,11 @@ export class Services implements OnInit {
         },
 
         error: (err) => {
-          console.error('Error cargando servicios', err);
+          console.error(err);
 
           this.error = 'Error cargando servicios';
-          this.services = [];
           this.loading = false;
+          this.services = [];
 
           this.cd.detectChanges();
         }
@@ -72,32 +119,161 @@ export class Services implements OnInit {
   }
 
   /* ===============================
-     STATUS LABEL
+     STATUS HTML (UTIL SHARED)
   =============================== */
 
-  getStatusClass(status: string): string {
+  getStatusHTML(status: string): string {
+    return getStatusLabel(status?.toLowerCase());
+  }
 
-    if (!status) return 'services-status';
+  /* ===============================
+     MODAL CONTROL
+  =============================== */
 
-    switch (status.toLowerCase()) {
+  openAssignModal(service: Service) {
 
-      case 'pendiente':
-        return 'services-status services-status-pending';
+    this.selectedServiceId = service.id;
+    this.selectedTechnicianId = null;
 
-      case 'asignado':
-      case 'asignado a técnico':
-        return 'services-status services-status-assigned';
+    this.showModal = true;
 
-      case 'en proceso':
-        return 'services-status services-status-progress';
+    this.loadTechnicians();
+  }
 
-      case 'completado':
-      case 'finalizado':
-        return 'services-status services-status-completed';
+  closeModal() {
+    this.showModal = false;
+    this.selectedServiceId = null;
+    this.selectedTechnicianId = null;
+  }
 
-      default:
-        return 'services-status';
-    }
+  /* ===============================
+     LOAD TECHNICIANS
+  =============================== */
+
+  loadTechnicians() {
+
+    this.loadingTechnicians = true;
+
+    this.http.get<any>(this.techniciansUrl)
+      .subscribe({
+        next: (response) => {
+
+          console.log('Tecnicos:', response);
+
+          this.technicians = response.resultado ?? [];
+          this.loadingTechnicians = false;
+
+          this.cd.detectChanges();
+        },
+
+        error: (err) => {
+          console.error('Error cargando técnicos', err);
+          this.loadingTechnicians = false;
+        }
+      });
+  }
+
+  /* ===============================
+     ASSIGN TECHNICIAN
+  =============================== */
+
+  assignTechnician(technicianId: number | null) {
+
+    if (!technicianId || !this.selectedServiceId) return;
+
+    const url = `http://localhost:8000/users/services/${this.selectedServiceId}/assign`;
+
+    const body = {
+      technician_id: technicianId
+    };
+
+    this.http.put(url, body)
+      .subscribe({
+        next: () => {
+
+          console.log('Tecnico asignado');
+
+          this.closeModal();
+
+          // refrescar tabla
+          this.getServices();
+        },
+
+        error: (err) => {
+          console.error('Error asignando técnico', err);
+          alert('No se pudo asignar el técnico');
+        }
+      });
+  }
+
+  /* ===============================
+    CONFIRMAR COMPLETAR SERVICIO
+  ================================ */
+
+  confirmComplete(service: Service) {
+
+    Swal.fire({
+      title: '¿Completar servicio?',
+      text: `El servicio #${service.id} será marcado como completado.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, completar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+        this.completeService(service.id);
+      }
+
+    });
+  }
+
+  /* ===============================
+    COMPLETAR SERVICIO API
+  ================================ */
+
+  completeService(serviceId: number) {
+
+    const url = `http://localhost:8000/services/${serviceId}/complete`;
+
+    Swal.fire({
+      title: 'Procesando...',
+      text: 'Actualizando servicio',
+      allowOutsideClick: false,
+      
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.http.put(url, {}).subscribe({
+
+      next: () => {
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Servicio completado',
+          text: 'El servicio fue actualizado correctamente',
+          
+        });
+
+        this.getServices(); // refrescar tabla
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo completar el servicio',
+          background: '#0f172a',
+          color: '#fff',
+          confirmButtonColor: '#ef4444'
+        });
+      }
+    });
   }
 
   /* ===============================
