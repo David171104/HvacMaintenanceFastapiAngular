@@ -206,11 +206,24 @@
   background: var(--dark-bg);
   color:white;
   outline:none;
+  box-sizing: border-box;
 }
 
 .modal input:focus,
 .modal select:focus{
   border-color: var(--accent-color);
+}
+
+.modal .is-invalid {
+  border-color: #f87171;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.18);
+}
+
+.field-error,
+.form-error {
+  color: #fca5a5;
+  font-size: 0.84rem;
+  line-height: 1.35;
 }
 
 /* acciones */
@@ -236,6 +249,12 @@
 
 .cancel-btn:hover{
   border-color: var(--accent-color);
+}
+
+.client-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* animación */

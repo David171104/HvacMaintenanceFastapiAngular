@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from app.routes.registerAndLogin.register_routes import router as register_router
 from app.routes.registerAndLogin.login_routes import router as login_router
 from app.routes.users.user_routes import router as user_router
@@ -8,6 +10,7 @@ from app.routes.permissions.permissions_routes import router as permission_route
 from app.routes.roles.roles_routes import router as roles_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.models.validation_utils import format_validation_errors
 
 app = FastAPI()
 
@@ -35,6 +38,12 @@ app.include_router(admin_router)
 app.include_router(techniccian_router)
 app.include_router(permission_router)
 app.include_router(roles_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    detail, errors = format_validation_errors(exc)
+    return JSONResponse(status_code=422, content={"detail": detail, "errors": errors})
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,32 +1,54 @@
 <div class="page-wrapper">
   <div class="form-container">
-    <h2>Iniciar Sesión</h2>
+    <h2>Iniciar Sesion</h2>
 
-    <form (ngSubmit)="onSubmit()">
-
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" name="email" [(ngModel)]="loginData.email" required />
+        <label>Correo Electronico</label>
+        <input
+          type="email"
+          formControlName="email"
+          [class.is-invalid]="isInvalid('email')"
+          autocomplete="email"
+        />
+        <small class="field-error" *ngIf="isInvalid('email')">{{ getError('email', 'Correo') }}</small>
       </div>
 
       <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" name="password" [(ngModel)]="loginData.password" required />
+        <label>Contrasena</label>
+        <input
+          type="password"
+          formControlName="password"
+          [class.is-invalid]="isInvalid('password')"
+          autocomplete="current-password"
+        />
+        <small class="field-error" *ngIf="isInvalid('password')">
+          {{ getError('password', 'Contrasena') }}
+        </small>
       </div>
 
       <div class="form-group">
-        <button type="submit">Ingresar</button>
+        <small class="form-error" *ngIf="serverError">{{ serverError }}</small>
+        <button type="submit" [disabled]="loginForm.invalid || isSubmitting">
+          <span class="button-spinner" *ngIf="isSubmitting"></span>
+          {{ isSubmitting ? 'Ingresando...' : 'Ingresar' }}
+        </button>
       </div>
-      
     </form>
-    <button type="submit" class="btn-microsoft" (click)="loginMicrosoft($event)">
+
+    <button
+      type="button"
+      class="btn-microsoft"
+      (click)="loginMicrosoft($event)"
+      [disabled]="isSubmitting"
+    >
+      <span class="button-spinner" *ngIf="isSubmitting"></span>
       <i class="fab fa-microsoft"></i>
       Ingresar con Microsoft 365
     </button>
 
     <div style="margin-top: 20px;">
-      <button type="button"  (click)="logoutMicrosoft()">Crear cuenta</button>
+      <button type="button" (click)="goToRegister()">Crear cuenta</button>
     </div>
-
   </div>
 </div>

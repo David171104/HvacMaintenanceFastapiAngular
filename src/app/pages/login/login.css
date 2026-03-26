@@ -63,12 +63,27 @@ input[type="password"] {
   color: #e4e4e7;
   font-size: 1rem;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
 }
 
 input:focus {
   outline: none;
   border-color: #00ffc6;
   box-shadow: 0 0 0 2px rgba(0, 255, 198, 0.2);
+}
+
+.is-invalid {
+  border-color: #ff6b6b !important;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.18);
+}
+
+.field-error,
+.form-error {
+  display: block;
+  margin-top: 0.45rem;
+  color: #ff9b9b;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 /* Botón principal */
@@ -88,6 +103,12 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #00d1b2;
   transform: scale(1.02);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important;
 }
 
 /* Botón secundario */
