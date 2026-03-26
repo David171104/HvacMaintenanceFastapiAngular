@@ -22,7 +22,15 @@
           </button>
         </div>
 
-        <table class="user-table">
+        <p *ngIf="servicesError" class="services-error">
+          {{ servicesError }}
+        </p>
+
+        <p *ngIf="loadingServices" class="services-loading">
+          Cargando servicios...
+        </p>
+
+        <table class="user-table" *ngIf="!loadingServices && servicios.length > 0">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -35,13 +43,28 @@
           </thead>
 
           <tbody>
-            <tr>
-              <td colspan="6" style="text-align:center;">
-                Sin servicios aún
+            <tr *ngFor="let servicio of servicios; trackBy: trackByServiceId">
+              <td>{{ formatearFecha(servicio.request_date) }}</td>
+              <td>{{ formatearHora(servicio.request_time) }}</td>
+              <td>{{ servicio.service_type }}</td>
+              <td>{{ servicio.address }}</td>
+              <td>
+                <span [class]="getStatusClass(servicio.current_status)">
+                  {{ servicio.current_status }}
+                </span>
+              </td>
+              <td>
+                <button class="client-btn" type="button" disabled>
+                  Ver
+                </button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <div *ngIf="!loadingServices && servicios.length === 0" class="empty-state">
+          Sin servicios aún
+        </div>
       </div>
     </div>
 
