@@ -47,6 +47,28 @@ html {
   scroll-behavior: smooth;
 }
 
+.button-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-top-color: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  animation: buttonSpin 0.7s linear infinite;
+}
+
+@keyframes buttonSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 /* =====================================================
    NAVBAR (prefijo navbar-)

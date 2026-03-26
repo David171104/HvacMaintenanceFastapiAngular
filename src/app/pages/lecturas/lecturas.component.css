@@ -1,0 +1,332 @@
+.lecturas-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.lecturas-manual-card,
+.lecturas-compare-card {
+  padding: 28px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 6px 10px rgba(15, 23, 42, 0.18),
+    0 24px 40px rgba(2, 6, 23, 0.22);
+}
+
+.lecturas-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.lecturas-section-head h2 {
+  margin: 0 0 6px;
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+.lecturas-section-head p {
+  margin: 0;
+  color: #94a3b8;
+  max-width: 720px;
+}
+
+.lecturas-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.lecturas-badge-compare {
+  background: rgba(56, 189, 248, 0.12);
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.24);
+}
+
+.lecturas-manual-form,
+.lecturas-compare-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lecturas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.lecturas-grid-compare {
+  grid-template-columns: 1.1fr 1fr 1fr;
+}
+
+.lecturas-field,
+.lecturas-period-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lecturas-field-wide {
+  grid-column: 1 / -1;
+}
+
+.lecturas-period-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.58);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.lecturas-period-card h3 {
+  margin: 0 0 8px;
+  color: #e2e8f0;
+  font-size: 1rem;
+}
+
+.lecturas-field label {
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.lecturas-field input,
+.lecturas-field select,
+.lecturas-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lecturas-field input:focus,
+.lecturas-field select:focus,
+.lecturas-field textarea:focus {
+  outline: none;
+  border-color: #00eaff;
+  box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.14);
+}
+
+.lecturas-field .is-invalid {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+}
+
+.field-error {
+  color: #fca5a5;
+  font-size: 0.83rem;
+  line-height: 1.35;
+}
+
+.lecturas-hint,
+.lecturas-interpretation {
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.lecturas-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lecturas-btn-primary {
+  background: linear-gradient(135deg, #00eaff, #22c55e);
+  color: #020617;
+  border-color: transparent;
+}
+
+.lecturas-btn-secondary {
+  background: transparent;
+  color: #cbd5e1;
+}
+
+.lecturas-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.inline-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+.lecturas-compare-empty {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.68);
+  border: 1px dashed rgba(148, 163, 184, 0.25);
+  color: #cbd5e1;
+}
+
+.lecturas-compare-result {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lecturas-compare-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.lecturas-compare-summary small {
+  display: block;
+  color: #94a3b8;
+}
+
+.lecturas-compare-summary h3 {
+  margin: 4px 0 0;
+  color: #f8fafc;
+}
+
+.lecturas-status-pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.status-improved {
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+}
+
+.status-worsened {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.status-stable {
+  background: rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+.status-mixed {
+  background: rgba(250, 204, 21, 0.12);
+  color: #fde68a;
+}
+
+.lecturas-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lecturas-kpi-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lecturas-kpi-card small {
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
+.lecturas-kpi-card strong {
+  color: #f8fafc;
+  font-size: 1.35rem;
+}
+
+.lecturas-kpi-card span {
+  color: #cbd5e1;
+  font-size: 0.83rem;
+}
+
+.lecturas-compare-table {
+  overflow-x: auto;
+}
+
+.lecturas-compare-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lecturas-compare-table th,
+.lecturas-compare-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+}
+
+.lecturas-compare-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .lecturas-grid-compare,
+  .lecturas-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .lecturas-manual-card,
+  .lecturas-compare-card {
+    padding: 20px;
+  }
+
+  .lecturas-section-head,
+  .lecturas-compare-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lecturas-grid,
+  .lecturas-grid-compare,
+  .lecturas-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lecturas-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
+import { AppToastComponent } from './components/app-toast/app-toast';
 
 /* ✅ declarar msal global */
 declare global {
@@ -11,7 +12,7 @@ declare global {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AppToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -1,16 +1,371 @@
 <div class="lecturas-dashboard">
-
   <div class="lecturas-header">
     <h1><i class="fa-solid fa-tower-broadcast"></i> Dashboard IoT</h1>
-    <button class="lecturas-btn" (click)="cargarDatos()">
-      <i class="fa-solid fa-rotate-right"></i> Actualizar
+    <button
+      class="lecturas-btn"
+      (click)="actualizarPanel()"
+      [disabled]="loading || equipmentLoading || isSaving || comparisonLoading"
+    >
+      <span class="inline-spinner" *ngIf="loading || equipmentLoading"></span>
+      {{ loading || equipmentLoading ? 'Actualizando...' : 'Actualizar' }}
     </button>
   </div>
 
-  <p class="lecturas-loading" *ngIf="loading">Cargando datos...</p>
+  <p class="lecturas-loading" *ngIf="loading">Cargando datos del sistema IoT...</p>
   <p class="lecturas-error" *ngIf="error">{{ error }}</p>
 
-  <!-- TARJETAS -->
+  <section class="lecturas-manual-card">
+    <div class="lecturas-section-head">
+      <div>
+        <h2>Registro manual de lecturas</h2>
+        <p>Captura una lectura de respaldo para el minisplit asociado sin salir del panel.</p>
+      </div>
+      <span class="lecturas-badge">Manual IoT</span>
+    </div>
+
+    <p class="lecturas-loading" *ngIf="equipmentLoading">Cargando catalogo de equipos...</p>
+    <p class="lecturas-error" *ngIf="equipmentError">{{ equipmentError }}</p>
+    <p class="lecturas-empty" *ngIf="!equipmentLoading && !equipmentError && !hasEquipmentAvailable">
+      No hay equipos IoT activos disponibles en este momento.
+    </p>
+
+    <form
+      class="lecturas-manual-form"
+      [formGroup]="manualReadingForm"
+      (ngSubmit)="registrarLecturaManual()"
+      novalidate
+    >
+      <div class="lecturas-grid">
+        <div class="lecturas-field">
+          <label>Temperatura (°C)</label>
+          <input
+            type="number"
+            formControlName="temperatura"
+            [class.is-invalid]="isInvalid('temperatura')"
+            step="0.1"
+          />
+          <small class="field-error" *ngIf="isInvalid('temperatura')">
+            {{ getError('temperatura', 'Temperatura') }}
+          </small>
+        </div>
+
+        <div class="lecturas-field">
+          <label>Humedad (%)</label>
+          <input
+            type="number"
+            formControlName="humedad"
+            [class.is-invalid]="isInvalid('humedad')"
+            step="0.1"
+          />
+          <small class="field-error" *ngIf="isInvalid('humedad')">
+            {{ getError('humedad', 'Humedad') }}
+          </small>
+        </div>
+
+        <div class="lecturas-field">
+          <label>Corriente (A)</label>
+          <input
+            type="number"
+            formControlName="corriente"
+            [class.is-invalid]="isInvalid('corriente')"
+            step="0.1"
+          />
+          <small class="field-error" *ngIf="isInvalid('corriente')">
+            {{ getError('corriente', 'Corriente') }}
+          </small>
+        </div>
+
+        <div class="lecturas-field">
+          <label>Fecha y hora de lectura</label>
+          <input
+            type="datetime-local"
+            formControlName="fecha_hora_manual"
+            [max]="maxManualDateTime"
+            [class.is-invalid]="isInvalid('fecha_hora_manual')"
+          />
+          <small class="field-error" *ngIf="isInvalid('fecha_hora_manual')">
+            {{ getError('fecha_hora_manual', 'Fecha y hora') }}
+          </small>
+        </div>
+
+        <div class="lecturas-field">
+          <label>Equipo o minisplit</label>
+          <select
+            formControlName="equipo_id"
+            [class.is-invalid]="isInvalid('equipo_id')"
+            [disabled]="equipmentLoading || !hasEquipmentAvailable"
+          >
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let item of equipmentOptions" [value]="item.id">
+              {{ item.name }} · {{ item.location }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="isInvalid('equipo_id')">
+            {{ getError('equipo_id', 'Equipo') }}
+          </small>
+        </div>
+
+        <div class="lecturas-field lecturas-field-wide">
+          <label>Observacion</label>
+          <textarea
+            rows="4"
+            formControlName="observacion"
+            [class.is-invalid]="isInvalid('observacion')"
+            placeholder="Detalle opcional sobre la lectura manual"
+          ></textarea>
+          <small class="field-error" *ngIf="isInvalid('observacion')">
+            {{ getError('observacion', 'Observacion') }}
+          </small>
+        </div>
+      </div>
+
+      <div class="lecturas-actions">
+        <button
+          type="button"
+          class="lecturas-btn lecturas-btn-secondary"
+          (click)="cargarCatalogoEquipos(true)"
+          [disabled]="equipmentLoading || isSaving"
+        >
+          <span class="inline-spinner" *ngIf="equipmentLoading"></span>
+          {{ equipmentLoading ? 'Recargando catalogo...' : 'Recargar catalogo' }}
+        </button>
+        <button
+          type="button"
+          class="lecturas-btn lecturas-btn-secondary"
+          (click)="resetManualForm()"
+          [disabled]="isSaving"
+        >
+          Limpiar
+        </button>
+        <button
+          type="submit"
+          class="lecturas-btn lecturas-btn-primary"
+          [disabled]="manualReadingForm.invalid || isSaving || equipmentLoading || !hasEquipmentAvailable"
+        >
+          <span class="inline-spinner" *ngIf="isSaving"></span>
+          {{ isSaving ? 'Guardando lectura...' : 'Registrar lectura' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="lecturas-compare-card">
+    <div class="lecturas-section-head">
+      <div>
+        <h2>Comparacion antes vs despues del mantenimiento</h2>
+        <p>Compara periodos del mismo equipo para verificar si hubo mejora en consumo y comportamiento termico.</p>
+      </div>
+      <span class="lecturas-badge lecturas-badge-compare">Analisis</span>
+    </div>
+
+    <form class="lecturas-compare-form" [formGroup]="comparisonForm" (ngSubmit)="compararPeriodos()" novalidate>
+      <div class="lecturas-grid lecturas-grid-compare">
+        <div class="lecturas-field lecturas-field-wide">
+          <label>Equipo o minisplit</label>
+          <select
+            formControlName="equipo_id"
+            [class.is-invalid]="isComparisonInvalid('equipo_id')"
+            [disabled]="equipmentLoading || !hasEquipmentAvailable || comparisonLoading"
+          >
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let item of equipmentOptions" [value]="item.id">
+              {{ item.name }} · {{ item.location }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="isComparisonInvalid('equipo_id')">
+            {{ getComparisonError('equipo_id', 'Equipo') }}
+          </small>
+        </div>
+
+        <div class="lecturas-period-card">
+          <h3>Periodo antes</h3>
+          <div class="lecturas-field">
+            <label>Desde</label>
+            <input
+              type="datetime-local"
+              formControlName="before_from"
+              [max]="maxManualDateTime"
+              [class.is-invalid]="isComparisonInvalid('before_from')"
+            />
+            <small class="field-error" *ngIf="isComparisonInvalid('before_from')">
+              {{ getComparisonError('before_from', 'Desde') }}
+            </small>
+          </div>
+
+          <div class="lecturas-field">
+            <label>Hasta</label>
+            <input
+              type="datetime-local"
+              formControlName="before_to"
+              [max]="maxManualDateTime"
+              [class.is-invalid]="isComparisonInvalid('before_to')"
+            />
+            <small class="field-error" *ngIf="isComparisonInvalid('before_to')">
+              {{ getComparisonError('before_to', 'Hasta') }}
+            </small>
+          </div>
+
+          <small class="field-error" *ngIf="hasBeforeRangeError">
+            El rango del periodo antes debe tener una fecha inicial menor o igual a la final.
+          </small>
+        </div>
+
+        <div class="lecturas-period-card">
+          <h3>Periodo despues</h3>
+          <div class="lecturas-field">
+            <label>Desde</label>
+            <input
+              type="datetime-local"
+              formControlName="after_from"
+              [max]="maxManualDateTime"
+              [class.is-invalid]="isComparisonInvalid('after_from')"
+            />
+            <small class="field-error" *ngIf="isComparisonInvalid('after_from')">
+              {{ getComparisonError('after_from', 'Desde') }}
+            </small>
+          </div>
+
+          <div class="lecturas-field">
+            <label>Hasta</label>
+            <input
+              type="datetime-local"
+              formControlName="after_to"
+              [max]="maxManualDateTime"
+              [class.is-invalid]="isComparisonInvalid('after_to')"
+            />
+            <small class="field-error" *ngIf="isComparisonInvalid('after_to')">
+              {{ getComparisonError('after_to', 'Hasta') }}
+            </small>
+          </div>
+
+          <small class="field-error" *ngIf="hasAfterRangeError">
+            El rango del periodo despues debe tener una fecha inicial menor o igual a la final.
+          </small>
+        </div>
+      </div>
+
+      <div class="lecturas-actions">
+        <button
+          type="button"
+          class="lecturas-btn lecturas-btn-secondary"
+          (click)="resetComparisonForm()"
+          [disabled]="comparisonLoading"
+        >
+          Reiniciar comparacion
+        </button>
+        <button
+          type="submit"
+          class="lecturas-btn lecturas-btn-primary"
+          [disabled]="comparisonForm.invalid || comparisonLoading || equipmentLoading || !hasEquipmentAvailable"
+        >
+          <span class="inline-spinner" *ngIf="comparisonLoading"></span>
+          {{ comparisonLoading ? 'Procesando comparacion...' : 'Comparar periodos' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="lecturas-compare-empty" *ngIf="comparisonEmptyMessage">
+      {{ comparisonEmptyMessage }}
+    </div>
+
+    <div class="lecturas-compare-result" *ngIf="comparisonResult && comparisonResult.has_enough_data">
+      <div class="lecturas-compare-summary">
+        <div>
+          <small>Equipo analizado</small>
+          <h3>{{ comparisonResult.equipment_name }}</h3>
+        </div>
+        <span
+          class="lecturas-status-pill"
+          [class.status-improved]="comparisonResult.status === 'improved'"
+          [class.status-worsened]="comparisonResult.status === 'worsened'"
+          [class.status-stable]="comparisonResult.status === 'stable'"
+          [class.status-mixed]="comparisonResult.status === 'mixed'"
+        >
+          {{ comparisonStatusLabel }}
+        </span>
+      </div>
+
+      <p class="lecturas-interpretation">{{ comparisonResult.interpretation }}</p>
+
+      <div class="lecturas-kpi-grid">
+        <div class="lecturas-kpi-card">
+          <small>Corriente promedio</small>
+          <strong>{{ formatDelta(comparisonResult.delta.current, 'A') }}</strong>
+          <span>Antes {{ comparisonResult.before.average_current ?? 'Sin datos' }} A</span>
+          <span>Despues {{ comparisonResult.after.average_current ?? 'Sin datos' }} A</span>
+        </div>
+        <div class="lecturas-kpi-card">
+          <small>Temperatura promedio</small>
+          <strong>{{ formatDelta(comparisonResult.delta.temperature, '°C') }}</strong>
+          <span>Antes {{ comparisonResult.before.average_temperature ?? 'Sin datos' }} °C</span>
+          <span>Despues {{ comparisonResult.after.average_temperature ?? 'Sin datos' }} °C</span>
+        </div>
+        <div class="lecturas-kpi-card">
+          <small>Humedad promedio</small>
+          <strong>{{ formatDelta(comparisonResult.delta.humidity, '%') }}</strong>
+          <span>Antes {{ comparisonResult.before.average_humidity ?? 'Sin datos' }} %</span>
+          <span>Despues {{ comparisonResult.after.average_humidity ?? 'Sin datos' }} %</span>
+        </div>
+        <div class="lecturas-kpi-card">
+          <small>Lecturas usadas</small>
+          <strong>{{ comparisonResult.before.readings_count }} / {{ comparisonResult.after.readings_count }}</strong>
+          <span>Antes / Despues</span>
+        </div>
+      </div>
+
+      <div class="lecturas-compare-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Metrica</th>
+              <th>Antes</th>
+              <th>Despues</th>
+              <th>Diferencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Temperatura promedio</td>
+              <td>{{ comparisonResult.before.average_temperature ?? 'Sin datos' }} °C</td>
+              <td>{{ comparisonResult.after.average_temperature ?? 'Sin datos' }} °C</td>
+              <td>{{ formatDelta(comparisonResult.delta.temperature, '°C') }}</td>
+            </tr>
+            <tr>
+              <td>Humedad promedio</td>
+              <td>{{ comparisonResult.before.average_humidity ?? 'Sin datos' }} %</td>
+              <td>{{ comparisonResult.after.average_humidity ?? 'Sin datos' }} %</td>
+              <td>{{ formatDelta(comparisonResult.delta.humidity, '%') }}</td>
+            </tr>
+            <tr>
+              <td>Corriente promedio</td>
+              <td>{{ comparisonResult.before.average_current ?? 'Sin datos' }} A</td>
+              <td>{{ comparisonResult.after.average_current ?? 'Sin datos' }} A</td>
+              <td>{{ formatDelta(comparisonResult.delta.current, 'A') }}</td>
+            </tr>
+            <tr>
+              <td>Lecturas</td>
+              <td>{{ comparisonResult.before.readings_count }}</td>
+              <td>{{ comparisonResult.after.readings_count }}</td>
+              <td>{{ comparisonResult.after.readings_count - comparisonResult.before.readings_count }}</td>
+            </tr>
+            <tr>
+              <td>Inicio del periodo</td>
+              <td>{{ formatearFecha(comparisonResult.before.first_reading_at) }}</td>
+              <td>{{ formatearFecha(comparisonResult.after.first_reading_at) }}</td>
+              <td>Comparativo</td>
+            </tr>
+            <tr>
+              <td>Fin del periodo</td>
+              <td>{{ formatearFecha(comparisonResult.before.last_reading_at) }}</td>
+              <td>{{ formatearFecha(comparisonResult.after.last_reading_at) }}</td>
+              <td>Comparativo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <div class="lecturas-cards" *ngIf="ultimaLectura">
     <div class="lecturas-card lecturas-temp">
       <h3><i class="fa-solid fa-temperature-half"></i> Temperatura</h3>
@@ -25,15 +380,14 @@
       <p>{{ ultimaLectura.corriente }} A</p>
     </div>
     <div class="lecturas-card lecturas-fecha">
-      <h3><i class="fa-solid fa-clock"></i> Última lectura</h3>
+      <h3><i class="fa-solid fa-clock"></i> Ultima lectura</h3>
       <p>{{ formatearFecha(ultimaLectura.fecha_hora) }}</p>
       <small>ID: {{ ultimaLectura.id }}</small>
     </div>
   </div>
 
-  <!-- TABLA -->
   <div class="lecturas-table-container">
-    <h2>Últimas lecturas</h2>
+    <h2>Ultimas lecturas registradas</h2>
     <table *ngIf="lecturas.length > 0">
       <thead>
         <tr>
@@ -55,8 +409,7 @@
       </tbody>
     </table>
     <p *ngIf="!loading && lecturas.length === 0" class="lecturas-empty">
-      No hay lecturas disponibles
+      No hay lecturas disponibles.
     </p>
   </div>
-
 </div>

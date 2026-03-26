@@ -2,47 +2,87 @@
   <div class="form-container">
     <h2>Registro de Usuario</h2>
 
-    <form (ngSubmit)="onSubmit()">
-
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="form-group">
         <label>Nombres <span class="required">*</span></label>
-        <input type="text" name="name" [(ngModel)]="user.name" required />
+        <input type="text" formControlName="name" [class.is-invalid]="isInvalid('name')" />
+        <small class="field-error" *ngIf="isInvalid('name')">{{ getError('name', 'Nombres') }}</small>
       </div>
 
       <div class="form-group">
         <label>Apellidos <span class="required">*</span></label>
-        <input type="text" name="last_name" [(ngModel)]="user.last_name" required />
+        <input
+          type="text"
+          formControlName="last_name"
+          [class.is-invalid]="isInvalid('last_name')"
+        />
+        <small class="field-error" *ngIf="isInvalid('last_name')">
+          {{ getError('last_name', 'Apellidos') }}
+        </small>
       </div>
 
       <div class="form-group">
-        <label>Número de documento</label>
-        <input type="text" name="document_number" [(ngModel)]="user.document_number" />
+        <label>Numero de documento</label>
+        <input
+          type="text"
+          formControlName="document_number"
+          [class.is-invalid]="isInvalid('document_number')"
+          inputmode="numeric"
+        />
+        <small class="field-error" *ngIf="isInvalid('document_number')">
+          {{ getError('document_number', 'Documento') }}
+        </small>
       </div>
 
       <div class="form-group">
         <label>Edad</label>
-        <input type="text" name="age" [(ngModel)]="user.age" />
+        <input type="number" formControlName="age" [class.is-invalid]="isInvalid('age')" />
+        <small class="field-error" *ngIf="isInvalid('age')">{{ getError('age', 'Edad') }}</small>
       </div>
 
       <div class="form-group">
-        <label>Correo Electrónico <span class="required">*</span></label>
-        <input type="email" name="email" [(ngModel)]="user.email" required />
+        <label>Correo Electronico <span class="required">*</span></label>
+        <input type="email" formControlName="email" [class.is-invalid]="isInvalid('email')" />
+        <small class="field-error" *ngIf="isInvalid('email')">{{ getError('email', 'Correo') }}</small>
       </div>
 
       <div class="form-group">
-        <label>Contraseña <span class="required">*</span></label>
-        <input type="password" name="password" [(ngModel)]="user.password" required />
+        <label>Contrasena <span class="required">*</span></label>
+        <input
+          type="password"
+          formControlName="password"
+          [class.is-invalid]="isInvalid('password')"
+          autocomplete="new-password"
+        />
+        <small class="field-error" *ngIf="isInvalid('password')">
+          {{ getError('password', 'Contrasena') }}
+        </small>
       </div>
 
       <div class="form-group">
-        <button type="submit">Registrar</button>
+        <label>Confirmar contrasena <span class="required">*</span></label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          [class.is-invalid]="isInvalid('confirmPassword')"
+          autocomplete="new-password"
+        />
+        <small class="field-error" *ngIf="isInvalid('confirmPassword')">
+          {{ getError('confirmPassword', 'Confirmacion') }}
+        </small>
       </div>
 
+      <div class="form-group">
+        <small class="form-error" *ngIf="serverError">{{ serverError }}</small>
+        <button type="submit" [disabled]="registerForm.invalid || isSubmitting">
+          <span class="button-spinner" *ngIf="isSubmitting"></span>
+          {{ isSubmitting ? 'Registrando...' : 'Registrar' }}
+        </button>
+      </div>
     </form>
 
     <div style="margin-top: 20px;">
-      <button type="button" (click)="goToLogin()">Iniciar sesión</button>
+      <button type="button" (click)="goToLogin()">Iniciar sesion</button>
     </div>
-
   </div>
 </div>

@@ -1,104 +1,96 @@
 <div class="client-container">
-
   <div class="client-header">
-    <h1 class="client-title">
-      Mis <span class="client-gradient">Servicios</span>
-    </h1>
+    <h1 class="client-title">Mis <span class="client-gradient">Servicios</span></h1>
 
-    <p class="client-subtitle">
-      Aquí puedes ver todos los servicios que has solicitado.
-    </p>
+    <p class="client-subtitle">Aqui puedes ver todos los servicios que has solicitado.</p>
   </div>
 
   <div class="client-card">
-
     <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-
       <h3>Lista de Servicios</h3>
 
-        <button class="client-btn" (click)="solicitarServicio()">
-        Solicitar Servicio
-        </button>
-
+      <button class="client-btn" (click)="solicitarServicio()">Solicitar Servicio</button>
     </div>
 
     <table class="user-table">
-
       <thead>
         <tr>
           <th>Fecha</th>
           <th>Hora</th>
           <th>Tipo</th>
-          <th>Dirección</th>
+          <th>Direccion</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
 
       <tbody>
-
         <tr>
-          <td colspan="6" style="text-align:center;">
-            Sin servicios aún
-          </td>
+          <td colspan="6" style="text-align:center;">Sin servicios aun</td>
         </tr>
-
       </tbody>
-
     </table>
-
   </div>
-
 </div>
 
 <div *ngIf="showModal" class="modal-backdrop">
-
-  <div class="modal">
-
+  <form class="modal" [formGroup]="serviceForm" (ngSubmit)="guardarServicio()" novalidate>
     <h3>Solicitar Servicio</h3>
 
     <label>Fecha del servicio *</label>
     <input
       type="date"
-      [(ngModel)]="formData.request_date"
-      required
+      formControlName="request_date"
+      [min]="minServiceDate"
+      [class.is-invalid]="isInvalid('request_date')"
     />
+    <small class="field-error" *ngIf="isInvalid('request_date')">
+      {{ getError('request_date', 'Fecha del servicio') }}
+    </small>
 
     <label>Hora del servicio *</label>
     <input
       type="time"
-      [(ngModel)]="formData.request_time"
+      formControlName="request_time"
       min="08:00"
       max="17:00"
-      required
+      [class.is-invalid]="isInvalid('request_time')"
     />
+    <small class="field-error" *ngIf="isInvalid('request_time')">
+      {{ getError('request_time', 'Hora del servicio') }}
+    </small>
 
     <label>Tipo de servicio *</label>
-    <select [(ngModel)]="formData.service_type">
+    <select formControlName="service_type" [class.is-invalid]="isInvalid('service_type')">
       <option value="Correctivo">Correctivo</option>
       <option value="Preventivo">Preventivo</option>
     </select>
+    <small class="field-error" *ngIf="isInvalid('service_type')">
+      {{ getError('service_type', 'Tipo de servicio') }}
+    </small>
 
-    <label>Dirección *</label>
+    <label>Direccion *</label>
     <input
       type="text"
-      placeholder="Dirección del servicio"
-      [(ngModel)]="formData.address"
-      required
+      placeholder="Direccion del servicio"
+      formControlName="address"
+      [class.is-invalid]="isInvalid('address')"
     />
+    <small class="field-error" *ngIf="isInvalid('address')">
+      {{ getError('address', 'Direccion') }}
+    </small>
 
-        <div class="modal-actions">
+    <small class="form-error" *ngIf="submitError">{{ submitError }}</small>
 
-        <button class="client-btn" (click)="guardarServicio()">
-            Guardar
-        </button>
+    <div class="modal-actions">
+      <button class="client-btn" type="submit" [disabled]="serviceForm.invalid || isSubmitting">
+        <span class="button-spinner" *ngIf="isSubmitting"></span>
+        {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
+      </button>
 
-        <button class="cancel-btn" (click)="cerrarModal()">
-            Cancelar
-        </button>
-
-        </div>
-
-  </div>
-
+      <button class="cancel-btn" type="button" (click)="cerrarModal()" [disabled]="isSubmitting">
+        Cancelar
+      </button>
+    </div>
+  </form>
 </div>
