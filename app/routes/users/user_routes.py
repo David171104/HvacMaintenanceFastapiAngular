@@ -25,7 +25,7 @@ async def create_service(service: Service, token_data: dict = Depends(verify_tok
     return response
 
 @router.get("/users/services/list/{client_id}")
-async def get_services(client_id: int, token_data: dict = Depends(verify_token)):
+async def get_services(client_id: int):
     response = userController.get_services(client_id)
     return response
 
