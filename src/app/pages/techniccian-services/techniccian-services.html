@@ -1,0 +1,77 @@
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="home-content">
+
+    <div class="services-container">
+
+      <!-- HEADER -->
+      <div class="services-header">
+        <h1 class="services-title">Mis Servicios Asignados</h1>
+        <p class="services-subtitle">
+          Servicios asignados al técnico
+        </p>
+      </div>
+
+      <div class="services-table-wrapper">
+
+        <!-- ERROR -->
+        <p class="services-error" *ngIf="error">
+          {{ error }}
+        </p>
+
+        <!-- LOADING -->
+        <div class="services-state" *ngIf="loading">
+          ⏳ Cargando servicios...
+        </div>
+
+        <!-- TABLA -->
+        <table class="services-table">
+
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Técnico</th>
+      <th>Tipo</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th>Dirección</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <tr *ngFor="let service of services">
+
+      <td>#{{ service.id }}</td>
+      <td>{{ service.client_name }}</td>
+      <td>{{ service.technician_name }}</td>
+      <td>{{ service.service_type }}</td>
+      <td>{{ service.request_date }}</td>
+      <td>
+  {{ formatearHora(service.request_time) }}
+</td>
+      <td>{{ service.address }}</td>
+
+      <td [innerHTML]="getStatusHTML(service.current_status)"></td>
+
+    </tr>
+
+  </tbody>
+
+</table>
+        <!-- SIN RESULTADOS -->
+        <div
+          class="services-state"
+          *ngIf="!loading && services.length === 0">
+          No tienes servicios asignados.
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>
