@@ -170,36 +170,47 @@ export class TechniccianServices implements OnInit {
   /* ===============================
    FORMAT TIME
 ================================ */
-
- formatearHora(hora: any): string {
-
+  formatearHora(hora: any): string {
   if (!hora) return '';
 
-  // Si viene como número (ej: 58260 segundos)
+  let hours = 0;
+  let minutes = 0;
+
   if (typeof hora === 'number') {
-
-    const hours = Math.floor(hora / 3600);
-    const minutes = Math.floor((hora % 3600) / 60);
-
-    return `${this.pad(hours)}:${this.pad(minutes)}`;
+    hours = Math.floor(hora / 3600);
+    minutes = Math.floor((hora % 3600) / 60);
   }
 
-  // Si viene como string tipo "10:00:00"
   if (typeof hora === 'string') {
-
-    // MySQL TIME → HH:mm:ss
-    if (hora.includes(':')) {
-      const parts = hora.split(':');
-      return `${this.pad(+parts[0])}:${this.pad(+parts[1])}`;
-    }
-
-    return hora;
+    const parts = hora.split(':');
+    hours = Number(parts[0]);
+    minutes = Number(parts[1]);
   }
 
-  return '';
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours === 0 ? 12 : hours;
+
+  return `${this.pad(hours)}:${this.pad(minutes)} ${ampm}`;
+}
+
+formatearFecha(fecha: string): string {
+  if (!fecha) return '';
+
+  const date = new Date(fecha);
+
+  const formatted = date.toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  return formatted.replace(/^\d{2} (\w+)/, (match, month) => {
+    return match.replace(month, month.charAt(0).toUpperCase() + month.slice(1));
+  });
 }
 
 pad(value: number): string {
-  return value < 10 ? `0${value}` : value.toString();
+  return value < 10 ? '0' + value : value.toString();
 }
 }
