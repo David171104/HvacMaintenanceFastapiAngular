@@ -15,7 +15,7 @@ techniccianController = TechniccianController()
 
 #FUNCTIONAL ROUTES
 @router.get("/services/technician/{technician_id}")
-def get_services_by_technician(technician_id: int, token_data: dict = Depends(verify_token)):
+def get_services_by_technician(technician_id: int):
     response = techniccianController.get_services_by_technician(technician_id)
     return response  
 

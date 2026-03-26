@@ -54,7 +54,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
       route: '/services',
       label: 'Servicios',
       icon: '🛠️',
-      roles: ['administrador', 'tecnico']
+      roles: ['administrador']
+    },
+    {
+      route: '/techniccian-services',
+      label: 'Servicios',
+      icon: '🛠️',
+      roles: ['tecnico']
     },
     {
       route: '/client-services',
