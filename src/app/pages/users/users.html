@@ -5,52 +5,66 @@
     <div class="users-container">
 
       <div class="users-header">
-        <h1 class="users-title">Lista de usuarios</h1>
-        <p class="users-subtitle">Gestión y control de usuarios del sistema</p>
-      </div>
+        <div>
+      <h1 class="users-title">Lista de usuarios</h1>
+          <p class="users-subtitle">
+        Gestión y control de usuarios del sistema
+      </p>
+        </div>
 
-      <p class="users-error" *ngIf="error">{{ error }}</p>
+    <button class="create-btn" (click)="openCreateModal()">
+      Crear Usuario
+    </button>
+  </div>
+
+  <p class="users-error" *ngIf="error">{{ error }}</p>
 
       <div class="users-table-wrapper">
 
-        <div class="users-state" *ngIf="loading">
-          <span class="users-state-icon">⏳</span>
-          <p>Cargando usuarios...</p>
-        </div>
+    <!-- LOADING -->
+    <div class="users-state" *ngIf="loading">
+      <span class="users-state-icon">⏳</span>
+      <p>Cargando usuarios...</p>
+    </div>
 
-        <table
-          class="users-table"
-          *ngIf="!loading && usuarios.length > 0"
+    <!-- TABLA -->
+    <table
+      class="users-table"
+      *ngIf="!loading && usuarios.length > 0"
+    >
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Número identificación</th>
+          <th>Correo</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          *ngFor="let user of usuarios; trackBy: trackById"
         >
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Número identificación</th>
-              <th>Correo</th>
-              <th>Rol</th>
-            </tr>
-          </thead>
+          <td>{{ user.name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.document_number }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span [class]="getRoleClass(user.role_id)">
+              {{ getRole(user.role_id) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-          <tbody>
-            <tr *ngFor="let user of usuarios; trackBy: trackById">
-              <td>{{ user.name }}</td>
-              <td>{{ user.last_name }}</td>
-              <td>{{ user.document_number }}</td>
-              <td>{{ user.email }}</td>
-              <td>
-                <span [class]="getRoleClass(user.role_id)">
-                  {{ getRole(user.role_id) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="users-state" *ngIf="!loading && usuarios.length === 0">
-          <span class="users-state-icon">📭</span>
-          <p>No hay usuarios registrados</p>
-        </div>
+    <!-- EMPTY -->
+    <div class="users-state"
+         *ngIf="!loading && usuarios.length === 0">
+      <span class="users-state-icon">📭</span>
+      <p>No hay usuarios registrados</p>
+    </div>
 
       </div>
     </div>

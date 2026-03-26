@@ -1264,3 +1264,45 @@ th, td {
     white-space: nowrap;
   }
 }
+
+
+/*STATUS STYLES*/
+/* ===== STATUS ===== */
+
+.status-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-icon i {
+  font-size: 13px;
+}
+
+/* Pendiente */
+.status-pending {
+  background: #f59e0b20;
+  color: #f59e0b;
+}
+
+/* Asignado */
+.status-assigned {
+  background: #3b82f620;
+  color: #3b82f6;
+}
+
+/* Completado */
+.status-completed {
+  background: #00ffc620;
+  color: #00ffc6;
+}
+
+/* Desconocido */
+.status-unknown {
+  background: #6b728020;
+  color: #9ca3af;
+}
