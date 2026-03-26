@@ -5,6 +5,7 @@ import { Statistics } from '../statistics/statistics';
 import { UserList } from '../user-list/user-list';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-reports',
@@ -14,7 +15,8 @@ import { RouterModule, Router } from '@angular/router';
     LecturasComponent,
     Statistics,
     UserList,
-    FormsModule
+    FormsModule,
+    SidebarComponent
   ],
   templateUrl: './reports.html',
   styleUrls: ['./reports.css']

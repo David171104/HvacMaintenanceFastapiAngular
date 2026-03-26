@@ -1,140 +1,137 @@
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
 
-
-/* ✅ declarar MSAL global correctamente */
-declare global {
-  interface Window {
-    msal: any;
-  }
-}
+import { requiredTrimmed } from '../../shared/validation/custom-validators';
+import {
+  controlInvalid,
+  getControlErrorMessage,
+  markFormGroupTouched,
+  trimFormValues,
+} from '../../shared/validation/form-utils';
+import { NotificationService } from '../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrl: './login.css',
 })
 export class LoginComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
 
-  private msalInstance: any;
+  readonly loginForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email, requiredTrimmed]],
+    password: ['', [Validators.required, requiredTrimmed]],
+  });
 
-  constructor(private router: Router,  private http: HttpClient) {}
+  submitted = false;
+  isSubmitting = false;
+  serverError = '';
 
-  // =====================================================
-  // INIT
-  // =====================================================
+  private msalInstance:
+    | {
+        loginRedirect: (request: { scopes: string[] }) => void;
+        logoutRedirect: (request: { postLogoutRedirectUri: string }) => void;
+      }
+    | undefined;
+
+  constructor(
+    private readonly router: Router,
+    private readonly http: HttpClient,
+    private readonly notificationService: NotificationService,
+  ) {}
+
   ngOnInit(): void {
-
     if (!window.msal) {
       console.error('MSAL no cargado (script CDN)');
       return;
     }
 
-    const msalConfig = {
+    this.msalInstance = new window.msal.PublicClientApplication({
       auth: {
-        clientId: "9390d994-fdb5-4104-b1e9-8ce7277fcd35",
-        authority:
-          "https://login.microsoftonline.com/1e9aabe8-67f8-4f1c-a329-a754e92499ae",
-        redirectUri: "http://localhost:4200"
-      }
-    };
-
-    // ✅ crear UNA sola instancia
-    this.msalInstance =
-      new window.msal.PublicClientApplication(msalConfig);
+        clientId: '9390d994-fdb5-4104-b1e9-8ce7277fcd35',
+        authority: 'https://login.microsoftonline.com/1e9aabe8-67f8-4f1c-a329-a754e92499ae',
+        redirectUri: 'http://localhost:4200',
+      },
+    });
   }
 
-  // =====================================================
-  // LOGIN MICROSOFT
-  // =====================================================
   loginMicrosoft(event: Event): void {
-
-    // 🚨 evita submit del form
     event.preventDefault();
     event.stopPropagation();
 
     if (!this.msalInstance) {
-      console.error("MSAL no inicializado");
+      console.error('MSAL no inicializado');
       return;
     }
 
-    console.log("🔵 Redirigiendo a Microsoft...");
-
     this.msalInstance.loginRedirect({
-      scopes: ["User.Read"]
+      scopes: ['User.Read'],
     });
   }
 
-  logoutMicrosoft() {
-    console.log("🔴 Cerrando sesión Microsoft...");
-    // limpiar sesión local
+  logoutMicrosoft(): void {
     localStorage.clear();
     sessionStorage.clear();
 
-    const msalConfig = {
+    if (!window.msal) {
+      return;
+    }
+
+    const msalInstance = new window.msal.PublicClientApplication({
       auth: {
-        clientId: "9390d994-fdb5-4104-b1e9-8ce7277fcd35",
-        authority:
-          "https://login.microsoftonline.com/1e9aabe8-67f8-4f1c-a329-a754e92499ae",
-        redirectUri: "http://localhost:4200"
-      }
-    };
+        clientId: '9390d994-fdb5-4104-b1e9-8ce7277fcd35',
+        authority: 'https://login.microsoftonline.com/1e9aabe8-67f8-4f1c-a329-a754e92499ae',
+        redirectUri: 'http://localhost:4200',
+      },
+    });
 
-    const msalInstance =
-      new window.msal.PublicClientApplication(msalConfig);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
 
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    // 🔥 logout REAL Microsoft
     msalInstance.logoutRedirect({
-      postLogoutRedirectUri: "http://localhost:4200"
+      postLogoutRedirectUri: 'http://localhost:4200',
     });
   }
 
-  // =====================================================
-  // LOGIN NORMAL
-  // =====================================================
-  loginData = {
-    email: '',
-    password: ''
-  };
+  onSubmit(): void {
+    this.submitted = true;
+    this.serverError = '';
+    trimFormValues(this.loginForm);
 
- onSubmit(): void {
+    if (this.loginForm.invalid) {
+      markFormGroupTouched(this.loginForm);
+      return;
+    }
 
-    const body = {
-      email: this.loginData.email,
-      password: this.loginData.password
-    };
+    if (this.isSubmitting) {
+      return;
+    }
 
-    this.http.post<any>(
-      'http://localhost:8000/users/user_login',
-      body
-    ).subscribe({
+    this.isSubmitting = true;
 
-      next: (response) => {
+    this.http
+      .post<{ access_token: string; user: { role_id: number } }>(
+        'http://localhost:8000/users/user_login',
+        this.loginForm.getRawValue(),
+      )
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: (response) => {
+          localStorage.setItem('access_token', response.access_token);
+          localStorage.setItem('user', JSON.stringify(response.user));
 
-        console.log("Respuesta API:", response);
+          this.notificationService.success(
+            'Sesion iniciada',
+            'Tu acceso fue validado correctamente.',
+          );
 
-        // ✅ guardar token
-        localStorage.setItem(
-          'access_token',
-          response.access_token
-        );
-
-        // ✅ guardar usuario
-        localStorage.setItem(
-          'user',
-          JSON.stringify(response.user)
-        );
-
-        alert('Login exitoso');
-
-        // ✅ redirección según rol
-        const role = response.user.role_id;
+          const role = response.user.role_id;
 
         if (role === 1) {
           this.router.navigateByUrl('/home');
@@ -149,20 +146,22 @@ export class LoginComponent implements OnInit {
 
       error: (error) => {
 
-        console.error("Error login:", error);
-
-        if (error.error?.detail) {
-          alert(error.error.detail);
-        } else {
-          alert("Error conectando con el servidor");
-        }
-      }
-
-    });
+          console.error('Error login:', error);
+          this.serverError = error.error?.detail || 'Error conectando con el servidor.';
+          this.notificationService.error('No se pudo iniciar sesion', this.serverError);
+        },
+      });
   }
 
-  // =====================================================
-  // goToRegister(): void {
-  //   this.router.navigateByUrl('/register');
-  // }
+  isInvalid(controlName: 'email' | 'password'): boolean {
+    return controlInvalid(this.loginForm.get(controlName), this.submitted);
+  }
+
+  getError(controlName: 'email' | 'password', label: string): string | null {
+    return getControlErrorMessage(this.loginForm.get(controlName), label);
+  }
+
+  goToRegister(): void {
+  this.router.navigateByUrl('/register');
+  }
 }

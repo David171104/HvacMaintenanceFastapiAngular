@@ -3,17 +3,15 @@
 
 <!-- MAIN CONTENT -->
 <main class="main-container">
-
   <section class="main-hero">
     <div class="main-hero-overlay">
       <div class="page-container main-hero-content">
         <div class="main-hero-text">
-
-          <h1 class="main-gradient-text">Climatización Total</h1>
+          <h1 class="main-gradient-text">Climatizacion Total</h1>
 
           <p>
-            Innovación, eficiencia y tecnología en sistemas de aire acondicionado.
-            Monitorea y optimiza tus equipos los 365 días del año.
+            Innovacion, eficiencia y tecnologia en sistemas de aire acondicionado. Monitorea y
+            optimiza tus equipos los 365 dias del ano.
           </p>
 
           <div class="main-hero-cta">
@@ -21,10 +19,7 @@
             <a href="/login" class="main-btn-outline">Ir al panel</a>
           </div>
 
-          <div class="main-hero-meta">
-            Monitoreo en tiempo real · Reportes de consumo
-          </div>
-
+          <div class="main-hero-meta">Monitoreo en tiempo real · Reportes de consumo</div>
         </div>
       </div>
     </div>
@@ -32,113 +27,147 @@
 
   <section class="main-section main-section-dark" id="servicios">
     <div class="page-container">
-      <h2 class="main-section-title">¿Quiénes Somos?</h2>
+      <h2 class="main-section-title">Quienes Somos?</h2>
       <p class="main-section-text">
-        Somos especialistas en soluciones integrales de climatización con enfoque en
-        <strong>tecnología IoT y eficiencia energética</strong>.
+        Somos especialistas en soluciones integrales de climatizacion con enfoque en
+        <strong>tecnologia IoT y eficiencia energetica</strong>.
       </p>
     </div>
   </section>
 
-    <!-- SERVICIOS -->
   <section class="main-section main-section-dark" id="servicios">
     <div class="page-container">
-
       <h2 class="main-section-title">Nuestros Servicios</h2>
 
       <p class="main-section-text">
-        Ofrecemos soluciones completas en climatización con tecnología avanzada,
-        monitoreo inteligente y mantenimiento especializado para maximizar el
-        rendimiento de tus equipos.
+        Ofrecemos soluciones completas en climatizacion con tecnologia avanzada, monitoreo
+        inteligente y mantenimiento especializado para maximizar el rendimiento de tus equipos.
       </p>
 
       <div class="main-services-grid">
-
         <div class="main-service-card">
-          <h3>Instalación Profesional</h3>
+          <h3>Instalacion Profesional</h3>
           <p>
-            Instalación de sistemas de aire acondicionado con estándares de calidad,
-            eficiencia energética y configuración optimizada.
+            Instalacion de sistemas de aire acondicionado con estandares de calidad, eficiencia
+            energetica y configuracion optimizada.
           </p>
         </div>
 
         <div class="main-service-card">
           <h3>Mantenimiento Preventivo</h3>
           <p>
-            Revisiones periódicas para evitar fallas, reducir costos operativos y
-            prolongar la vida útil de los equipos.
+            Revisiones periodicas para evitar fallas, reducir costos operativos y prolongar la vida
+            util de los equipos.
           </p>
         </div>
 
         <div class="main-service-card">
           <h3>Monitoreo Inteligente IoT</h3>
           <p>
-            Control en tiempo real de temperatura, consumo y estado de los sistemas
-            mediante sensores inteligentes.
+            Control en tiempo real de temperatura, consumo y estado de los sistemas mediante
+            sensores inteligentes.
           </p>
         </div>
 
         <div class="main-service-card">
-          <h3>Diagnóstico Avanzado</h3>
+          <h3>Diagnostico Avanzado</h3>
           <p>
-            Análisis digital del rendimiento del sistema para detectar fallas y
-            optimizar el funcionamiento.
+            Analisis digital del rendimiento del sistema para detectar fallas y optimizar el
+            funcionamiento.
           </p>
         </div>
-
       </div>
-
     </div>
   </section>
 
-
-  <!-- CONTACTO -->
   <section class="main-section main-section-alt" id="contacto">
     <div class="page-container">
-
-      <h2 class="main-section-title">  <i class="fa-solid fa-envelope"></i> Contáctanos</h2>
+      <h2 class="main-section-title"><i class="fa-solid fa-envelope"></i> Contactanos</h2>
 
       <p class="main-section-text">
-        ¿Tienes dudas o necesitas asesoría en climatización?
-        Nuestro equipo está listo para ayudarte.
+        Tienes dudas o necesitas asesoria en climatizacion? Nuestro equipo esta listo para
+        ayudarte.
       </p>
 
       <div class="main-contact-container">
-
-        <!-- FORMULARIO -->
-        <form class="main-contact-form">
-
+        <form
+          class="main-contact-form"
+          [formGroup]="contactForm"
+          (ngSubmit)="submitContact()"
+          novalidate
+        >
           <div class="main-form-group">
             <label>Nombre</label>
-            <input type="text" placeholder="Tu nombre" />
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              formControlName="name"
+              [class.is-invalid]="isContactInvalid('name')"
+            />
+            <small class="field-error" *ngIf="isContactInvalid('name')">
+              {{ getContactError('name', 'Nombre') }}
+            </small>
           </div>
 
           <div class="main-form-group">
             <label>Email</label>
-            <input type="email" placeholder="correo@email.com" />
+            <input
+              type="email"
+              placeholder="correo@email.com"
+              formControlName="email"
+              [class.is-invalid]="isContactInvalid('email')"
+            />
+            <small class="field-error" *ngIf="isContactInvalid('email')">
+              {{ getContactError('email', 'Email') }}
+            </small>
+          </div>
+
+          <div class="main-form-group">
+            <label>Telefono</label>
+            <input
+              type="tel"
+              placeholder="+57 300 000 0000"
+              formControlName="phone"
+              [class.is-invalid]="isContactInvalid('phone')"
+            />
+            <small class="field-error" *ngIf="isContactInvalid('phone')">
+              {{ getContactError('phone', 'Telefono') }}
+            </small>
           </div>
 
           <div class="main-form-group">
             <label>Mensaje</label>
-            <textarea rows="5" placeholder="Escribe tu mensaje"></textarea>
+            <textarea
+              rows="5"
+              placeholder="Escribe tu mensaje"
+              formControlName="message"
+              [class.is-invalid]="isContactInvalid('message')"
+            ></textarea>
+            <small class="field-error" *ngIf="isContactInvalid('message')">
+              {{ getContactError('message', 'Mensaje') }}
+            </small>
           </div>
 
-          <button type="submit" class="main-btn-primary">
-            Enviar mensaje
-          </button>
+          <small class="contact-success" *ngIf="contactSuccess">{{ contactSuccess }}</small>
 
+          <button
+            type="submit"
+            class="main-btn-primary"
+            [disabled]="contactForm.invalid || contactSending"
+          >
+            <span class="button-spinner" *ngIf="contactSending"></span>
+            {{ contactSending ? 'Validando...' : 'Enviar mensaje' }}
+          </button>
         </form>
 
-        <!-- INFO CONTACTO -->
         <div class="main-contact-info">
-
           <div class="main-contact-item">
-            <h3> <i class="fa-solid fa-location-dot"></i>  Ubicación</h3>
-            <p>Bucaramanga, Santander — Colombia</p>
+            <h3><i class="fa-solid fa-location-dot"></i> Ubicacion</h3>
+            <p>Bucaramanga, Santander - Colombia</p>
           </div>
 
           <div class="main-contact-item">
-            <h3> <i class="fa-solid fa-phone"></i>  Teléfono</h3>
+            <h3><i class="fa-solid fa-phone"></i> Telefono</h3>
             <p>+57 300 000 0000</p>
           </div>
 
@@ -149,20 +178,13 @@
 
           <div class="main-contact-item">
             <h3><i class="fa-solid fa-clock"></i> Horario</h3>
-            <p>Lunes — Viernes | 8:00 AM — 6:00 PM</p>
+            <p>Lunes - Viernes | 8:00 AM - 6:00 PM</p>
           </div>
-
         </div>
-
       </div>
-
     </div>
   </section>
-
-
 </main>
-
-
 
 <!-- FOOTER -->
 <app-footer></app-footer>

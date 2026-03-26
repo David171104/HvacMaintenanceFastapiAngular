@@ -1,4 +1,9 @@
-<div class="services-container">
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="home-content">
+
+    <div class="services-container">
 
   <!-- HEADER -->
   <div class="services-header">
@@ -8,18 +13,21 @@
     </p>
   </div>
 
-  <div class="services-table-wrapper">
+      <div class="services-table-wrapper">
 
-    <!-- ERROR -->
-    <p class="services-error" *ngIf="error">{{ error }}</p>
+        <!-- ERROR -->
+        <p class="services-error" *ngIf="error">{{ error }}</p>
 
-    <!-- LOADING -->
-    <div class="services-state" *ngIf="loading">
-      ⏳ Cargando servicios...
-    </div>
+        <!-- LOADING -->
+        <div class="services-state" *ngIf="loading">
+          ⏳ Cargando servicios...
+        </div>
 
     <!-- TABLA -->
-    <table class="services-table" *ngIf="!loading && services.length">
+    <table
+      class="services-table"
+      *ngIf="!loading && services.length > 0"
+    >
 
       <thead>
         <tr>
@@ -35,7 +43,7 @@
         </tr>
       </thead>
 
-      <tbody>
+          <tbody>
 
         <tr *ngFor="let service of services; trackBy: trackById">
 
@@ -133,4 +141,5 @@
     </div>
 
   </div>
+
 </div>

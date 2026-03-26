@@ -1,15 +1,28 @@
 /* =====================================================
+   LAYOUT CON SIDEBAR
+===================================================== */
+
+.home-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.home-content {
+  margin-left: 260px;
+  width: 100%;
+  padding: 40px;
+  background: var(--dark-bg);
+  color: white;
+  transition: margin-left 0.3s ease;
+}
+
+/* =====================================================
    ADMIN HOME
 ===================================================== */
 
 .admin-container {
-  padding: 80px 40px;
-  min-height: 100vh;
-  background: var(--dark-bg);
-  color: white;
+  min-height: 100%;
 }
-
-/* HEADER */
 
 .admin-header {
   margin-bottom: 50px;
@@ -31,8 +44,6 @@
   color: #94a3b8;
   font-size: 16px;
 }
-
-/* CARDS */
 
 .admin-cards {
   display: grid;
@@ -63,8 +74,6 @@
   margin-bottom: 20px;
 }
 
-/* BOTÓN */
-
 .admin-btn {
   background: var(--primary-color);
   color: white;
@@ -78,4 +87,11 @@
 
 .admin-btn:hover {
   background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    margin-left: 0;
+    padding: 20px;
+  }
 }

@@ -1,48 +1,47 @@
-<!-- NAVBAR TECNICO -->
-<nav class="navbar-container">
-  <div class="navbar-left">
-    <a class="navbar-link">Panel Técnico</a>
-  </div>
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
 
-  <div class="navbar-right">
-    <button class="navbar-btn navbar-btn-outline" (click)="logout()">
-      Cerrar sesión
-    </button>
-  </div>
-</nav>
+  <main class="home-content">
 
-<!-- CONTENIDO -->
-<div class="technic-container">
+    <div class="technic-container">
 
-  <div class="technic-header">
-    <h1 class="technic-title">
-      Bienvenido <span class="technic-gradient">Técnico</span>
-    </h1>
-    <p class="technic-subtitle">
-      Administra los servicios asignados y actualiza su estado.
-    </p>
-  </div>
+      <div class="technic-header">
+        <h1 class="technic-title">
+          Bienvenido
+          <span class="technic-gradient">
+            {{ userName }} {{ userLastName }}
+          </span>
+        </h1>
 
-  <!-- CARDS DASHBOARD -->
-  <div class="technic-cards">
+        <p class="technic-subtitle">
+          Panel de {{ userRole | titlecase }}
+        </p>
+        <p class="technic-subtitle">
+          Administra los servicios asignados y actualiza su estado.
+        </p>
+      </div>
 
-    <div class="technic-card">
-      <h3>Servicios asignados</h3>
-      <p>Consulta los servicios que te han sido asignados.</p>
-      <button class="technic-btn" routerLink="/assigned-services">
-        Ver servicios
-      </button>
+      <div class="technic-cards">
+
+        <div class="technic-card">
+          <h3>Servicios asignados</h3>
+          <p>Consulta los servicios que te han sido asignados.</p>
+          <button class="technic-btn" routerLink="/assigned-services">
+            Ver servicios
+          </button>
+        </div>
+
+        <div class="technic-card">
+          <h3>Actualizar estado</h3>
+          <p>Marca servicios como en proceso o completados.</p>
+          <button class="technic-btn" routerLink="/update-services">
+            Actualizar
+          </button>
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="technic-card">
-      <h3>Actualizar estado</h3>
-      <p>Marca servicios como en proceso o completados.</p>
-      <button class="technic-btn" routerLink="/update-services">
-        Actualizar
-      </button>
-    </div>
-
-
-  </div>
-
+  </main>
 </div>

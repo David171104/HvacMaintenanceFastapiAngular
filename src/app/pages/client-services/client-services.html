@@ -1,104 +1,110 @@
-<div class="client-container">
+<div class="home-layout">
+  <app-sidebar></app-sidebar>
 
-  <div class="client-header">
-    <h1 class="client-title">
-      Mis <span class="client-gradient">Servicios</span>
-    </h1>
+  <main class="home-content">
+    <div class="client-container">
+      <div class="client-header">
+        <h1 class="client-title">
+          Mis <span class="client-gradient">Servicios</span>
+        </h1>
 
-    <p class="client-subtitle">
-      Aquí puedes ver todos los servicios que has solicitado.
-    </p>
-  </div>
+        <p class="client-subtitle">
+          Aquí puedes ver todos los servicios que has solicitado.
+        </p>
+      </div>
 
-  <div class="client-card">
+      <div class="client-card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+          <h3>Lista de Servicios</h3>
 
-    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-
-      <h3>Lista de Servicios</h3>
-
-        <button class="client-btn" (click)="solicitarServicio()">
-        Solicitar Servicio
-        </button>
-
-    </div>
-
-    <table class="user-table">
-
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Tipo</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <tr>
-          <td colspan="6" style="text-align:center;">
-            Sin servicios aún
-          </td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-<div *ngIf="showModal" class="modal-backdrop">
-
-  <div class="modal">
-
-    <h3>Solicitar Servicio</h3>
-
-    <label>Fecha del servicio *</label>
-    <input
-      type="date"
-      [(ngModel)]="formData.request_date"
-      required
-    />
-
-    <label>Hora del servicio *</label>
-    <input
-      type="time"
-      [(ngModel)]="formData.request_time"
-      min="08:00"
-      max="17:00"
-      required
-    />
-
-    <label>Tipo de servicio *</label>
-    <select [(ngModel)]="formData.service_type">
-      <option value="Correctivo">Correctivo</option>
-      <option value="Preventivo">Preventivo</option>
-    </select>
-
-    <label>Dirección *</label>
-    <input
-      type="text"
-      placeholder="Dirección del servicio"
-      [(ngModel)]="formData.address"
-      required
-    />
-
-        <div class="modal-actions">
-
-        <button class="client-btn" (click)="guardarServicio()">
-            Guardar
-        </button>
-
-        <button class="cancel-btn" (click)="cerrarModal()">
-            Cancelar
-        </button>
-
+          <button class="client-btn" type="button" (click)="solicitarServicio()">
+            Solicitar Servicio
+          </button>
         </div>
 
-  </div>
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Tipo</th>
+              <th>Dirección</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
 
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align:center;">
+                Sin servicios aún
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="showModal" class="modal-backdrop">
+      <div class="modal">
+        <h3>Solicitar Servicio</h3>
+
+        <form [formGroup]="serviceForm" (ngSubmit)="guardarServicio()" novalidate>
+          <label>Fecha del servicio *</label>
+          <input
+            type="date"
+            formControlName="request_date"
+            [min]="minServiceDate"
+          />
+          <small *ngIf="isInvalid('request_date')">
+            {{ getError('request_date', 'Fecha del servicio') }}
+          </small>
+
+          <label>Hora del servicio *</label>
+          <input
+            type="time"
+            formControlName="request_time"
+            min="08:00"
+            max="17:00"
+          />
+          <small *ngIf="isInvalid('request_time')">
+            {{ getError('request_time', 'Hora del servicio') }}
+          </small>
+
+          <label>Tipo de servicio *</label>
+          <select formControlName="service_type">
+            <option value="Correctivo">Correctivo</option>
+            <option value="Preventivo">Preventivo</option>
+          </select>
+          <small *ngIf="isInvalid('service_type')">
+            {{ getError('service_type', 'Tipo de servicio') }}
+          </small>
+
+          <label>Dirección *</label>
+          <input
+            type="text"
+            placeholder="Dirección del servicio"
+            formControlName="address"
+          />
+          <small *ngIf="isInvalid('address')">
+            {{ getError('address', 'Dirección') }}
+          </small>
+
+          <p *ngIf="submitError" class="services-error">
+            {{ submitError }}
+          </p>
+
+          <div class="modal-actions">
+            <button class="client-btn" type="submit" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
+            </button>
+
+            <button class="cancel-btn" type="button" (click)="cerrarModal()">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
 </div>
