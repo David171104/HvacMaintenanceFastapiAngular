@@ -1,27 +1,8 @@
-/* =====================================================
-   LAYOUT CON SIDEBAR
-===================================================== */
-
-.home-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.home-content {
-  margin-left: 260px;
-  width: 100%;
-  padding: 40px;
-  background: var(--dark-bg);
-  color: white;
-  transition: margin-left 0.3s ease;
-}
-
-/* =====================================================
-   ADMIN HOME
-===================================================== */
-
 .admin-container {
-  min-height: 100%;
+  min-height: 100vh;
+  padding: 64px 48px;
+  background: linear-gradient(160deg, #0f172a 0%, #020617 100%);
+  color: white;
 }
 
 .admin-header {
@@ -90,8 +71,7 @@
 }
 
 @media (max-width: 768px) {
-  .home-content {
-    margin-left: 0;
-    padding: 20px;
+  .admin-container {
+    padding: 40px 20px;
   }
 }

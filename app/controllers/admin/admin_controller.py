@@ -8,11 +8,14 @@ from fastapi.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema
 from app.config.email_config import mail_config
 from werkzeug.security import *
+from app.controllers.admin.report_pdf_service import AdminReportService
 
 
 
 
 class AdminController:
+    def __init__(self):
+        self.report_service = AdminReportService()
     
     def get_user(self, user_id: int):
         try:
@@ -424,6 +427,37 @@ class AdminController:
             if conn:
                 cursor.close()
                 conn.close()
+
+    def get_report_options(self):
+        return self.report_service.get_report_options()
+
+    def generate_iot_readings_report_pdf(
+        self,
+        date_from=None,
+        date_to=None,
+        equipment_id=None,
+        limit=200,
+    ):
+        return self.report_service.download_iot_readings_pdf(date_from, date_to, equipment_id, limit)
+
+    def generate_services_report_pdf(
+        self,
+        date_from=None,
+        date_to=None,
+        technician_id=None,
+        status=None,
+        service_type=None,
+    ):
+        return self.report_service.download_services_pdf(
+            date_from,
+            date_to,
+            technician_id,
+            status,
+            service_type,
+        )
+
+    def generate_admin_summary_report_pdf(self, date_from=None, date_to=None):
+        return self.report_service.download_admin_summary_pdf(date_from, date_to)
 
     def verify_password(self, user_id, data):
         print("old_password", data["old_password"])

@@ -13,18 +13,25 @@ import { ClientHome } from './pages/client-home/client-home';
 import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
 import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 
 
 export const routes: Routes = [
-    { path: '', component:Main},
+    { path: '', component:Main, pathMatch: 'full' },
     { path: 'contact', component:Contact},
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'users', component: Users },
-    { path: 'services', component: Services },
-    { path: 'home', component: HomeComponent },
-    { path: 'reports', component: Reports },
-    { path: 'lecturas', component: LecturasComponent },
+    {
+      path: '',
+      component: AdminLayoutComponent,
+      children: [
+        { path: 'home', component: HomeComponent },
+        { path: 'users', component: Users },
+        { path: 'services', component: Services },
+        { path: 'reports', component: Reports },
+        { path: 'lecturas', component: LecturasComponent },
+      ],
+    },
     { path: 'client-home', component: ClientHome },
     { path: 'tecnic-home', component: TecnicHome },
     { path: 'client-services', component: ClientServices },

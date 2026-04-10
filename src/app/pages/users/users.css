@@ -1,18 +1,7 @@
-.home-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.home-content {
-  margin-left: 260px;
-  width: 100%;
-  padding: 40px;
-  background: var(--dark-bg);
-  color: white;
-  transition: margin-left 0.3s ease;
-}
 .users-container {
-  padding: 30px;
+  min-height: 100vh;
+  padding: 40px;
+  background: linear-gradient(160deg, #0f172a 0%, #020617 100%);
   color: #e5e7eb;
 }
 
@@ -233,4 +222,10 @@
 /* separacion entre botones */
 .actions button {
   margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+  .users-container {
+    padding: 20px;
+  }
 }

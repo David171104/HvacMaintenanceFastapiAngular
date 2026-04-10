@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -17,7 +17,8 @@ interface NavItem {
   styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  isCollapsed = false;
+  @Input() isCollapsed = false;
+  @Output() readonly collapsedChange = new EventEmitter<boolean>();
 
   userRole = '';
   userName = '';
@@ -87,17 +88,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadUserInfo();
     this.filterNavByRole();
-
-    if (this.isCollapsed) {
-      document.body.classList.add('sidebar-collapsed');
-    } else {
-      document.body.classList.remove('sidebar-collapsed');
-    }
   }
 
-  ngOnDestroy(): void {
-    document.body.classList.remove('sidebar-collapsed');
-  }
+  ngOnDestroy(): void {}
 
   loadUserInfo(): void {
     this.userRole = localStorage.getItem('userRole') || '';
@@ -113,12 +106,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
-
-    if (this.isCollapsed) {
-      document.body.classList.add('sidebar-collapsed');
-    } else {
-      document.body.classList.remove('sidebar-collapsed');
-    }
+    this.collapsedChange.emit(this.isCollapsed);
   }
 
   logout(): void {
@@ -127,8 +115,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     localStorage.removeItem('userLastName');
-
-    document.body.classList.remove('sidebar-collapsed');
     this.router.navigate(['/login']);
   }
 
