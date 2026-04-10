@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.ds-kpi-card {
+  height: 100%;
+}
+
+.ui-stat-card__meta--success {
+  color: var(--secondary);
+}
+
+.ui-stat-card__meta--error {
+  color: var(--error);
+}

@@ -1,0 +1,12 @@
+<button
+  [type]="type"
+  class="ds-button"
+  [class.ds-button-primary]="variant === 'primary'"
+  [class.ds-button-secondary]="variant === 'secondary'"
+  [class.ds-button-ghost]="variant === 'ghost'"
+  [class.ds-button-block]="block"
+  [disabled]="disabled || loading"
+>
+  <span class="button-spinner" *ngIf="loading"></span>
+  <ng-content></ng-content>
+</button>

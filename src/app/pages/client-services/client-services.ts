@@ -12,7 +12,6 @@ import {
   trimFormValues,
 } from '../../shared/validation/form-utils';
 import { NotificationService } from '../../shared/notifications/notification.service';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 interface ServicioCliente {
   id: number;
@@ -29,7 +28,7 @@ interface ServicioCliente {
   standalone: true,
   templateUrl: './client-services.html',
   styleUrls: ['./client-services.css'],
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, SidebarComponent]
+  imports: [RouterModule, ReactiveFormsModule, CommonModule]
 })
 export class ClientServices implements OnInit {
   private readonly fb = inject(FormBuilder);

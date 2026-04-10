@@ -1,88 +1,108 @@
-<div class="page-wrapper">
-  <div class="form-container">
-    <h2>Registro de Usuario</h2>
+<section class="register-page">
+  <div class="register-page__backdrop"></div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
-      <div class="form-group">
-        <label>Nombres <span class="required">*</span></label>
-        <input type="text" formControlName="name" [class.is-invalid]="isInvalid('name')" />
-        <small class="field-error" *ngIf="isInvalid('name')">{{ getError('name', 'Nombres') }}</small>
-      </div>
+  <ui-card class="register-card" [glass]="true">
+    <div class="register-card__header">
+      <p class="register-card__eyebrow">Nuevo acceso</p>
+      <h1>Crear cuenta</h1>
+      <p class="register-card__subtitle">Registra tu acceso al sistema IoT industrial.</p>
+    </div>
 
-      <div class="form-group">
-        <label>Apellidos <span class="required">*</span></label>
-        <input
+    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Nombres"
           type="text"
+          inputId="register-name"
+          formControlName="name"
+          autocomplete="given-name"
+          placeholder="Ej. Laura"
+          [error]="isInvalid('name') ? (getError('name', 'Nombres') || '') : ''"
+        />
+
+        <ui-input
+          label="Apellidos"
+          type="text"
+          inputId="register-last-name"
           formControlName="last_name"
-          [class.is-invalid]="isInvalid('last_name')"
+          autocomplete="family-name"
+          placeholder="Ej. Torres"
+          [error]="isInvalid('last_name') ? (getError('last_name', 'Apellidos') || '') : ''"
         />
-        <small class="field-error" *ngIf="isInvalid('last_name')">
-          {{ getError('last_name', 'Apellidos') }}
-        </small>
       </div>
 
-      <div class="form-group">
-        <label>Numero de documento</label>
-        <input
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Número de documento"
           type="text"
+          inputId="register-document"
           formControlName="document_number"
-          [class.is-invalid]="isInvalid('document_number')"
-          inputmode="numeric"
+          autocomplete="off"
+          placeholder="123456789"
+          [error]="isInvalid('document_number') ? (getError('document_number', 'Documento') || '') : ''"
         />
-        <small class="field-error" *ngIf="isInvalid('document_number')">
-          {{ getError('document_number', 'Documento') }}
-        </small>
+
+        <ui-input
+          label="Edad"
+          type="number"
+          inputId="register-age"
+          formControlName="age"
+          autocomplete="off"
+          placeholder="28"
+          [error]="isInvalid('age') ? (getError('age', 'Edad') || '') : ''"
+        />
       </div>
 
-      <div class="form-group">
-        <label>Edad</label>
-        <input type="number" formControlName="age" [class.is-invalid]="isInvalid('age')" />
-        <small class="field-error" *ngIf="isInvalid('age')">{{ getError('age', 'Edad') }}</small>
-      </div>
+      <ui-input
+        label="Correo electrónico"
+        type="email"
+        inputId="register-email"
+        formControlName="email"
+        autocomplete="email"
+        placeholder="operador@climatech.io"
+        [error]="isInvalid('email') ? (getError('email', 'Correo electrónico') || '') : ''"
+      />
 
-      <div class="form-group">
-        <label>Correo Electronico <span class="required">*</span></label>
-        <input type="email" formControlName="email" [class.is-invalid]="isInvalid('email')" />
-        <small class="field-error" *ngIf="isInvalid('email')">{{ getError('email', 'Correo') }}</small>
-      </div>
-
-      <div class="form-group">
-        <label>Contrasena <span class="required">*</span></label>
-        <input
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Contraseña"
           type="password"
+          inputId="register-password"
           formControlName="password"
-          [class.is-invalid]="isInvalid('password')"
           autocomplete="new-password"
+          placeholder="Crea una contraseña segura"
+          [error]="isInvalid('password') ? (getError('password', 'Contraseña') || '') : ''"
         />
-        <small class="field-error" *ngIf="isInvalid('password')">
-          {{ getError('password', 'Contrasena') }}
-        </small>
-      </div>
 
-      <div class="form-group">
-        <label>Confirmar contrasena <span class="required">*</span></label>
-        <input
+        <ui-input
+          label="Confirmación de contraseña"
           type="password"
+          inputId="register-password-confirm"
           formControlName="confirmPassword"
-          [class.is-invalid]="isInvalid('confirmPassword')"
           autocomplete="new-password"
+          placeholder="Repite tu contraseña"
+          [error]="isInvalid('confirmPassword') ? (getError('confirmPassword', 'Confirmación') || '') : ''"
         />
-        <small class="field-error" *ngIf="isInvalid('confirmPassword')">
-          {{ getError('confirmPassword', 'Confirmacion') }}
-        </small>
       </div>
 
-      <div class="form-group">
-        <small class="form-error" *ngIf="serverError">{{ serverError }}</small>
-        <button type="submit" [disabled]="registerForm.invalid || isSubmitting">
-          <span class="button-spinner" *ngIf="isSubmitting"></span>
-          {{ isSubmitting ? 'Registrando...' : 'Registrar' }}
-        </button>
-      </div>
+      <small class="register-error" *ngIf="serverError">{{ serverError }}</small>
+
+      <ui-button
+        type="submit"
+        variant="primary"
+        [block]="true"
+        [loading]="isSubmitting"
+        [disabled]="registerForm.invalid || isSubmitting"
+      >
+        {{ isSubmitting ? 'Creando cuenta...' : 'Crear cuenta' }}
+      </ui-button>
     </form>
 
-    <div style="margin-top: 20px;">
-      <button type="button" (click)="goToLogin()">Iniciar sesion</button>
-    </div>
-  </div>
-</div>
+    <p class="register-card__footer">
+      ¿Ya tienes cuenta?
+      <button type="button" class="register-link register-link--button" (click)="goToLogin()">
+        Iniciar sesión
+      </button>
+    </p>
+  </ui-card>
+</section>

@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tecnic-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './tecnic-home.html',
   styleUrls: ['./tecnic-home.css'],
 })

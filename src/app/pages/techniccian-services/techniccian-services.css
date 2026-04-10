@@ -1,20 +1,7 @@
-.home-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.home-content {
-  margin-left: 260px;
-  width: 100%;
-  padding: 40px;
-  background: var(--dark-bg);
-  color: white;
-  transition: margin-left 0.3s ease;
-}
-
-
 .services-container {
-  padding: 30px;
+  min-height: 100vh;
+  padding: 48px;
+  background: transparent;
   color: #e5e7eb;
 }
 
@@ -265,16 +252,10 @@
 
 .complete-btn:hover {
   box-shadow: 0 0 15px #00ffc680;
-}.home-layout {
-  display: flex;
-  min-height: 100vh;
 }
 
-.home-content {
-  margin-left: 260px;
-  width: 100%;
-  padding: 40px;
-  background: var(--dark-bg);
-  color: white;
-  transition: margin-left 0.3s ease;
+@media (max-width: 768px) {
+  .services-container {
+    padding: 24px 18px 32px;
+  }
 }

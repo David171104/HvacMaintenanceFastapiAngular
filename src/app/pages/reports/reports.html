@@ -5,7 +5,7 @@
       <h1>Centro de reportes ClimaTech</h1>
       <p class="reports-lead">
         Genera PDFs reales a partir de usuarios, servicios y lecturas IoT. La vista de
-        Lecturas queda para operacion diaria; aqui concentramos la salida documental.
+        Lecturas queda para operación diaria; aquí concentramos la salida documental.
       </p>
     </div>
 
@@ -31,7 +31,7 @@
         <h2>Historial de lecturas IoT</h2>
         <p>
           Exporta lecturas reales desde PostgreSQL con fecha, equipo, temperatura, humedad,
-          corriente, observacion y origen manual o IoT.
+          corriente, observación y origen manual o IoT.
         </p>
       </div>
 
@@ -94,9 +94,9 @@
         </label>
 
         <label class="report-field">
-          <span>Tecnico</span>
+          <span>Técnico</span>
           <select [(ngModel)]="servicesFilters.technician_id">
-            <option [ngValue]="null">Todos los tecnicos</option>
+            <option [ngValue]="null">Todos los técnicos</option>
             <option *ngFor="let technician of technicians" [ngValue]="technician.id">
               {{ technician.name }}
             </option>
@@ -139,8 +139,8 @@
         <span class="report-card__badge">PDF 03</span>
         <h2>Resumen administrativo consolidado</h2>
         <p>
-          Cruza metricas reales de usuarios, servicios, equipos cliente y lecturas IoT para
-          entregar un resumen ejecutivo de operacion.
+          Cruza métricas reales de usuarios, servicios, equipos cliente y lecturas IoT para
+          entregar un resumen ejecutivo de operación.
         </p>
       </div>
 
@@ -158,7 +158,7 @@
 
       <div class="report-summary-note">
         Incluye total de usuarios, servicios, equipos IoT, equipos de clientes, promedios de
-        lecturas y distribucion por roles y estados.
+        lecturas y distribución por roles y estados.
       </div>
 
       <button

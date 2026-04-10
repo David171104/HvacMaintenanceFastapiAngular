@@ -5,6 +5,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
+import { ButtonComponent } from '../../ui/button/button';
+import { CardComponent } from '../../ui/card/card';
+import { InputComponent } from '../../ui/input/input';
 import {
   fieldsMatch,
   numberRange,
@@ -25,7 +28,7 @@ import { VALIDATION_LIMITS } from '../../shared/validation/validation.constants'
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ButtonComponent, CardComponent, InputComponent],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -119,7 +122,7 @@ export class RegisterComponent {
         next: () => {
           this.notificationService.success(
             'Registro completado',
-            'Tu cuenta fue creada correctamente. Ya puedes iniciar sesion.',
+            'Tu cuenta fue creada correctamente. Ya puedes iniciar sesión.',
           );
           this.router.navigate(['/login']);
         },
@@ -162,7 +165,7 @@ export class RegisterComponent {
     const control = this.registerForm.get(controlName);
 
     if (controlName === 'document_number' && control?.hasError('pattern')) {
-      return `${label}: solo se permiten digitos.`;
+      return `${label}: solo se permiten dígitos.`;
     }
 
     return getControlErrorMessage(control, label);

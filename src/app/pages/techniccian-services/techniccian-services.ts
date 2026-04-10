@@ -6,7 +6,6 @@ import {
 
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
 import { getStatusLabel } from '../../shared/service-status.util';
 
 /* ===============================
@@ -41,7 +40,7 @@ interface User {
 @Component({
   selector: 'app-techniccian-services',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule],
   templateUrl: './techniccian-services.html',
   styleUrl: './techniccian-services.css',
 })

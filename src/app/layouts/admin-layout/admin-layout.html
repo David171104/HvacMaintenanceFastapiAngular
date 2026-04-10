@@ -2,15 +2,41 @@
   class="admin-layout"
   [class.sidebar-expanded]="!isSidebarCollapsed"
   [class.sidebar-collapsed]="isSidebarCollapsed"
+  [class.mobile-sidebar-open]="isMobileSidebarOpen"
 >
-  <div class="admin-layout__sidebar">
+  <div class="admin-layout__backdrop" (click)="closeMobileSidebar()"></div>
+
+  <aside class="admin-layout__sidebar">
     <app-sidebar
       [isCollapsed]="isSidebarCollapsed"
+      [mobileOpen]="isMobileSidebarOpen"
       (collapsedChange)="onSidebarCollapsedChange($event)"
+      (closeRequested)="closeMobileSidebar()"
     ></app-sidebar>
-  </div>
+  </aside>
 
-  <main class="admin-layout__content">
-    <router-outlet></router-outlet>
-  </main>
+  <section class="admin-layout__main">
+    <header class="admin-layout__topbar">
+      <button type="button" class="admin-layout__menu" (click)="toggleMobileSidebar()">
+        ☰
+      </button>
+
+      <div class="admin-layout__topbar-copy">
+        <p class="admin-layout__eyebrow">Centro de control</p>
+        <h1 class="admin-layout__title">ClimaTech Administración</h1>
+        <p class="admin-layout__description">
+          Supervisa operación, servicios, lecturas IoT y analítica ejecutiva desde un solo entorno.
+        </p>
+      </div>
+
+      <div class="admin-layout__status">
+        <span class="admin-layout__status-dot"></span>
+        <span>Sistema estable</span>
+      </div>
+    </header>
+
+    <main class="admin-layout__content">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
 </div>

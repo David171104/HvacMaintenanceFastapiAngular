@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [CommonModule ,RouterModule, SidebarComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './client-home.html',
   styleUrls: ['./client-home.css'],
 })

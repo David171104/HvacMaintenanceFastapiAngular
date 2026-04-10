@@ -1,3 +1,5 @@
+@import "./design-system.css";
+
 /* =====================================================
    VARIABLES — GAMA DE COLORES
 ===================================================== */
@@ -31,10 +33,21 @@
 }
 
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: var(--light-bg);
-  color: var(--text-dark);
+  font-family: var(--font-family-sans);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(83, 221, 252, 0.1), transparent 24%),
+    linear-gradient(180deg, #07101f 0%, #060b18 100%);
+  color: var(--on-surface);
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+html,
+body,
+app-root {
+  min-height: 100%;
+  background-color: #060b18;
 }
 
 .page-container {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,10 +21,8 @@ interface User {
   imports: [CommonModule, FormsModule],
   templateUrl: './users.html',
   styleUrls: ['./users.css'],
-  
 })
 export class Users implements OnInit {
-
   usuarios: User[] = [];
   loading = true;
   error = '';
@@ -33,18 +31,17 @@ export class Users implements OnInit {
   isCreating = false;
 
   roles = [
-    { id: 1, name: 'Admin' },
-    { id: 2, name: 'Tecnico' },
-    { id: 3, name: 'Cliente' }
+    { id: 1, name: 'Administrador' },
+    { id: 2, name: 'Técnico' },
+    { id: 3, name: 'Cliente' },
   ];
 
   selectedUser: User = this.emptyUser();
-
   api = 'http://localhost:8000/users';
 
   constructor(
-    private http: HttpClient,
-    private cd: ChangeDetectorRef
+    private readonly http: HttpClient,
+    private readonly cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -59,34 +56,27 @@ export class Users implements OnInit {
       role_id: 3,
       document_number: '',
       age: '',
-      password: ''
+      password: '',
     };
   }
 
-  /* ================= CREATE ================= */
-
-  openCreateModal() {
+  openCreateModal(): void {
     this.isCreating = true;
     this.selectedUser = this.emptyUser();
     this.showModal = true;
   }
 
-  /* ================= EDIT ================= */
-
-  openEditModal(user: User) {
+  openEditModal(user: User): void {
     this.isCreating = false;
     this.selectedUser = { ...user };
     this.showModal = true;
   }
 
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
   }
 
-  /* ================= SAVE ================= */
-
-  saveChanges() {
-
+  saveChanges(): void {
     if (!this.selectedUser.name || !this.selectedUser.email) {
       Swal.fire('Campos requeridos', 'Nombre y correo obligatorios', 'warning');
       return;
@@ -99,17 +89,16 @@ export class Users implements OnInit {
     Swal.fire({
       title: 'Guardando...',
       allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
+      didOpen: () => Swal.showLoading(),
     });
 
     request.subscribe({
       next: () => {
-
         Swal.fire({
           icon: 'success',
           title: this.isCreating ? 'Usuario creado' : 'Usuario actualizado',
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
 
         this.closeModal();
@@ -117,57 +106,46 @@ export class Users implements OnInit {
       },
       error: () => {
         Swal.fire('Error', 'No se pudo guardar', 'error');
-      }
+      },
     });
   }
 
-  /* ================= DELETE ================= */
-
-  deleteUser(user: User) {
-
+  deleteUser(user: User): void {
     Swal.fire({
       title: '¿Eliminar usuario?',
       text: `¿Seguro que deseas eliminar a ${user.name}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      confirmButtonColor: '#ef4444'
-    }).then(result => {
-
+      confirmButtonColor: '#ef4444',
+    }).then((result) => {
       if (result.isConfirmed) {
-
-        this.http.delete(`${this.api}/delete/${user.id}`)
-          .subscribe(() => {
-
-            Swal.fire('Eliminado', 'Usuario eliminado', 'success');
-            this.getUsers();
-          });
+        this.http.delete(`${this.api}/delete/${user.id}`).subscribe(() => {
+          Swal.fire('Eliminado', 'Usuario eliminado', 'success');
+          this.getUsers();
+        });
       }
     });
   }
 
-  /* ================= GET USERS ================= */
-
-  getUsers() {
-
+  getUsers(): void {
     this.loading = true;
 
-    this.http.get<any>(`${this.api}/get_users/`)
-      .subscribe({
-        next: (response) => {
-          this.usuarios = [...(response.resultado ?? [])];
-          this.loading = false;
-          this.cd.detectChanges();
-        },
-        error: () => {
-          this.error = 'Error cargando usuarios';
-          this.loading = false;
-        }
-      });
+    this.http.get<any>(`${this.api}/get_users/`).subscribe({
+      next: (response) => {
+        this.usuarios = [...(response.resultado ?? [])];
+        this.loading = false;
+        this.cd.detectChanges();
+      },
+      error: () => {
+        this.error = 'Error cargando usuarios';
+        this.loading = false;
+      },
+    });
   }
 
   getRole(roleId: number): string {
-    return this.roles.find(r => r.id === roleId)?.name ?? 'Desconocido';
+    return this.roles.find((r) => r.id === roleId)?.name ?? 'Desconocido';
   }
 
   getRoleClass(roleId: number): string {

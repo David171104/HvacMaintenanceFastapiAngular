@@ -1,139 +1,107 @@
-<div class="services-container">
+<section class="admin-page">
+  <header class="admin-page__hero">
+    <div>
+      <p class="admin-page__eyebrow">Operación de servicios</p>
+      <h1 class="admin-page__title">Gestión de servicios</h1>
+      <p class="admin-page__subtitle">
+        Controla asignaciones técnicas, seguimiento de solicitudes y cierre operativo desde un solo lugar.
+      </p>
+    </div>
+  </header>
 
-  <!-- HEADER -->
-  <div class="services-header">
-    <h1 class="services-title">Gestión de Servicios</h1>
-    <p class="services-subtitle">
-      Control y seguimiento de solicitudes de servicio
-    </p>
-  </div>
+  <p class="admin-page__error" *ngIf="error">{{ error }}</p>
 
-      <div class="services-table-wrapper">
+  <section class="admin-surface">
+    <div class="admin-surface__header">
+      <div>
+        <h2>Servicios registrados</h2>
+        <p>Tabla operativa con asignación, estado actual y acciones disponibles.</p>
+      </div>
+      <span class="admin-surface__meta">{{ services.length }} registros</span>
+    </div>
 
-        <!-- ERROR -->
-        <p class="services-error" *ngIf="error">{{ error }}</p>
+    <div class="services-state" *ngIf="loading">
+      <div class="services-skeleton-row" *ngFor="let item of [1, 2, 3, 4, 5]"></div>
+    </div>
 
-        <!-- LOADING -->
-        <div class="services-state" *ngIf="loading">
-          ⏳ Cargando servicios...
-        </div>
+    <div class="services-table-shell" *ngIf="!loading && services.length > 0">
+      <table class="services-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
 
-    <!-- TABLA -->
-    <table
-      class="services-table"
-      *ngIf="!loading && services.length > 0"
-    >
-
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Técnico</th>
-          <th>Tipo</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-
-          <tbody>
-
-        <tr *ngFor="let service of services; trackBy: trackById">
-
-          <td>#{{ service.id }}</td>
-          <td>{{ service.client_name }}</td>
-          <td>{{ service.technician_name || '—' }}</td>
-          <td>{{ service.service_type }}</td>
-          <td>{{ formatearFecha(service.request_date) }}</td>
-          <td>{{ formatearHora(service.request_time) }}</td>
-          <td>{{ service.address }}</td>
-
-          <td [innerHTML]="getStatusHTML(service.current_status)"></td>
-
-          <td class="actions">
-
-            <button
-  *ngIf="service.current_status === 'pending'"
-  class="assign-btn"
-  (click)="openAssignModal(service)">
-  Asignar técnico
-</button>
-
-            <button
-              *ngIf="service.current_status === 'assigned'"
-              class="complete-btn"
-              (click)="confirmComplete(service)"
+        <tbody>
+          <tr *ngFor="let service of services; trackBy: trackById">
+            <td>#{{ service.id }}</td>
+            <td>{{ service.client_name }}</td>
+            <td>{{ service.technician_name || 'Sin asignar' }}</td>
+            <td>{{ service.service_type }}</td>
+            <td>{{ formatearFecha(service.request_date) }}</td>
+            <td>{{ formatearHora(service.request_time) }}</td>
+            <td>{{ service.address }}</td>
+            <td [innerHTML]="getStatusHTML(service.current_status)"></td>
+            <td class="actions">
+              <button
+                *ngIf="service.current_status === 'pending'"
+                class="action-btn action-btn--secondary"
+                (click)="openAssignModal(service)"
               >
-              Marcar como completado
-            </button>
+                Asignar técnico
+              </button>
 
-            
-
-          </td>
-
-        </tr>
-
-      </tbody>
-    </table>
-
-  </div>
-
-
-<!-- =====================================================
-                     MODAL TECNICOS
-===================================================== -->
-
-<div class="modal-backdrop" *ngIf="showModal">
-
-  <div class="modal">
-
-    <h2 class="modal-title">
-      Seleccionar Técnico
-    </h2>
-
-    <!-- LOADING -->
-    <div *ngIf="loadingTechnicians">
-      Cargando técnicos...
+              <button
+                *ngIf="service.current_status === 'assigned'"
+                class="action-btn action-btn--primary"
+                (click)="confirmComplete(service)"
+              >
+                Completar servicio
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- LISTA TECNICOS -->
-    <label>Seleccione un técnico:</label>
-
-    <select
-      [(ngModel)]="selectedTechnicianId"
-      *ngIf="!loadingTechnicians"
-    >
-      <option [ngValue]="null">-- Seleccionar --</option>
-
-      <option
-        *ngFor="let tech of technicians"
-        [ngValue]="tech.id"
-      >
-        {{ tech.name }} {{ tech.last_name }}
-      </option>
-    </select>
-
-
-    <!-- BOTONES -->
-    <div class="modal-actions">
-
-      <button
-        class="cancel-btn"
-        (click)="closeModal()">
-        Cancelar
-      </button>
-
-      <button
-        class="save-btn"
-        [disabled]="!selectedTechnicianId"
-        (click)="assignTechnician(selectedTechnicianId)">
-        Asignar Técnico
-      </button>
-
+    <div class="admin-empty" *ngIf="!loading && services.length === 0">
+      No hay servicios para mostrar en este momento.
     </div>
+  </section>
 
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal">
+      <h2 class="modal-title">Seleccionar técnico</h2>
+
+      <div class="modal-state" *ngIf="loadingTechnicians">Cargando técnicos disponibles...</div>
+
+      <label class="modal-label">Técnico asignado</label>
+
+      <select [(ngModel)]="selectedTechnicianId" *ngIf="!loadingTechnicians">
+        <option [ngValue]="null">Selecciona un técnico</option>
+        <option *ngFor="let tech of technicians" [ngValue]="tech.id">
+          {{ tech.name }} {{ tech.last_name }}
+        </option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
+        <button
+          class="modal-btn modal-btn--primary"
+          [disabled]="!selectedTechnicianId"
+          (click)="assignTechnician(selectedTechnicianId)"
+        >
+          Asignar técnico
+        </button>
+      </div>
+    </div>
   </div>
-
-</div>
+</section>

@@ -1,50 +1,52 @@
-<aside class="sidebar" [class.collapsed]="isCollapsed">
-  <div class="sidebar-top">
-    <div class="brand" *ngIf="!isCollapsed">
-      <div class="brand-icon">✳</div>
-      <div class="brand-text">
-        <h2>ClimaTech</h2>
-        <span>IOT PLATFORM</span>
+<aside class="sidebar" [class.collapsed]="isCollapsed" [class.mobile-open]="mobileOpen">
+  <div class="sidebar__top">
+    <a class="sidebar__brand" routerLink="/home" (click)="handleNavigate()">
+      <span class="sidebar__brand-mark">CT</span>
+      <div class="sidebar__brand-copy" *ngIf="!isCollapsed">
+        <strong>ClimaTech Admin</strong>
+        <span>Centro operativo industrial</span>
       </div>
-    </div>
+    </a>
 
-    <div class="brand-collapsed" *ngIf="isCollapsed">
-      <div class="brand-icon">✳</div>
+    <div class="sidebar__controls">
+      <button type="button" class="sidebar__icon-btn sidebar__desktop-toggle" (click)="toggleSidebar()">
+        {{ isCollapsed ? '>>' : '<<' }}
+      </button>
+      <button type="button" class="sidebar__icon-btn sidebar__mobile-close" (click)="closeRequested.emit()">
+        ✕
+      </button>
     </div>
-
-    <button class="toggle-btn" type="button" (click)="toggleSidebar()">
-      {{ isCollapsed ? '»' : '«' }}
-    </button>
   </div>
 
-  <nav class="sidebar-nav">
+  <div class="sidebar__section" *ngIf="!isCollapsed">
+    <p class="sidebar__eyebrow">Navegación</p>
+  </div>
+
+  <nav class="sidebar__nav">
     <a
       *ngFor="let item of navItems"
       [routerLink]="item.route"
-      routerLinkActive="active"
-      class="nav-item"
+      routerLinkActive="is-active"
+      class="sidebar__nav-item"
+      (click)="handleNavigate()"
     >
-      <span class="nav-icon">{{ item.icon }}</span>
-      <span class="nav-label" *ngIf="!isCollapsed">
-        {{ item.label }}
-      </span>
+      <span class="sidebar__nav-icon">{{ item.icon }}</span>
+      <span class="sidebar__nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
     </a>
   </nav>
 
-  <div class="sidebar-footer">
-    <button class="logout-btn" type="button" (click)="logout()">
-      <div class="user-box">
-        <div class="avatar">
-          {{ getUserInitials() }}
-        </div>
+  <div class="sidebar__footer">
+    <div class="sidebar__footer-note" *ngIf="!isCollapsed">
+      <small>Sesión activa</small>
+      <strong>Entorno administrativo</strong>
+    </div>
 
-        <div class="user-info" *ngIf="!isCollapsed">
-          <strong>{{ userName }} {{ userLastName }}</strong>
-          <span>{{ userRole | titlecase }}</span>
-        </div>
-
-        <div class="dots" *ngIf="!isCollapsed">⋮</div>
-      </div>
+    <button type="button" class="sidebar__profile" (click)="logout()">
+      <span class="sidebar__avatar">{{ getUserInitials() }}</span>
+      <span class="sidebar__profile-copy" *ngIf="!isCollapsed">
+        <strong>{{ userName }} {{ userLastName }}</strong>
+        <small>{{ userRole | titlecase }} · Cerrar sesión</small>
+      </span>
     </button>
   </div>
 </aside>

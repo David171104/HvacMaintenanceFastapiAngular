@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
@@ -11,8 +12,24 @@ import { SidebarComponent } from '../../components/sidebar/sidebar';
 })
 export class AdminLayoutComponent {
   isSidebarCollapsed = false;
+  isMobileSidebarOpen = false;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth > 960) {
+      this.isMobileSidebarOpen = false;
+    }
+  }
 
   onSidebarCollapsedChange(isCollapsed: boolean): void {
     this.isSidebarCollapsed = isCollapsed;
+  }
+
+  toggleMobileSidebar(): void {
+    this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
+  }
+
+  closeMobileSidebar(): void {
+    this.isMobileSidebarOpen = false;
   }
 }
