@@ -14,9 +14,9 @@ import { SectionHeaderComponent } from '../../ui/section-header/section-header';
   styleUrl: './analitica.css',
 })
 export class AnaliticaComponent {
-  readonly powerBiEmbedUrl = '';
+  readonly powerBiEmbedUrl = 'https://app.powerbi.com/view?r=eyJrIjoiZTBiZWFlOGQtMGQyZi00ZGY0LTlhYTktZDI2NTkzNTI1MzIxIiwidCI6IjFlOWFhYmU4LTY3ZjgtNGYxYy1hMzI5LWE3NTRlOTI0OTlhZSIsImMiOjR9';
 
-  constructor(private readonly sanitizer: DomSanitizer) {}
+  constructor(private readonly sanitizer: DomSanitizer) { }
 
   get hasEmbedUrl(): boolean {
     return this.powerBiEmbedUrl.trim().length > 0;

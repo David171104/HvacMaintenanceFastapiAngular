@@ -1,10 +1,10 @@
 <aside class="sidebar" [class.collapsed]="isCollapsed" [class.mobile-open]="mobileOpen">
   <div class="sidebar__top">
-    <a class="sidebar__brand" routerLink="/home" (click)="handleNavigate()">
+    <a class="sidebar__brand" [routerLink]="brandRoute" (click)="handleNavigate()">
       <span class="sidebar__brand-mark">CT</span>
       <div class="sidebar__brand-copy" *ngIf="!isCollapsed">
-        <strong>ClimaTech Admin</strong>
-        <span>Centro operativo industrial</span>
+        <strong>{{ brandLabel }}</strong>
+        <span>{{ brandSubLabel }}</span>
       </div>
     </a>
 
@@ -38,7 +38,7 @@
   <div class="sidebar__footer">
     <div class="sidebar__footer-note" *ngIf="!isCollapsed">
       <small>Sesión activa</small>
-      <strong>Entorno administrativo</strong>
+      <strong>{{ environmentLabel }}</strong>
     </div>
 
     <button type="button" class="sidebar__profile" (click)="logout()">

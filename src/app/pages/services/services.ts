@@ -7,6 +7,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { getStatusLabel } from '../../shared/service-status.util';
 
@@ -61,23 +62,28 @@ export class Services implements OnInit {
   getServices(): void {
     this.loading = true;
 
-    this.http.get<any>(this.servicesUrl).subscribe({
-      next: (response) => {
-        console.log('Servicios API:', response);
+    this.http.get<any>(this.servicesUrl)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cd.detectChanges();
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Servicios API:', response);
 
-        this.services = [...(response.resultado ?? [])];
-        this.loading = false;
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error(err);
+          this.services = [...(response.resultado ?? [])];
+          this.cd.detectChanges();
+        },
+        error: (err) => {
+          console.error(err);
 
-        this.error = 'Error cargando servicios';
-        this.loading = false;
-        this.services = [];
-        this.cd.detectChanges();
-      },
-    });
+          this.error = 'Error cargando servicios';
+          this.services = [];
+          this.cd.detectChanges();
+        },
+      });
   }
 
   getStatusHTML(status: string): string {
@@ -100,17 +106,22 @@ export class Services implements OnInit {
   loadTechnicians(): void {
     this.loadingTechnicians = true;
 
-    this.http.get<any>(this.techniciansUrl).subscribe({
+    this.http.get<any>(this.techniciansUrl)
+      .pipe(
+        finalize(() => {
+          this.loadingTechnicians = false;
+          this.cd.detectChanges();
+        }),
+      )
+      .subscribe({
       next: (response) => {
         console.log('Técnicos:', response);
 
         this.technicians = response.resultado ?? [];
-        this.loadingTechnicians = false;
         this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Error cargando técnicos', err);
-        this.loadingTechnicians = false;
       },
     });
   }

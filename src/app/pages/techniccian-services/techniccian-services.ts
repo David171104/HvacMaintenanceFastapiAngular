@@ -6,6 +6,7 @@ import {
 
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 import { getStatusLabel } from '../../shared/service-status.util';
 
 /* ===============================
@@ -108,6 +109,12 @@ export class TechniccianServices implements OnInit {
       `http://localhost:8000/services/technician/${this.technicianId}`;
 
     this.http.get<any>(url)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cd.detectChanges();
+        }),
+      )
       .subscribe({
 
         next: (response) => {
@@ -132,8 +139,6 @@ export class TechniccianServices implements OnInit {
           }));
 
           console.log('Servicios procesados:', this.services);
-
-          this.loading = false;
           this.cd.detectChanges();
         },
 
@@ -143,8 +148,6 @@ export class TechniccianServices implements OnInit {
 
           this.error = 'Error cargando servicios';
           this.services = [];
-          this.loading = false;
-
           this.cd.detectChanges();
         }
       });

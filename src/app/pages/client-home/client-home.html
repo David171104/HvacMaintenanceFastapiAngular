@@ -1,45 +1,93 @@
-<div class="client-container">
+<div class="ch-shell">
 
-      <div class="client-header">
-        <h1 class="client-title">
-          Bienvenido
-          <span class="client-gradient">
-            {{ userName }} {{ userLastName }} ({{ userRole | titlecase }})
-          </span>
-        </h1>
-        <p class="client-subtitle">
-          Rol: {{ userRole | titlecase }}
-        </p>
-        <p class="client-subtitle">
-          Gestiona tus servicios y revisa el estado de tus solicitudes.
-        </p>
+  <!-- ── HERO HEADER ─────────────────────────────── -->
+  <header class="ch-hero ds-glass">
+    <div class="ch-hero__copy">
+      <p class="ch-hero__eyebrow">Panel de cliente</p>
+      <h1 class="ch-hero__title">
+        Bienvenido,
+        <span class="ch-hero__name">{{ userName }} {{ userLastName }}</span>
+      </h1>
+      <p class="ch-hero__subtitle">
+        {{ userRole | titlecase }} · Gestiona tus solicitudes y revisa el estado de tus servicios en tiempo real.
+      </p>
+    </div>
+  </header>
+
+  <!-- ── KPI STRIP ────────────────────────────────── -->
+  <div class="ch-kpi-row">
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Solicitudes activas</span>
+      <strong class="ds-kpi-card__value">
+        {{ loadingStats ? '…' : totalPendientes }}
+      </strong>
+      <span class="ds-kpi-card__meta">Pendientes de atención</span>
+    </article>
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Servicios completados</span>
+      <strong class="ds-kpi-card__value">
+        {{ loadingStats ? '…' : totalCompletados }}
+      </strong>
+      <span class="ds-kpi-card__meta">Historial total</span>
+    </article>
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Total de servicios</span>
+      <strong class="ds-kpi-card__value">
+        {{ loadingStats ? '…' : totalServicios }}
+      </strong>
+      <span class="ds-kpi-card__meta">Todos los registros</span>
+    </article>
+  </div>
+
+  <!-- ── ACCIONES RÁPIDAS ──────────────────────────── -->
+  <section class="ch-actions">
+    <p class="ch-actions__label">Acciones rápidas</p>
+
+    <div class="ch-actions__grid">
+
+      <!-- Solicitar servicio -->
+      <div class="ch-action-card ds-surface-card">
+        <div class="ch-action-card__icon ch-action-card__icon--primary">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div class="ch-action-card__copy">
+          <h3 class="ch-action-card__title">Solicitar servicio</h3>
+          <p class="ch-action-card__desc">Crea una nueva solicitud de soporte o mantenimiento de climatización.</p>
+        </div>
+        <button class="ds-button ds-button-primary ch-action-card__cta" routerLink="/client-services">
+          Solicitar ahora
+        </button>
       </div>
 
-      <div class="client-cards">
-
-        <div class="client-card">
-          <h3>Solicitar servicio</h3>
-          <p>Crea una nueva solicitud de soporte o mantenimiento.</p>
-          <button class="client-btn" routerLink="/client-services">
-            Solicitar servicio
-          </button>
+      <!-- Mis servicios -->
+      <div class="ch-action-card ds-surface-card">
+        <div class="ch-action-card__icon ch-action-card__icon--secondary">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         </div>
-
-        <div class="client-card">
-          <h3>Mis servicios</h3>
-          <p>Consulta el estado de tus servicios solicitados.</p>
-          <button class="client-btn" routerLink="/client-services">
-            Ver servicios
-          </button>
+        <div class="ch-action-card__copy">
+          <h3 class="ch-action-card__title">Mis servicios</h3>
+          <p class="ch-action-card__desc">Consulta el estado actual de todas tus solicitudes registradas.</p>
         </div>
-
-        <div class="client-card">
-          <h3>Perfil</h3>
-          <p>Actualiza tu información personal y datos de contacto.</p>
-          <button class="client-btn" type="button">
-            Ver perfil
-          </button>
-        </div>
-
+        <button class="ds-button ds-button-secondary ch-action-card__cta" routerLink="/client-services">
+          Ver servicios
+        </button>
       </div>
+
+      <!-- Perfil -->
+      <div class="ch-action-card ds-surface-card">
+        <div class="ch-action-card__icon ch-action-card__icon--ghost">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="ch-action-card__copy">
+          <h3 class="ch-action-card__title">Mi perfil</h3>
+          <p class="ch-action-card__desc">Actualiza tu información personal, correo y datos de contacto.</p>
+        </div>
+        <button class="ds-button ds-button-ghost ch-action-card__cta" type="button">
+          Ver perfil
+        </button>
+      </div>
+
+    </div>
+  </section>
+
 </div>

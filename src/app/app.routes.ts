@@ -15,10 +15,12 @@ import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
 import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
+import { ClientLayoutComponent } from './layouts/client-layout/client-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 
 
 export const routes: Routes = [
+    // ── Rutas Públicas ────────────────────────────────
     {
       path: '',
       component: PublicLayoutComponent,
@@ -29,6 +31,8 @@ export const routes: Routes = [
     },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
+
+    // ── Rutas de Administrador ────────────────────────
     {
       path: '',
       component: AdminLayoutComponent,
@@ -39,13 +43,21 @@ export const routes: Routes = [
         { path: 'reports', component: Reports },
         { path: 'analitica', component: AnaliticaComponent },
         { path: 'lecturas', component: LecturasComponent },
-        { path: 'client-home', component: ClientHome },
         { path: 'tecnic-home', component: TecnicHome },
-        { path: 'client-services', component: ClientServices },
         { path: 'techniccian-services', component: TechniccianServices },
       ],
     },
-  
-    { path: '**', component:Notfound}
 
+    // ── Rutas de Cliente ─────────────────────────────
+    {
+      path: '',
+      component: ClientLayoutComponent,
+      children: [
+        { path: 'client-home', component: ClientHome },
+        { path: 'client-services', component: ClientServices },
+      ],
+    },
+
+    // ── Fallback ─────────────────────────────────────
+    { path: '**', component: Notfound },
 ];

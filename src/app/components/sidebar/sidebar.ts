@@ -26,6 +26,25 @@ export class SidebarComponent implements OnInit {
   userName = '';
   userLastName = '';
   navItems: NavItem[] = [];
+  brandRoute = '/home';
+
+  get brandLabel(): string {
+    if (this.userRole === 'cliente') return 'Portal Cliente';
+    if (this.userRole === 'tecnico') return 'ClimaTech';
+    return 'ClimaTech Admin';
+  }
+
+  get brandSubLabel(): string {
+    if (this.userRole === 'cliente') return 'Servicios';
+    if (this.userRole === 'tecnico') return 'Panel técnico';
+    return 'Centro operativo';
+  }
+
+  get environmentLabel(): string {
+    if (this.userRole === 'cliente') return 'Panel de usuario';
+    if (this.userRole === 'tecnico') return 'Panel de técnico';
+    return 'Entorno administrativo';
+  }
 
   private readonly allNavItems: NavItem[] = [
     { route: '/home', label: 'Resumen', icon: 'RS', roles: ['administrador'] },
@@ -44,9 +63,13 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.userRole = localStorage.getItem('userRole') || '';
-    this.userName = localStorage.getItem('userName') || 'Administrador';
+    this.userName = localStorage.getItem('userName') || 'Usuario';
     this.userLastName = localStorage.getItem('userLastName') || '';
     this.navItems = this.allNavItems.filter((item) => item.roles.includes(this.userRole));
+    this.brandRoute =
+      this.userRole === 'cliente' ? '/client-home' :
+      this.userRole === 'tecnico' ? '/tecnic-home' :
+      '/home';
   }
 
   toggleSidebar(): void {
