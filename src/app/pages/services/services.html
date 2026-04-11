@@ -59,15 +59,16 @@
 
           <td class="actions">
 
-            <button
-  *ngIf="service.current_status === 'pending'"
-  class="assign-btn"
-  (click)="openAssignModal(service)">
-  Asignar técnico
-</button>
+          <button
+            *ngIf="service.current_status !== 'completed'"
+            class="assign-btn"
+            [class.reassign]="service.technician_name"
+            (click)="openAssignModal(service)">
+            {{ service.technician_name ? 'Reasignar Técnico' : 'Asignar Técnico' }}
+          </button>
 
             <button
-              *ngIf="service.current_status === 'assigned'"
+              *ngIf="service.current_status === ''"
               class="complete-btn"
               (click)="confirmComplete(service)"
               >
@@ -134,7 +135,7 @@
       <button
         class="save-btn"
         [disabled]="!selectedTechnicianId"
-        (click)="assignTechnician(selectedTechnicianId)">
+        (click)="assignTechnician()">
         Asignar Técnico
       </button>
 

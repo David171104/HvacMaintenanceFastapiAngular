@@ -178,34 +178,52 @@ export class Services implements OnInit {
      ASSIGN TECHNICIAN
   =============================== */
 
-  assignTechnician(technicianId: number | null) {
+  assignTechnician() {
 
-    if (!technicianId || !this.selectedServiceId) return;
+  if (!this.selectedTechnicianId || !this.selectedServiceId) return;
 
-    const url = `http://localhost:8000/users/services/${this.selectedServiceId}/assign`;
+  const url =
+    `http://localhost:8000/users/services/${this.selectedServiceId}/assign`;
 
-    const body = {
-      technician_id: technicianId
-    };
+  const body = {
+    technician_id: this.selectedTechnicianId
+  };
 
-    this.http.put(url, body)
-      .subscribe({
-        next: () => {
+  Swal.fire({
+    title: 'Asignando...',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
 
-          console.log('Tecnico asignado');
+  this.http.put<any>(url, body).subscribe({
 
-          this.closeModal();
+    next: (response) => {
 
-          // refrescar tabla
-          this.getServices();
-        },
+      console.log('RESPUESTA API:', response);
 
-        error: (err) => {
-          console.error('Error asignando técnico', err);
-          alert('No se pudo asignar el técnico');
-        }
+      Swal.fire({
+        icon: 'success',
+        title: response?.message || 'Técnico asignado correctamente',
+        timer: 1600,
+        showConfirmButton: false
       });
-  }
+
+      this.closeModal();
+      this.getServices();
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err?.error?.detail || 'No se pudo asignar el técnico'
+      });
+    }
+  });
+}
 
   /* ===============================
     CONFIRMAR COMPLETAR SERVICIO

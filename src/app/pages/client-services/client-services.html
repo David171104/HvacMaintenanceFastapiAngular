@@ -22,26 +22,86 @@
           </button>
         </div>
 
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Tipo</th>
-              <th>Dirección</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+         <!-- ======================
+       LOADING
+  ======================= -->
+  @if (loadingServices) {
+    <div class="loading">
+      Cargando servicios...
+    </div>
+  }
 
-          <tbody>
-            <tr>
-              <td colspan="6" style="text-align:center;">
-                Sin servicios aún
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- ======================
+       SIN SERVICIOS
+  ======================= -->
+  @if (!loadingServices && servicios.length === 0) {
+    <div class="empty-state">
+      No tienes servicios registrados.
+    </div>
+  }
+
+  <!-- ======================
+       TABLA
+  ======================= -->
+  @if (!loadingServices && servicios.length > 0) {
+
+    <table class="services-table">
+
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Tipo</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        @for (service of servicios; track service.id) {
+
+          <tr>
+
+            <td>
+              {{ service.request_date | date:'dd/MM/yyyy' }}
+            </td>
+
+            <td>
+              {{ formatearHora(service.request_time) }}
+            </td>
+
+            <td>
+              {{ service.service_type }}
+            </td>
+
+            <td class="address">
+              {{ service.address }}
+            </td>
+
+            <td>
+              <span
+                class="status"
+                [ngClass]="{
+                  pending: service.current_status === 'pending',
+                  assigned: service.current_status === 'assigned',
+                  completed: service.current_status === 'completed',
+                  cancelled: service.current_status === 'cancelled'
+                }"
+              >
+                {{ service.current_status }}
+              </span>
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  }
       </div>
     </div>
 
