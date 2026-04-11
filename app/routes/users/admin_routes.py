@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends,Request
+from fastapi import APIRouter, Depends, Request
+from typing import Optional, List
+from pydantic import BaseModel
 from typing import Optional
 from app.controllers.admin.admin_controller import *
 from app.models.users.user_model import User
@@ -248,3 +250,32 @@ async def change_password(user_id: int, request: dict, token_data: dict = Depend
 @router.put("/users/update-profile/{user_id}")
 async def update_profile(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
     return adminController.update_profile(user_id, request)
+
+
+class UserSelectResponse(BaseModel):
+    id: int
+    name: str
+    last_name: str
+    email: str
+
+class UserSelectResponseWrapper(BaseModel):
+    resultado: List[UserSelectResponse]
+
+@router.get('/users/select/role/{role_name}', response_model=UserSelectResponseWrapper)
+async def get_users_by_role_for_select(role_name: str, token_data: dict = Depends(verify_token)):
+    response = adminController.get_users_by_role_name(role_name)
+    return response
+
+
+class ManualServiceCreate(BaseModel):
+    client_id: int
+    technician_id: Optional[int] = None
+    request_date: str
+    request_time: str
+    service_type: str
+    address: str
+
+@router.post('/users/services/manual_create')
+async def create_service_manual(service: ManualServiceCreate, token_data: dict = Depends(verify_token)):
+    response = adminController.create_service_manual(service)
+    return response

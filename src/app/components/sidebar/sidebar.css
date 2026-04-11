@@ -27,8 +27,7 @@
 .sidebar__top,
 .sidebar__controls,
 .sidebar__brand,
-.sidebar__nav-item,
-.sidebar__profile {
+.sidebar__nav-item {
   display: flex;
   align-items: center;
 }
@@ -189,15 +188,18 @@
   font-size: 0.95rem;
 }
 
+/* Contenedor de perfil — div pasivo (sin cursor pointer, sin clic global) */
 .sidebar__profile {
+  display: flex;
+  align-items: center;
   gap: 0.8rem;
   width: 100%;
   padding: 0.8rem;
   border: 1px solid rgba(66, 72, 89, 0.15);
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.02);
-  color: var(--on-surface-strong);
-  text-align: left;
+  /* cursor por defecto: indica que el contenedor no es clickeable */
+  cursor: default;
 }
 
 .sidebar__avatar {
@@ -207,20 +209,78 @@
   background: rgba(83, 221, 252, 0.18);
   color: var(--primary);
   font-weight: 800;
+  flex-shrink: 0;
 }
 
 .sidebar__profile-copy {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar__profile-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--on-surface-strong);
+  font-size: 0.9rem;
 }
 
 .sidebar__profile-copy small {
   color: var(--on-surface-soft);
+  font-size: 0.78rem;
 }
 
-.sidebar.collapsed .sidebar__nav-item,
+/* ── BOTÓN DE LOGOUT — área de clic aislada y precisa ── */
+.sidebar__logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--on-surface-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base),
+    border-color var(--transition-base);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.sidebar__logout-btn:hover {
+  color: var(--error, #ff6b6b);
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+.sidebar__logout-btn:active {
+  transform: scale(0.96);
+}
+
+.sidebar__logout-label {
+  letter-spacing: 0.01em;
+}
+
+/* Variante icon-only para sidebar colapsado */
+.sidebar__logout-btn--icon-only {
+  padding: 0.5rem;
+  margin-left: 0;
+}
+
+.sidebar.collapsed .sidebar__nav-item {
+  justify-content: center;
+}
+
 .sidebar.collapsed .sidebar__profile {
   justify-content: center;
+  padding: 0.6rem;
 }
 
 @media (max-width: 960px) {

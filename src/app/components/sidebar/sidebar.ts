@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import Swal from 'sweetalert2';
+import { ServicesStateService } from '../../shared/services-state/services-state.service';
 
 interface NavItem {
   route: string;
@@ -59,7 +61,10 @@ export class SidebarComponent implements OnInit {
     { route: '/client-services', label: 'Mis servicios', icon: 'MS', roles: ['cliente'] },
   ];
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly servicesState: ServicesStateService,
+  ) {}
 
   ngOnInit(): void {
     this.userRole = localStorage.getItem('userRole') || '';
@@ -84,13 +89,48 @@ export class SidebarComponent implements OnInit {
   }
 
   logout(): void {
+    // a) Limpiar todas las claves de sesión del localStorage
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     localStorage.removeItem('userLastName');
+
+    // b) Resetear el estado reactivo para evitar fuga de datos entre sesiones
+    this.servicesState.clearState();
+
+    // c) Cerrar el sidebar móvil si está abierto y redirigir al login
     this.closeRequested.emit();
     this.router.navigate(['/login']);
+  }
+
+  confirmarLogout(): void {
+    void Swal.fire({
+      title: '¿Cerrar Sesión?',
+      text: 'Tendrás que volver a ingresar tus credenciales.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#334155',
+      background: '#0f172a',
+      color: '#f8fafc',
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'ds-glass',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userLastName');
+        this.servicesState.clearState();
+        this.closeRequested.emit();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   getUserInitials(): string {
