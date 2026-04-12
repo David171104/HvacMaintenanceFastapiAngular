@@ -17,7 +17,10 @@
         <h2>Servicios registrados</h2>
         <p>Tabla operativa con asignación, estado actual y acciones disponibles.</p>
       </div>
-      <span class="admin-surface__meta">{{ services.length }} registros</span>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="admin-surface__meta">{{ services.length }} registros</span>
+        <button class="ds-button ds-button-primary" (click)="abrirModalCreacion()">+ Nuevo Servicio Manual</button>
+      </div>
     </div>
 
     <div class="services-state" *ngIf="loading">
@@ -102,6 +105,113 @@
           Asignar técnico
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de Creación de Servicio Manual -->
+  <div class="modal-backdrop" *ngIf="showModalCreacion">
+    <div class="modal modal--large">
+      <div class="modal__header">
+        <h2 class="modal-title">Nuevo Servicio Manual</h2>
+        <p class="modal-subtitle">Asigna un servicio manualmente a un cliente.</p>
+      </div>
+      <p class="admin-page__error" *ngIf="creacionError">{{ creacionError }}</p>
+
+      <form class="modal__form" [formGroup]="creacionForm" (ngSubmit)="guardarServicioManual()" novalidate>
+        
+        <div class="cs-form-grid">
+          <!-- Cliente -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="client_id_select">Cliente *</label>
+            <select
+              id="client_id_select"
+              class="cs-control"
+              formControlName="client_id"
+            >
+              <option [ngValue]="null">Selecciona un cliente</option>
+              <option *ngFor="let client of clientesList" [ngValue]="client.id">
+                {{ client.name }} {{ client.last_name }}
+              </option>
+            </select>
+            <div class="modal-state" *ngIf="loadingClientes">Cargando clientes...</div>
+          </div>
+
+          <!-- Técnico Asignado -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="technician_id_select">Técnico Asignado</label>
+            <select
+              id="technician_id_select"
+              class="cs-control"
+              formControlName="technician_id"
+            >
+              <option [ngValue]="null">Pendiente de asignación</option>
+              <option *ngFor="let tech of technicians" [ngValue]="tech.id">
+                {{ tech.name }} {{ tech.last_name }}
+              </option>
+            </select>
+            <div class="modal-state" *ngIf="loadingTechnicians">Cargando técnicos...</div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="request_date_input">Fecha *</label>
+            <input
+              type="date"
+              id="request_date_input"
+              class="cs-control"
+              formControlName="request_date"
+            />
+          </div>
+
+          <!-- Hora -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="request_time_input">Hora *</label>
+            <input
+              type="time"
+              id="request_time_input"
+              class="cs-control"
+              formControlName="request_time"
+            />
+          </div>
+
+          <!-- Tipo de Servicio -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="service_type_select">Tipo de Servicio *</label>
+            <select
+              id="service_type_select"
+              class="cs-control"
+              formControlName="service_type"
+            >
+              <option value="Preventivo">Preventivo</option>
+              <option value="Correctivo">Correctivo</option>
+              <option value="Instalación">Instalación</option>
+            </select>
+          </div>
+
+          <!-- Dirección (Full Width) -->
+          <div class="cs-form-group cs-form-group--full">
+            <label class="cs-label" for="address_input">Dirección *</label>
+            <input
+              type="text"
+              id="address_input"
+              class="cs-control"
+              formControlName="address"
+              placeholder="Dirección completa del servicio"
+            />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-btn--ghost" (click)="cerrarModalCreacion()">Cancelar</button>
+          <button
+            type="submit"
+            class="modal-btn modal-btn--primary"
+            [disabled]="creacionForm.invalid || isCreando"
+          >
+            {{ isCreando ? 'Guardando...' : 'Crear Servicio' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </section>

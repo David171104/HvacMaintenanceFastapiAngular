@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   ChartData,
@@ -154,6 +154,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private readonly http: HttpClient,
     private readonly lecturasService: LecturasService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -204,10 +205,12 @@ export class HomeComponent implements OnInit {
 
         this.buildCharts(recentReadings);
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'No se pudo cargar el resumen operativo del dashboard.';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

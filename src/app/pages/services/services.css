@@ -175,13 +175,19 @@
 
 .modal-backdrop {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
   background: rgba(2, 6, 23, 0.72);
   backdrop-filter: blur(8px);
-  display: flex;
+  -webkit-backdrop-filter: blur(8px);
+  display: flex !important;
   justify-content: center;
   align-items: center;
-  z-index: 9998;
 }
 
 .modal {
@@ -193,6 +199,10 @@
   box-shadow: var(--shadow-soft);
   display: grid;
   gap: 0.9rem;
+}
+
+.modal--large {
+  width: min(42rem, calc(100vw - 2rem));
 }
 
 .modal-title {
@@ -239,6 +249,52 @@
 .modal-btn--primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
   color: #03212d;
+}
+
+.modal-subtitle {
+  color: #aebbd6;
+  font-size: 0.85rem;
+  margin: 0.2rem 0 1rem;
+}
+
+/* Formularios de Modal (Grid style) */
+.cs-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.cs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cs-form-group--full {
+  grid-column: 1 / -1;
+}
+
+.cs-label {
+  color: #b7c5df;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cs-control {
+  width: 100%;
+  min-height: 2.8rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(116, 128, 156, 0.2);
+  background: rgba(9, 15, 29, 0.84);
+  color: var(--on-surface-strong);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cs-control:focus {
+  border-color: var(--primary);
+  background: rgba(16, 24, 43, 0.95);
+  outline: none;
 }
 
 @media (max-width: 900px) {

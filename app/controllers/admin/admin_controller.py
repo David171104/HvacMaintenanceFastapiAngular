@@ -295,6 +295,33 @@ class AdminController:
             conn.close()
 
 
+    def get_users_by_role_name(self, role_name: str):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            # Usamos LIKE para que sea case-insensitive y soporte posibles espacios ("Técnico ", "Cliente")
+            query = """
+                SELECT u.id, u.name, u.last_name, u.email
+                FROM users u
+                INNER JOIN roles r ON u.role_id = r.id
+                WHERE LOWER(r.name) LIKE LOWER(%s) AND u.deleted_at IS NULL AND u.status = 1
+                ORDER BY u.name ASC
+            """
+            cursor.execute(query, (f"%{role_name}%",))
+            result = cursor.fetchall()
+            
+            return {"resultado": result}
+            
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al obtener usuarios para select: {e}")
+            
+        finally:
+            if conn:
+                conn.close()
+
+
     async def assign_technician(self, service_id: int, technician_id: int):
         conn = None
         try:
@@ -531,3 +558,37 @@ class AdminController:
 
         finally:
             conn.close()
+
+    def create_service_manual(self, service: object):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            current_status = "assigned" if service.technician_id else "pending"
+            
+            cursor.execute('''
+                INSERT INTO services (client_id, technician_id, request_date, request_time, service_type, address, current_status, created_at, updated_at, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), 1)
+            ''', (
+                service.client_id,
+                service.technician_id,
+                service.request_date,
+                service.request_time,
+                service.service_type,
+                service.address,
+                current_status
+            ))
+            
+            conn.commit()
+            return {"message": "Servicio manual creado correctamente."}
+        
+        except mysql.connector.Error as e:
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error al crear el servicio: {e}")
+            
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()

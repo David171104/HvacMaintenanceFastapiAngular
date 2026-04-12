@@ -109,12 +109,71 @@
       <strong>{{ environmentLabel }}</strong>
     </div>
 
-    <button type="button" class="sidebar__profile" (click)="logout()">
-      <span class="sidebar__avatar">{{ getUserInitials() }}</span>
+    <!-- Tarjeta de perfil: contenedor pasivo sin evento de clic global -->
+    <div class="sidebar__profile">
+      <!-- Lado izquierdo: Avatar + info (solo lectura, sin interacción) -->
+      <span class="sidebar__avatar" aria-hidden="true">{{ getUserInitials() }}</span>
       <span class="sidebar__profile-copy" *ngIf="!isCollapsed">
         <strong>{{ userName }} {{ userLastName }}</strong>
-        <small>{{ userRole | titlecase }} · Cerrar sesión</small>
+        <small>{{ userRole | titlecase }}</small>
       </span>
-    </button>
+
+      <!-- Botón de cerrar sesión aislado (área de clic pequeña y precisa) -->
+      <button
+        *ngIf="!isCollapsed"
+        type="button"
+        class="sidebar__logout-btn"
+        (click)="confirmarLogout()"
+        title="Cerrar sesión"
+        aria-label="Cerrar sesión"
+      >
+        <!-- Icono SVG de salida (door/arrow-right-from-bracket) -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span class="sidebar__logout-label">Salir</span>
+      </button>
+
+      <!-- En modo colapsado: solo el ícono de logout sin texto -->
+      <button
+        *ngIf="isCollapsed"
+        type="button"
+        class="sidebar__logout-btn sidebar__logout-btn--icon-only"
+        (click)="confirmarLogout()"
+        title="Cerrar sesión"
+        aria-label="Cerrar sesión"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+
   </div>
 </aside>
