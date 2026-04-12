@@ -44,11 +44,7 @@
             <td>{{ formatearHora(servicio.request_time) }}</td>
             <td>{{ servicio.service_type }}</td>
             <td>{{ servicio.address }}</td>
-            <td>
-              <span [class]="getStatusClass(servicio.current_status)">
-                {{ servicio.current_status }}
-              </span>
-            </td>
+            <td [innerHTML]="getStatusHTML(servicio.current_status)"></td>
             <td>
               <!-- Misión 3: botón habilitado con toggle de panel de detalles -->
               <button
@@ -89,9 +85,8 @@
                   </div>
                   <div class="cs-detail-item">
                     <span class="cs-detail-label">Estado actual</span>
-                    <span [class]="getStatusClass(servicio.current_status)">
-                      {{ servicio.current_status }}
-                    </span>
+                    <span [innerHTML]="getStatusHTML(servicio.current_status)"></span>
+                  
                   </div>
                 </div>
               </div>

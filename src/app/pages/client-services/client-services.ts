@@ -14,7 +14,7 @@ import {
 } from '../../shared/validation/form-utils';
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { ServicesStateService, ServicioCliente } from '../../shared/services-state/services-state.service';
-
+import { getStatusLabel } from '../../shared/service-status.util';
 /** Timeout en milisegundos para las peticiones HTTP al backend */
 const API_TIMEOUT_MS = 15_000;
 
@@ -251,6 +251,10 @@ export class ClientServices implements OnInit, OnDestroy {
     if (normalized.includes('complet')) return 'status-badge status-done';
     if (normalized.includes('cancel')) return 'status-badge status-cancelled';
     return 'status-badge';
+  }
+
+  getStatusHTML(status: string): string {
+    return getStatusLabel(status?.toLowerCase());
   }
 
   formatearHora(hora: any): string {

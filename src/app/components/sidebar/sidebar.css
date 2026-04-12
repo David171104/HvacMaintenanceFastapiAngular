@@ -238,3 +238,211 @@
     justify-content: center;
   }
 }
+
+/* ── Campanita ────────────────────────────────────────────────────────────── */
+.sidebar__bell-wrap {
+  position: relative;
+}
+
+.sidebar__bell-btn {
+  position: relative;
+  color: var(--primary);
+}
+
+.sidebar__bell-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.sidebar__notif-panel {
+  position: fixed;
+  top: 1rem;
+  left: 290px;
+  width: 380px;
+  max-height: calc(100vh - 2rem);
+  background: linear-gradient(160deg, rgba(10, 18, 38, 0.98), rgba(6, 12, 26, 0.99));
+  border: 1px solid rgba(83, 221, 252, 0.2);
+  border-radius: 1.4rem;
+  box-shadow:
+    0 0 0 1px rgba(83, 221, 252, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar__notif-panel--collapsed {
+  left: 135px;
+}
+
+.sidebar__notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem 0.9rem;
+  border-bottom: 1px solid rgba(83, 221, 252, 0.1);
+  background: rgba(83, 221, 252, 0.04);
+}
+
+.sidebar__notif-header span {
+  color: #53ddfc;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sidebar__notif-close {
+  width: 1.7rem;
+  height: 1.7rem;
+  background: rgba(83, 221, 252, 0.08);
+  border: 1px solid rgba(83, 221, 252, 0.15);
+  border-radius: 0.5rem;
+  color: rgba(83, 221, 252, 0.6);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.sidebar__notif-close:hover {
+  background: rgba(83, 221, 252, 0.15);
+  color: #53ddfc;
+}
+
+.sidebar__notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.82rem;
+  gap: 0.5rem;
+}
+
+.sidebar__notif-empty p {
+  margin: 0;
+}
+
+.sidebar__notif-list {
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar__notif-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar__notif-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar__notif-list::-webkit-scrollbar-thumb {
+  background: rgba(83, 221, 252, 0.2);
+  border-radius: 999px;
+}
+
+.sidebar__notif-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(83, 221, 252, 0.08);
+  transition: all 0.2s;
+}
+
+.sidebar__notif-item:hover {
+  background: rgba(83, 221, 252, 0.07);
+  border-color: rgba(83, 221, 252, 0.18);
+  transform: translateX(2px);
+}
+
+.sidebar__notif-icon {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.7rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__notif-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.sidebar__notif-msg {
+  margin: 0;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+}
+
+.sidebar__notif-time {
+  font-size: 0.72rem;
+  color: rgba(83, 221, 252, 0.45);
+  font-weight: 500;
+}
+
+
+.sidebar__notif-header {
+  cursor: grab;
+}
+
+.sidebar__notif-header:active {
+  cursor: grabbing;
+}
+
+.sidebar__notif-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar__notif-drag-hint {
+  color: rgba(83, 221, 252, 0.4);
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Evita que el CDK override la posición fixed al arrastrar */
+.cdk-drag-preview {
+  border-radius: 1.4rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
