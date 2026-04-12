@@ -308,3 +308,14 @@
     min-width: 11rem;
   }
 }
+
+
+.action-btn--reassign {
+  background-color: rgba(59, 130, 246, 0.15); /* azul suave */
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.action-btn--reassign:hover {
+  background-color: rgba(59, 130, 246, 0.25);
+}

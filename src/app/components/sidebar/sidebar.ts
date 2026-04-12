@@ -89,7 +89,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     
     private readonly router: Router,
     private readonly http: HttpClient,
-  ,
+  
     private readonly servicesState: ServicesStateService,
   ) {}
 

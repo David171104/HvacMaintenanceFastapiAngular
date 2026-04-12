@@ -55,20 +55,24 @@
             <td [innerHTML]="getStatusHTML(service.current_status)"></td>
             <td class="actions">
               <button
-                *ngIf="service.current_status === 'pending'"
-                class="action-btn action-btn--secondary"
+                *ngIf="service.current_status === 'pending' || service.current_status === 'assigned'"
+                class="action-btn"
+                [ngClass]="{
+                  'action-btn--secondary': service.current_status === 'pending',
+                  'action-btn--reassign': service.current_status === 'assigned'
+                }"
                 (click)="openAssignModal(service)"
               >
-                Asignar técnico
+                {{ service.current_status === 'assigned' ? 'Reasignar técnico' : 'Asignar técnico' }}
               </button>
 
-              <button
+              <!-- <button
                 *ngIf="service.current_status === 'assigned'"
                 class="action-btn action-btn--primary"
                 (click)="confirmComplete(service)"
               >
                 Completar servicio
-              </button>
+              </button> -->
             </td>
           </tr>
         </tbody>
