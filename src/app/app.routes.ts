@@ -18,6 +18,7 @@ import { TechniccianServices } from './pages/techniccian-services/techniccian-se
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 import { ClientLayoutComponent } from './layouts/client-layout/client-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
+import { MaintenanceControlComponent } from './pages/maintenance-control/maintenance-control';
 
 
 export const routes: Routes = [
@@ -46,6 +47,7 @@ export const routes: Routes = [
         { path: 'lecturas', component: LecturasComponent },
         { path: 'tecnic-home', component: TecnicHome },
         { path: 'techniccian-services', component: TechniccianServices },
+        { path: 'maintenance-control', component: MaintenanceControlComponent },
       ],
     },
 

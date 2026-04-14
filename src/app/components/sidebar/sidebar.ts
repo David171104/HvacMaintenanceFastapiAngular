@@ -79,6 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { route: '/reports',             label: 'Reportes',         icon: 'RP', roles: ['administrador'] },
     { route: '/analitica',           label: 'Analítica avanzada', icon: 'BI', roles: ['administrador'] },
     { route: '/lecturas',            label: 'Lecturas IoT',     icon: 'IO', roles: ['administrador', 'tecnico'] },
+    { route: '/maintenance-control', label: 'Control Mantenimiento', icon: 'CM', roles: ['administrador'] },
     { route: '/tecnic-home',         label: 'Resumen',          icon: 'RS', roles: ['tecnico'] },
     { route: '/techniccian-services',label: 'Servicios',        icon: 'SV', roles: ['tecnico'] },
     { route: '/client-home',         label: 'Resumen',          icon: 'RS', roles: ['cliente'] },

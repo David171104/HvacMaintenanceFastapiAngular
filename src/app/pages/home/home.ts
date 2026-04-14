@@ -11,6 +11,9 @@ import {
 } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { HttpHeaders } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 import { IoTEquipment, Lectura, LecturasService } from '../../services/lecturas/lecturas.service';
 import { BadgeComponent } from '../../ui/badge/badge';
@@ -92,6 +95,7 @@ export class HomeComponent implements OnInit {
 
   loading = true;
   error = '';
+  isSendingEmails = false;
 
   totalLecturas = 0;
   totalUsuarios = 0;
@@ -213,6 +217,38 @@ export class HomeComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  dispararCorreosManual(): void {
+    this.isSendingEmails = true;
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    this.http.post('http://localhost:8000/admin/notifications/trigger-maintenances', {}, { headers })
+      .pipe(finalize(() => this.isSendingEmails = false))
+      .subscribe({
+        next: (res: any) => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Operación finalizada!',
+            text: res.message || 'Correos de mantenimiento procesados y enviados exitosamente.',
+            background: '#0a0f1c',
+            color: '#e2e8f0',
+            confirmButtonColor: '#0ef0d1'
+          });
+        },
+        error: (err) => {
+          console.error('[Error de Envío de Correos]', err);
+          Swal.fire({
+            icon: 'warning',
+            title: 'Advertencia',
+            text: err.error?.detail || 'No se pudo completar el envío de correos.',
+            background: '#0a0f1c',
+            color: '#e2e8f0',
+            confirmButtonColor: '#ef4444'
+          });
+        }
+      });
   }
 
   get greetingName(): string {

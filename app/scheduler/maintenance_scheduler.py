@@ -1,12 +1,13 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from app.services.maintenance_email_service import send_maintenance_emails
+from app.services.maintenance_email_service import NotificationService
 
 scheduler = AsyncIOScheduler()
+notification_service = NotificationService()
 
 
 def start_scheduler():
     scheduler.add_job(
-        send_maintenance_emails,
+        notification_service.process_pending_maintenances,
         trigger="interval",
         minutes=2,           # ← cada 2 minutos
         id="maintenance_check",

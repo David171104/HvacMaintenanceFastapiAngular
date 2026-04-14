@@ -9,9 +9,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.auth import verify_token 
 
+from app.services.maintenance_email_service import NotificationService
+
 router = APIRouter()
 
 adminController = AdminController()
+notification_service = NotificationService()
 
 
 #FUNCTIONAL ROUTES
@@ -38,6 +41,13 @@ async def update_user(user_id: int, user: User):
 async def delete_user(user_id: int):
     return adminController.delete_user(user_id)
  
+@router.post("/admin/notifications/trigger-maintenances")
+async def trigger_maintenances(token_data: dict = Depends(verify_token)):
+    if token_data.get("role_name") != "administrador":
+        raise HTTPException(status_code=403, detail="No autorizado. Se requiere rol de administrador.")
+
+    await notification_service.process_pending_maintenances()
+    return {"message": "Correos de mantenimiento procesados y enviados exitosamente"}
 
 @router.get("/users/services/all")
 async def get_users():
@@ -279,3 +289,180 @@ class ManualServiceCreate(BaseModel):
 async def create_service_manual(service: ManualServiceCreate, token_data: dict = Depends(verify_token)):
     response = adminController.create_service_manual(service)
     return response
+
+
+# ── Centro de Control de Mantenimiento ───────────────────────────────────────
+
+@router.get("/admin/maintenance/status-list")
+async def get_maintenance_status_list(token_data: dict = Depends(verify_token)):
+    """
+    Retorna TODOS los service_report con dos campos calculados en Python:
+      - can_notify (bool): True si no recibio notificacion en los ultimos 30 dias.
+      - status_badge (str): 'Elegible' | 'Notificado' | 'Al dia'
+    """
+    from datetime import datetime, timezone
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Traer todos los reportes con informacion de cliente, tecnico y ultima notificacion
+        cursor.execute("""
+            SELECT
+                sr.id               AS report_id,
+                sr.service_id,
+                sr.updated_at       AS last_service_date,
+
+                u_client.id         AS client_id,
+                u_client.name       AS client_name,
+                u_client.last_name  AS client_last_name,
+                u_client.email      AS client_email,
+
+                u_tech.id           AS technician_id,
+                u_tech.name         AS technician_name,
+
+                s.service_type,
+                s.address,
+
+                -- Fecha de la notificacion mas reciente (NULL si nunca se notifico)
+                (
+                    SELECT MAX(sent_at)
+                    FROM maintenance_notifications
+                    WHERE service_report_id = sr.id
+                      AND deleted_at IS NULL
+                ) AS last_notification_date
+
+            FROM service_report sr
+            JOIN services s        ON s.id       = sr.service_id
+            JOIN users u_client    ON u_client.id = s.client_id
+            LEFT JOIN users u_tech ON u_tech.id   = s.technician_id
+
+            WHERE sr.deleted_at IS NULL
+            ORDER BY sr.updated_at DESC
+        """)
+
+        rows = cursor.fetchall()
+        now = datetime.now(timezone.utc)
+        SPAM_DAYS = 30  # ventana anti-spam
+
+        result = []
+        for row in rows:
+            last_service_date = row.get("last_service_date")
+            last_notif        = row.get("last_notification_date")
+
+            # Serializar fechas para JSON
+            row["last_service_date"]       = str(last_service_date) if last_service_date else None
+            row["last_notification_date"]  = str(last_notif)         if last_notif         else None
+
+            # │ Calcular can_notify y status_badge
+            if last_notif:
+                # Normalizar la zona horaria de last_notif
+                if hasattr(last_notif, "tzinfo") and last_notif.tzinfo is None:
+                    from datetime import timezone
+                    last_notif = last_notif.replace(tzinfo=timezone.utc)
+
+                days_since_notif = (now - last_notif).days
+                if days_since_notif < SPAM_DAYS:
+                    row["can_notify"]   = False
+                    row["status_badge"] = "Notificado"
+                else:
+                    row["can_notify"]   = True
+                    row["status_badge"] = "Elegible"
+            else:
+                # Nunca ha sido notificado → elegible
+                row["can_notify"]   = True
+                row["status_badge"] = "Elegible"
+
+            result.append(row)
+
+        return {"records": result, "total": len(result)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()
+
+
+@router.post("/admin/maintenance/trigger/{report_id}")
+async def trigger_maintenance_by_report(
+    report_id: int,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Envía manualmente una notificación de mantenimiento para un report_id específico.
+    Valida anti-spam (30 días) antes de enviar.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # │ Verificar que el reporte existe
+        cursor.execute("""
+            SELECT
+                sr.id AS report_id, sr.service_id, sr.updated_at,
+                u_client.id AS client_id, u_client.email AS client_email, u_client.name AS client_name,
+                u_tech.id AS technician_id, u_tech.email AS tech_email, u_tech.name AS tech_name
+            FROM service_report sr
+            JOIN services s       ON s.id      = sr.service_id
+            JOIN users u_client   ON u_client.id = s.client_id
+            LEFT JOIN users u_tech ON u_tech.id  = s.technician_id
+            WHERE sr.id = %s AND sr.deleted_at IS NULL
+        """, (report_id,))
+
+        report = cursor.fetchone()
+        if not report:
+            raise HTTPException(status_code=404, detail="Reporte no encontrado")
+
+        # │ GUARDA ANTI-SPAM: verificar 30 días (race-condition check)
+        cursor.execute("""
+            SELECT id FROM maintenance_notifications
+            WHERE service_report_id = %s
+              AND deleted_at IS NULL
+              AND sent_at >= NOW() - INTERVAL 30 DAY
+        """, (report_id,))
+
+        existing = cursor.fetchone()
+        if existing:
+            raise HTTPException(
+                status_code=409,
+                detail="Este cliente ya fue notificado en los últimos 30 días."
+            )
+
+        # │ Llamar al NotificationService para enviar correos
+        from app.services.maintenance_email_service import NotificationService
+        ns = NotificationService()
+
+        from fastapi_mail import FastMail
+        from app.config.email_config import mail_config
+        fm = FastMail(mail_config)
+
+        await ns._send_client_email(fm, report)
+        if report.get("tech_email"):
+            await ns._send_technician_email(fm, report)
+
+        # │ Registrar la notificación
+        cursor.execute("""
+            INSERT INTO maintenance_notifications
+                (client_id, client_email, technician_id, technician_email, service_report_id, sent_at)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+        """, (
+            report["client_id"],
+            report["client_email"],
+            report["technician_id"],
+            report.get("tech_email", ""),
+            report_id,
+        ))
+        conn.commit()
+
+        return {"message": f"Notificación enviada exitosamente al cliente {report['client_name']}"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            conn.close()

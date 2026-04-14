@@ -63,6 +63,12 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Recuperar correo guardado para reducir fricción en el login
+    const savedEmail = localStorage.getItem('climatech_saved_email');
+    if (savedEmail) {
+      this.loginForm.patchValue({ email: savedEmail });
+    }
+
     if (!window.msal) {
       console.error('MSAL no cargado (script CDN)');
       return;
@@ -92,7 +98,12 @@ export class LoginComponent implements OnInit {
   }
 
   logoutMicrosoft(): void {
-    localStorage.clear();
+    // NO usar localStorage.clear() para preservar 'climatech_saved_email'
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userLastName');
     sessionStorage.clear();
 
     if (!window.msal) {
@@ -178,6 +189,9 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('userRole', roleText);
           localStorage.setItem('userName', response.user.name);
           localStorage.setItem('userLastName', response.user.last_name);
+
+          // Recordar correo para próximos inicios de sesión
+          localStorage.setItem('climatech_saved_email', formValue.email);
 
           this.notificationService.success(
             'Sesión iniciada',
