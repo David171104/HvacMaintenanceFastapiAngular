@@ -304,11 +304,45 @@
   position: relative;
 }
 
+/* Campanita como nav-item cuando está expandido */
 .sidebar__bell-btn {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.8rem;
+  border-radius: 1rem;
+  background: rgba(83, 221, 252, 0.05);
+  border: 1px solid rgba(83, 221, 252, 0.1);
   color: var(--primary);
+  text-align: left;
+  transition: background 0.2s;
 }
 
+.sidebar__bell-btn:hover {
+  background: rgba(83, 221, 252, 0.1);
+}
+
+/* En colapsado: centrado como los nav-items */
+.sidebar__bell-btn--collapsed {
+  justify-content: center;
+  padding: 0.8rem;
+  width: 100%;
+}
+
+.sidebar__notif-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  flex: 1;
+}
+
+.sidebar__bell-wrap--solo {
+  display: flex;
+  justify-content: center;
+}
 .sidebar__bell-badge {
   position: absolute;
   top: -4px;
