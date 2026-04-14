@@ -33,6 +33,7 @@
       <th>Hora</th>
       <th>Dirección</th>
       <th>Estado</th>
+      <th>Accion</th>
     </tr>
   </thead>
 
@@ -51,7 +52,15 @@
       <td>{{ service.address }}</td>
 
       <td [innerHTML]="getStatusHTML(service.current_status)"></td>
-
+      <td class="actions">
+        <button
+          *ngIf="service.current_status === 'assigned'"
+          class="action-btn action-btn--primary"
+          (click)="confirmComplete(service)"
+        >
+          Completar servicio
+        </button>
+      </td>
     </tr>
 
   </tbody>

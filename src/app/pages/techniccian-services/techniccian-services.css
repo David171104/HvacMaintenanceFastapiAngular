@@ -40,6 +40,31 @@
   box-shadow: 0 0 15px #00ffc680;
 }
 
+.action-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn--primary {
+  background: rgba(29, 158, 117, 0.15);
+  color: #1D9E75;
+  border: 1px solid rgba(29, 158, 117, 0.3);
+}
+
+.action-btn--primary:hover {
+  background: rgba(29, 158, 117, 0.25);
+  border-color: rgba(29, 158, 117, 0.6);
+  transform: translateY(-1px);
+}
+
+.action-btn--primary:active {
+  transform: translateY(0);
+}
 /* TABLA */
 
 .services-table {
