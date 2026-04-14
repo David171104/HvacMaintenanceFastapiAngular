@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
 
 import {
@@ -19,13 +20,18 @@ import { NotificationService } from '../../shared/notifications/notification.ser
   templateUrl: './reports.html',
   styleUrls: ['./reports.css'],
 })
-export class Reports implements OnInit {
+export class Reports implements OnInit, OnDestroy {
   roleId = 0;
   optionsLoading = true;
   downloadingReadings = false;
   downloadingServices = false;
   downloadingSummary = false;
   optionsError = '';
+  showPreviewModal = false;
+  previewTitle = '';
+  previewReportName = '';
+  previewUrl: SafeResourceUrl | null = null;
+  previewObjectUrl = '';
 
   technicians: ReportTechnicianOption[] = [];
   serviceTypes: string[] = [];
@@ -55,6 +61,7 @@ export class Reports implements OnInit {
   constructor(
     private readonly reportsService: ReportsService,
     private readonly notificationService: NotificationService,
+    private readonly sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +74,10 @@ export class Reports implements OnInit {
     }
 
     this.loadOptions();
+  }
+
+  ngOnDestroy(): void {
+    this.revokePreviewUrl();
   }
 
   loadOptions(): void {
@@ -94,10 +105,14 @@ export class Reports implements OnInit {
       .pipe(finalize(() => (this.downloadingReadings = false)))
       .subscribe({
         next: (response) => {
-          this.saveResponseFile(response, 'reporte_lecturas_iot.pdf');
+          this.openPreview(
+            response,
+            'reporte_lecturas_iot.pdf',
+            'Previsualizacion de lecturas IoT',
+          );
           this.notificationService.success(
             'Reporte generado',
-            'El historial de lecturas IoT se descargo correctamente.',
+            'El historial de lecturas IoT esta listo para previsualizarse.',
           );
         },
         error: (error: HttpErrorResponse) => {
@@ -118,10 +133,14 @@ export class Reports implements OnInit {
       .pipe(finalize(() => (this.downloadingServices = false)))
       .subscribe({
         next: (response) => {
-          this.saveResponseFile(response, 'reporte_servicios_admin.pdf');
+          this.openPreview(
+            response,
+            'reporte_servicios_admin.pdf',
+            'Previsualizacion de servicios y mantenimientos',
+          );
           this.notificationService.success(
             'Reporte generado',
-            'El reporte administrativo de servicios se descargo correctamente.',
+            'El reporte administrativo de servicios esta listo para previsualizarse.',
           );
         },
         error: (error: HttpErrorResponse) => {
@@ -142,10 +161,14 @@ export class Reports implements OnInit {
       .pipe(finalize(() => (this.downloadingSummary = false)))
       .subscribe({
         next: (response) => {
-          this.saveResponseFile(response, 'reporte_resumen_admin.pdf');
+          this.openPreview(
+            response,
+            'reporte_resumen_admin.pdf',
+            'Previsualizacion del resumen administrativo',
+          );
           this.notificationService.success(
             'Reporte generado',
-            'El resumen administrativo se descargo correctamente.',
+            'El resumen administrativo esta listo para previsualizarse.',
           );
         },
         error: (error: HttpErrorResponse) => {
@@ -165,20 +188,43 @@ export class Reports implements OnInit {
     this.equipmentOptions = response.iot_equipment ?? [];
   }
 
-  private saveResponseFile(response: HttpResponse<Blob>, fallbackName: string): void {
+  closePreviewModal(): void {
+    this.showPreviewModal = false;
+    this.previewTitle = '';
+    this.previewReportName = '';
+    this.previewUrl = null;
+    this.revokePreviewUrl();
+  }
+
+  downloadPreview(): void {
+    if (!this.previewObjectUrl) {
+      return;
+    }
+
+    const anchor = document.createElement('a');
+    anchor.href = this.previewObjectUrl;
+    anchor.download = this.previewReportName || 'reporte.pdf';
+    anchor.click();
+    anchor.remove();
+  }
+
+  private openPreview(
+    response: HttpResponse<Blob>,
+    fallbackName: string,
+    title: string,
+  ): void {
     const blob = response.body;
     if (!blob) {
       throw new Error('No se recibio contenido para descargar.');
     }
 
-    const filename = this.getFilename(response) || fallbackName;
-    const url = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    anchor.click();
-    anchor.remove();
-    window.URL.revokeObjectURL(url);
+    this.closePreviewModal();
+
+    this.previewReportName = this.getFilename(response) || fallbackName;
+    this.previewTitle = title;
+    this.previewObjectUrl = window.URL.createObjectURL(blob);
+    this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewObjectUrl);
+    this.showPreviewModal = true;
   }
 
   private getFilename(response: HttpResponse<Blob>): string | null {
@@ -203,5 +249,12 @@ export class Reports implements OnInit {
     const date = new Date();
     date.setDate(date.getDate() + offsetDays);
     return date.toISOString().slice(0, 10);
+  }
+
+  private revokePreviewUrl(): void {
+    if (this.previewObjectUrl) {
+      window.URL.revokeObjectURL(this.previewObjectUrl);
+      this.previewObjectUrl = '';
+    }
   }
 }

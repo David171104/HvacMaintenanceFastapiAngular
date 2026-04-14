@@ -68,7 +68,7 @@
         (click)="downloadReadingsReport()"
         [disabled]="downloadingReadings || optionsLoading"
       >
-        {{ downloadingReadings ? 'Generando PDF...' : 'Descargar PDF' }}
+        {{ downloadingReadings ? 'Generando PDF...' : 'Previsualizar PDF' }}
       </button>
     </article>
 
@@ -130,7 +130,7 @@
         (click)="downloadServicesReport()"
         [disabled]="downloadingServices || optionsLoading"
       >
-        {{ downloadingServices ? 'Generando PDF...' : 'Descargar PDF' }}
+        {{ downloadingServices ? 'Generando PDF...' : 'Previsualizar PDF' }}
       </button>
     </article>
 
@@ -167,7 +167,7 @@
         (click)="downloadSummaryReport()"
         [disabled]="downloadingSummary || optionsLoading"
       >
-        {{ downloadingSummary ? 'Generando PDF...' : 'Descargar PDF' }}
+        {{ downloadingSummary ? 'Generando PDF...' : 'Previsualizar PDF' }}
       </button>
     </article>
   </section>
@@ -177,4 +177,36 @@
   <p class="reports-state reports-state-info">
     Esta vista de reportes administrativos solo esta disponible para administradores.
   </p>
+</div>
+
+<div class="report-modal-backdrop" *ngIf="showPreviewModal" (click)="closePreviewModal()">
+  <div class="report-preview-modal" (click)="$event.stopPropagation()">
+    <div class="report-preview-modal__header">
+      <div>
+        <h2>{{ previewTitle || 'Previsualizacion del reporte' }}</h2>
+        <p>{{ previewReportName }}</p>
+      </div>
+
+      <button type="button" class="report-preview-modal__close" (click)="closePreviewModal()">x</button>
+    </div>
+
+    <div class="report-preview-modal__body" *ngIf="previewUrl; else previewFallback">
+      <iframe [src]="previewUrl" title="Previsualizacion PDF"></iframe>
+    </div>
+
+    <ng-template #previewFallback>
+      <div class="reports-state reports-state-error">
+        No se pudo cargar la previsualizacion del PDF.
+      </div>
+    </ng-template>
+
+    <div class="report-preview-modal__actions">
+      <button type="button" class="report-download report-download--secondary" (click)="downloadPreview()">
+        Descargar PDF
+      </button>
+      <button type="button" class="report-download report-download--ghost" (click)="closePreviewModal()">
+        Cerrar
+      </button>
+    </div>
+  </div>
 </div>

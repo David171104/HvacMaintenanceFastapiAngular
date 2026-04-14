@@ -209,6 +209,95 @@
   pointer-events: none;
 }
 
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.report-preview-modal {
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(16px, 2vw, 24px);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(16, 24, 43, 0.98), rgba(10, 15, 28, 0.98));
+  border: 1px solid rgba(116, 128, 156, 0.24);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45);
+}
+
+.report-preview-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.report-preview-modal__header h2 {
+  margin: 0 0 6px;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+
+.report-preview-modal__header p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.report-preview-modal__close {
+  border: none;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.report-preview-modal__body {
+  min-height: min(68vh, 760px);
+  max-height: calc(100vh - 240px);
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: #020617;
+}
+
+.report-preview-modal__body iframe {
+  width: 100%;
+  height: 100%;
+  min-height: min(68vh, 760px);
+  border: none;
+  background: #ffffff;
+}
+
+.report-preview-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.report-download--secondary {
+  width: auto;
+}
+
+.report-download--ghost {
+  width: auto;
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.24);
+  background: rgba(30, 41, 59, 0.72);
+}
+
 @media (max-width: 1180px) {
   .reports-grid {
     grid-template-columns: 1fr;
@@ -231,5 +320,28 @@
   .report-filters,
   .report-filters-inline {
     grid-template-columns: 1fr;
+  }
+
+  .report-preview-modal {
+    max-height: calc(100vh - 20px);
+    border-radius: 18px;
+  }
+
+  .report-preview-modal__body {
+    min-height: 44vh;
+    max-height: 52vh;
+  }
+
+  .report-preview-modal__body iframe {
+    min-height: 44vh;
+  }
+
+  .report-preview-modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .report-download--secondary,
+  .report-download--ghost {
+    width: 100%;
   }
 }
