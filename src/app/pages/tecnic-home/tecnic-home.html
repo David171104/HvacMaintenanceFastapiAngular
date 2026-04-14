@@ -1,38 +1,115 @@
-<div class="technic-container">
+<div class="th-shell">
+  <header class="th-hero ds-glass">
+    <div class="th-hero__copy">
+      <p class="th-hero__eyebrow">Panel tecnico</p>
+      <h1 class="th-hero__title">
+        Bienvenido,
+        <span class="th-hero__name">{{ getGreeting() }}</span>
+      </h1>
+      <p class="th-hero__subtitle">
+        {{ userRole | titlecase }} · Administra tus servicios, revisa tus resultados y consulta tu agenda operativa.
+      </p>
+    </div>
+  </header>
 
-      <div class="technic-header">
-        <h1 class="technic-title">
-          Bienvenido
-          <span class="technic-gradient">
-            {{ userName }} {{ userLastName }}
-          </span>
-        </h1>
+  <div class="th-kpi-row">
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Servicios asignados</span>
+      <strong class="ds-kpi-card__value">{{ loading ? '...' : totalServices }}</strong>
+      <span class="ds-kpi-card__meta">Carga operativa actual</span>
+    </article>
 
-        <p class="technic-subtitle">
-          Panel de {{ userRole | titlecase }}
-        </p>
-        <p class="technic-subtitle">
-          Administra los servicios asignados y actualiza su estado.
-        </p>
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Servicios completados</span>
+      <strong class="ds-kpi-card__value">{{ loading ? '...' : completedServices }}</strong>
+      <span class="ds-kpi-card__meta">Historial resuelto</span>
+    </article>
+
+    <article class="ds-kpi-card">
+      <span class="ds-kpi-card__label">Media de calificacion</span>
+      <strong class="ds-kpi-card__value">{{ loading ? '...' : averageRatingLabel }}</strong>
+      <span class="ds-kpi-card__meta">Valoracion de clientes</span>
+    </article>
+  </div>
+
+  <section class="th-actions">
+    <p class="th-actions__label">Acciones rapidas</p>
+
+    <div class="th-actions__grid">
+      <div class="th-action-card ds-surface-card">
+        <div class="th-action-card__icon th-action-card__icon--secondary">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div class="th-action-card__copy">
+          <h3 class="th-action-card__title">Mis servicios</h3>
+          <p class="th-action-card__desc">Consulta tus asignaciones, actualiza estados y revisa la valoracion de cada servicio.</p>
+        </div>
+        <button class="ds-button ds-button-secondary th-action-card__cta" routerLink="/techniccian-services">
+          Ver servicios
+        </button>
       </div>
 
-      <div class="technic-cards">
-
-        <div class="technic-card">
-          <h3>Servicios asignados</h3>
-          <p>Consulta los servicios que te han sido asignados.</p>
-          <button class="technic-btn" routerLink="/assigned-services">
-            Ver servicios
-          </button>
+      <div class="th-action-card ds-surface-card">
+        <div class="th-action-card__icon th-action-card__icon--primary">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V4.5A1.5 1.5 0 0 1 5.5 3h9.879a1.5 1.5 0 0 1 1.06.44l3.12 3.12a1.5 1.5 0 0 1 .44 1.06V19.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5Z"/><path d="M8 13h8M8 17h5M15 3v4h4"/></svg>
         </div>
-
-        <div class="technic-card">
-          <h3>Actualizar estado</h3>
-          <p>Marca servicios como en proceso o completados.</p>
-          <button class="technic-btn" routerLink="/update-services">
-            Actualizar
-          </button>
+        <div class="th-action-card__copy">
+          <h3 class="th-action-card__title">Mis reportes</h3>
+          <p class="th-action-card__desc">Gestiona reportes tecnicos, revisa comentarios y analiza la experiencia del cliente.</p>
         </div>
-
+        <button class="ds-button ds-button-primary th-action-card__cta" routerLink="/technician-reports">
+          Ver reportes
+        </button>
       </div>
+
+      <div class="th-action-card ds-surface-card">
+        <div class="th-action-card__icon th-action-card__icon--ghost">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="th-action-card__copy">
+          <h3 class="th-action-card__title">Mi perfil</h3>
+          <p class="th-action-card__desc">Actualiza tu informacion personal y mantén al dia tus datos de contacto.</p>
+        </div>
+        <button class="ds-button ds-button-ghost th-action-card__cta" routerLink="/profile">
+          Ver perfil
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="th-agenda ds-surface-card">
+    <div class="th-agenda__header">
+      <div>
+        <p class="th-agenda__eyebrow">Agenda operativa</p>
+        <h2 class="th-agenda__title">Proximos servicios</h2>
+      </div>
+      <button class="ds-button ds-button-secondary" routerLink="/techniccian-services">
+        Ver agenda completa
+      </button>
+    </div>
+
+    <div class="th-agenda__list" *ngIf="agendaHasItems; else emptyAgenda">
+      <article class="th-agenda__item" *ngFor="let item of upcomingAgenda">
+        <div class="th-agenda__time">
+          <strong>{{ formatTime(item.requestTime) }}</strong>
+          <span>{{ formatDate(item.requestDate) }}</span>
+        </div>
+
+        <div class="th-agenda__copy">
+          <h3>#{{ item.id }} · {{ item.clientName }}</h3>
+          <p>{{ item.serviceType }} · {{ item.address }}</p>
+        </div>
+
+        <span class="th-agenda__status">
+          {{ getStatusText(item.currentStatus) }}
+        </span>
+      </article>
+    </div>
+
+    <ng-template #emptyAgenda>
+      <div class="th-agenda__empty">
+        No tienes servicios pendientes en la agenda por ahora.
+      </div>
+    </ng-template>
+  </section>
 </div>

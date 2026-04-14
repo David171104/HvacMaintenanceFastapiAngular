@@ -20,4 +20,11 @@ describe('SidebarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show reports for technician role', () => {
+    localStorage.setItem('userRole', 'tecnico');
+    component.ngOnInit();
+
+    expect(component.navItems.some((item) => item.route === '/technician-reports')).toBeTrue();
+  });
 });

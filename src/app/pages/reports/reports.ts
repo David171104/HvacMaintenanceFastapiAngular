@@ -20,6 +20,7 @@ import { NotificationService } from '../../shared/notifications/notification.ser
   styleUrls: ['./reports.css'],
 })
 export class Reports implements OnInit {
+  roleId = 0;
   optionsLoading = true;
   downloadingReadings = false;
   downloadingServices = false;
@@ -57,6 +58,14 @@ export class Reports implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.roleId = Number(user?.role_id || 0);
+
+    if (this.roleId !== 1) {
+      this.optionsLoading = false;
+      return;
+    }
+
     this.loadOptions();
   }
 

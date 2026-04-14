@@ -18,6 +18,13 @@ import { getStatusLabel } from '../../shared/service-status.util';
 /** Timeout en milisegundos para las peticiones HTTP al backend */
 const API_TIMEOUT_MS = 15_000;
 
+interface ClientServiceReport {
+  id: number;
+  service_id: number;
+  client_rating: number | null;
+  client_comments: string | null;
+}
+
 @Component({
   selector: 'app-client-services',
   standalone: true,
@@ -42,6 +49,7 @@ export class ClientServices implements OnInit, OnDestroy {
   submitError = '';
   loadingServices = false;
   servicesError = '';
+  reportsByServiceId = new Map<number, ClientServiceReport>();
   /** Misión 3: ID del servicio cuyo panel de detalle está abierto (null = ninguno) */
   selectedServiceId: number | null = null;
 
@@ -110,12 +118,14 @@ export class ClientServices implements OnInit, OnDestroy {
         next: (response) => {
           const lista = response.resultado ?? [];
           this.servicesState.setServicios(lista);   // ← propaga al dashboard
+          this.loadClientReports();
         },
         error: (error) => {
           console.error('Error al cargar servicios:', error);
 
           if (error.status === 404) {
             this.servicesState.setServicios([]);
+            this.reportsByServiceId = new Map();
             this.servicesError = '';
             this.cdr.detectChanges();
             return;
@@ -131,6 +141,7 @@ export class ClientServices implements OnInit, OnDestroy {
           this.servicesError =
             error.error?.detail || 'No se pudieron cargar los servicios.';
           this.servicesState.setServicios([]);
+          this.reportsByServiceId = new Map();
           this.cdr.detectChanges();
         },
       });
@@ -257,6 +268,18 @@ export class ClientServices implements OnInit, OnDestroy {
     return getStatusLabel(status?.toLowerCase());
   }
 
+  getRatingStars(rating: number | null | undefined): string {
+    if (!rating || rating < 1) {
+      return 'Sin calificar';
+    }
+
+    return '\u2605'.repeat(rating) + '\u2606'.repeat(5 - rating);
+  }
+
+  getServiceReport(serviceId: number): ClientServiceReport | null {
+    return this.reportsByServiceId.get(serviceId) ?? null;
+  }
+
   formatearHora(hora: any): string {
     if (!hora) return '';
     let hours = 0;
@@ -297,5 +320,37 @@ export class ClientServices implements OnInit, OnDestroy {
 
   trackByServiceId(index: number, servicio: ServicioCliente): number {
     return servicio.id;
+  }
+
+  private loadClientReports(): void {
+    if (!this.clientId) {
+      this.reportsByServiceId = new Map();
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.http
+      .get<ClientServiceReport[]>(
+        `http://localhost:8000/users/reports/client/${this.clientId}`,
+        {
+          headers: new HttpHeaders({
+            Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
+          }),
+        },
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (reports) => {
+          this.reportsByServiceId = new Map(
+            (reports ?? []).map((report) => [Number(report.service_id), report]),
+          );
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al cargar reportes del cliente:', error);
+          this.reportsByServiceId = new Map();
+          this.cdr.detectChanges();
+        },
+      });
   }
 }

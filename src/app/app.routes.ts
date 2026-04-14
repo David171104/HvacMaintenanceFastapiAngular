@@ -15,6 +15,8 @@ import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
 import { ClientProfileComponent } from './pages/client-profile/client-profile';
 import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
+import { TechnicianReports } from './pages/technician-reports/technician-reports';
+import { ClientReports } from './pages/client-reports/client-reports';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 import { ClientLayoutComponent } from './layouts/client-layout/client-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
@@ -47,6 +49,8 @@ export const routes: Routes = [
         { path: 'lecturas', component: LecturasComponent },
         { path: 'tecnic-home', component: TecnicHome },
         { path: 'techniccian-services', component: TechniccianServices },
+        { path: 'technician-reports', component: TechnicianReports },
+        { path: 'profile', component: ClientProfileComponent },
         { path: 'maintenance-control', component: MaintenanceControlComponent },
       ],
     },
@@ -58,6 +62,7 @@ export const routes: Routes = [
       children: [
         { path: 'client-home', component: ClientHome },
         { path: 'client-services', component: ClientServices },
+        { path: 'client-reports', component: ClientReports },
         { path: 'profile', component: ClientProfileComponent },
       ],
     },

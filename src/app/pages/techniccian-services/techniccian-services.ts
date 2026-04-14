@@ -4,7 +4,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { getStatusLabel } from '../../shared/service-status.util';
@@ -24,6 +24,13 @@ interface Service {
   current_status: string;
   client_name: string;
   technician_name: string;
+}
+
+interface TechnicianServiceReport {
+  id: number;
+  service_id: number;
+  client_rating: number | null;
+  client_comments: string | null;
 }
 
 interface User {
@@ -48,6 +55,7 @@ interface User {
 export class TechniccianServices implements OnInit {
 
   services: Service[] = [];
+  reportsByServiceId = new Map<number, TechnicianServiceReport>();
 
   loading = true;
   error = '';
@@ -138,6 +146,7 @@ export class TechniccianServices implements OnInit {
             technician_name: row[9],
           }));
 
+          this.loadTechnicianReports();
           console.log('Servicios procesados:', this.services);
           this.cd.detectChanges();
         },
@@ -159,6 +168,18 @@ export class TechniccianServices implements OnInit {
 
   getStatusHTML(status: string): string {
     return getStatusLabel(status?.toLowerCase());
+  }
+
+  getRatingStars(rating: number | null | undefined): string {
+    if (!rating || rating < 1) {
+      return 'Sin calificar';
+    }
+
+    return '\u2605'.repeat(rating) + '\u2606'.repeat(5 - rating);
+  }
+
+  getServiceReport(serviceId: number): TechnicianServiceReport | null {
+    return this.reportsByServiceId.get(serviceId) ?? null;
   }
 
   /* ===============================
@@ -267,5 +288,36 @@ formatearFecha(fecha: string): string {
     }
 pad(value: number): string {
   return value < 10 ? '0' + value : value.toString();
+}
+
+private loadTechnicianReports(): void {
+  if (!this.technicianId) {
+    this.reportsByServiceId = new Map();
+    return;
+  }
+
+  this.http
+    .get<TechnicianServiceReport[]>(
+      `http://localhost:8000/reports/technician/${this.technicianId}`,
+      { headers: this.buildAuthHeaders() },
+    )
+    .subscribe({
+      next: (reports) => {
+        this.reportsByServiceId = new Map(
+          (reports ?? []).map((report) => [Number(report.service_id), report]),
+        );
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error cargando reportes del tecnico:', err);
+        this.reportsByServiceId = new Map();
+        this.cd.detectChanges();
+      },
+    });
+}
+
+private buildAuthHeaders(): HttpHeaders {
+  const token = localStorage.getItem('access_token') || '';
+  return new HttpHeaders({ Authorization: `Bearer ${token}` });
 }
 }

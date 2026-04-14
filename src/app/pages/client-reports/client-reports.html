@@ -1,0 +1,178 @@
+<div class="client-reports" *ngIf="roleId === 3">
+  <div class="client-reports__header">
+    <div>
+      <h1 class="client-reports__title">Mis Reportes</h1>
+      <p class="client-reports__subtitle">
+        Consulta los reportes tecnicos asociados a tus servicios.
+      </p>
+    </div>
+
+    <button type="button" class="client-reports__refresh" (click)="loadReports()" [disabled]="loading">
+      {{ loading ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </div>
+
+  <p class="client-reports__error" *ngIf="error">{{ error }}</p>
+
+  <div class="client-reports__state" *ngIf="loading">
+    Cargando reportes del cliente...
+  </div>
+
+  <div class="client-reports__table-wrap" *ngIf="!loading">
+    <table class="client-reports__table" *ngIf="reports.length > 0">
+      <thead>
+        <tr>
+          <th>Reporte</th>
+          <th>Servicio</th>
+          <th>Tecnico</th>
+          <th>Estado</th>
+          <th>Duracion</th>
+          <th>Fecha</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let report of reports">
+          <td>#{{ report.id }}</td>
+          <td>#{{ report.service_id }}</td>
+          <td>{{ report.technician_name }} {{ report.technician_last_name }}</td>
+          <td [innerHTML]="getStatusHTML(report.current_status)"></td>
+          <td>{{ report.service_duration || 'No registrada' }}</td>
+          <td>{{ formatearFecha(report.created_at) }}</td>
+          <td class="client-reports__actions">
+            <button
+              type="button"
+              class="action-btn action-btn--secondary"
+              (click)="viewReport(report.id)"
+            >
+              Ver Reporte
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="openRatingModal(report.id)"
+            >
+              Calificar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="client-reports__state" *ngIf="reports.length === 0">
+      Aun no tienes reportes tecnicos disponibles.
+    </div>
+  </div>
+</div>
+
+<div class="client-reports" *ngIf="roleId !== 3">
+  <div class="client-reports__state">
+    Esta vista de reportes solo esta disponible para clientes.
+  </div>
+</div>
+
+<div class="report-modal-backdrop" *ngIf="showPreviewModal" (click)="closePreviewModal()">
+  <div class="report-preview-modal" (click)="$event.stopPropagation()">
+    <div class="report-preview-modal__header">
+      <div>
+        <h2>{{ showingPdfPreview ? 'Previsualizacion del reporte' : 'Calificar servicio' }}</h2>
+        <p>
+          {{ showingPdfPreview ? previewReportName : ('Reporte #' + (selectedReport?.id || '')) }}
+        </p>
+      </div>
+
+      <button type="button" class="report-preview-modal__close" (click)="closePreviewModal()">x</button>
+    </div>
+
+    <div class="report-preview-modal__body" *ngIf="showingPdfPreview && previewUrl; else previewFallback">
+      <iframe [src]="previewUrl" title="Previsualizacion PDF"></iframe>
+    </div>
+
+    <ng-template #previewFallback>
+      <div class="client-reports__state" *ngIf="showingPdfPreview">No se pudo cargar la previsualizacion del PDF.</div>
+    </ng-template>
+
+    <div class="client-rating" *ngIf="selectedReport as report">
+      <div class="client-rating__header">
+        <h3>Calificar servicio</h3>
+        <p>Comparte tu experiencia con este mantenimiento tecnico.</p>
+      </div>
+
+      <div class="client-rating__state" *ngIf="report.current_status !== 'completed'">
+        El servicio debe estar completado para calificar.
+      </div>
+
+      <div
+        class="client-rating__state client-rating__state--success"
+        *ngIf="report.current_status === 'completed' && report.client_rating != null"
+      >
+        Ya calificaste este servicio.
+      </div>
+
+      <div
+        class="client-rating__summary"
+        *ngIf="report.current_status === 'completed' && report.client_rating != null"
+      >
+        <p>
+          Calificacion registrada:
+          <strong>{{ report.client_rating }}/5</strong>
+        </p>
+        <p *ngIf="report.client_comments">
+          Comentario: "{{ report.client_comments }}"
+        </p>
+      </div>
+
+      <div
+        class="client-rating__form"
+        *ngIf="report.current_status === 'completed' && report.client_rating == null"
+      >
+        <div class="client-rating__stars" aria-label="Seleccionar calificacion">
+          <button
+            *ngFor="let star of [1, 2, 3, 4, 5]"
+            type="button"
+            class="client-rating__star"
+            [class.client-rating__star--active]="star <= rating"
+            [attr.aria-label]="'Calificar con ' + star + ' estrellas'"
+            (click)="setRating(star)"
+          >
+            &#9733;
+          </button>
+        </div>
+
+        <label class="client-rating__field">
+          <span>Comentario</span>
+          <textarea
+            rows="4"
+            [(ngModel)]="comment"
+            [disabled]="savingRating"
+            placeholder="Escribe un comentario sobre el servicio recibido"
+          ></textarea>
+        </label>
+
+        <button
+          type="button"
+          class="action-btn action-btn--primary"
+          (click)="guardarCalificacion()"
+          [disabled]="savingRating || rating === 0"
+        >
+          {{ savingRating ? 'Enviando...' : 'Enviar calificacion' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="report-preview-modal__actions">
+      <button
+        *ngIf="showingPdfPreview"
+        type="button"
+        class="action-btn action-btn--secondary"
+        (click)="downloadPreview()"
+      >
+        Descargar PDF
+      </button>
+      <button type="button" class="action-btn action-btn--close" (click)="closePreviewModal()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

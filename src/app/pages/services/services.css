@@ -53,6 +53,7 @@
   background: linear-gradient(180deg, rgba(16, 24, 43, 0.9), rgba(10, 15, 28, 0.96));
   border: 1px solid rgba(116, 128, 156, 0.18);
   box-shadow: var(--shadow-soft);
+  overflow: hidden;
 }
 
 .admin-surface__header {
@@ -85,12 +86,17 @@
 
 .services-table-shell {
   overflow-x: auto;
+  margin-top: 0.25rem;
+  padding: 0.35rem;
+  border-radius: 1.35rem;
+  background: rgba(6, 12, 26, 0.28);
+  border: 1px solid rgba(116, 128, 156, 0.1);
 }
 
 .services-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 0.45rem;
+  border-spacing: 0 0.55rem;
 }
 
 .services-table th {
@@ -106,25 +112,55 @@
 .services-table td {
   padding: 1rem 0.8rem;
   color: #dbe5f8;
-  background: rgba(12, 22, 40, 0.72);
-  border-top: 1px solid rgba(116, 128, 156, 0.12);
-  border-bottom: 1px solid rgba(116, 128, 156, 0.12);
+  background:
+    linear-gradient(180deg, rgba(14, 24, 43, 0.84), rgba(10, 19, 36, 0.82));
+  border-top: 1px solid rgba(116, 128, 156, 0.1);
+  border-bottom: 1px solid rgba(116, 128, 156, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .services-table td:first-child {
-  border-left: 1px solid rgba(116, 128, 156, 0.12);
+  border-left: 1px solid rgba(116, 128, 156, 0.1);
   border-top-left-radius: var(--radius-lg);
   border-bottom-left-radius: var(--radius-lg);
 }
 
 .services-table td:last-child {
-  border-right: 1px solid rgba(116, 128, 156, 0.12);
+  border-right: 1px solid rgba(116, 128, 156, 0.1);
   border-top-right-radius: var(--radius-lg);
   border-bottom-right-radius: var(--radius-lg);
 }
 
 .actions {
   white-space: nowrap;
+}
+
+.service-feedback {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 11rem;
+}
+
+.service-feedback__rating {
+  color: #fbbf24;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.service-feedback__rating--empty {
+  color: #8f9dba;
+  letter-spacing: normal;
+}
+
+.service-feedback__comment {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #dbe5f8;
+  font-size: 0.8rem;
+  line-height: 1.45;
 }
 
 .action-btn {

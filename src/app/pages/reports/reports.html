@@ -1,4 +1,4 @@
-<div class="reports-page">
+<div class="reports-page" *ngIf="roleId === 1">
   <header class="reports-hero">
     <div>
       <p class="reports-eyebrow">Documentos administrativos</p>
@@ -171,4 +171,10 @@
       </button>
     </article>
   </section>
+</div>
+
+<div class="reports-page" *ngIf="roleId !== 1">
+  <p class="reports-state reports-state-info">
+    Esta vista de reportes administrativos solo esta disponible para administradores.
+  </p>
 </div>

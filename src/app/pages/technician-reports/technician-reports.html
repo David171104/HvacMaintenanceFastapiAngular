@@ -1,0 +1,330 @@
+<div class="technician-reports" *ngIf="roleId === 2">
+  <header class="technician-reports__hero">
+    <div>
+      <p class="technician-reports__eyebrow">Reportes del tecnico</p>
+      <h1 class="technician-reports__title">Centro de reportes tecnicos</h1>
+      <p class="technician-reports__subtitle">
+        Desde aqui puedes generar, editar y consultar los reportes tecnicos de los servicios que tienes asignados.
+      </p>
+    </div>
+
+    <button type="button" class="technician-reports__refresh" (click)="loadData()" [disabled]="loading">
+      {{ loading ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </header>
+
+  <p class="technician-reports__error" *ngIf="error">{{ error }}</p>
+
+  <div class="technician-reports__state" *ngIf="loading">
+    Cargando servicios y reportes del tecnico...
+  </div>
+
+  <section class="technician-reports__selector" *ngIf="!loading && services.length > 0">
+    <label class="technician-reports__selector-field">
+      <span>Seleccionar ID del servicio</span>
+      <select [(ngModel)]="selectedServiceIdForCards">
+        <option [ngValue]="null">Selecciona un servicio</option>
+        <option *ngFor="let service of services; trackBy: trackById" [ngValue]="service.id">
+          Servicio #{{ service.id }} · {{ service.client_name }} · {{ service.service_type }}
+        </option>
+      </select>
+    </label>
+
+    <div class="technician-reports__selector-note" *ngIf="selectedServiceForCards">
+      Servicio activo: <strong>#{{ selectedServiceForCards.id }}</strong>
+      · {{ selectedServiceForCards.client_name }}
+      · <span [innerHTML]="getStatusHTML(selectedServiceForCards.current_status)"></span>
+    </div>
+  </section>
+
+  <section class="technician-reports__cards" *ngIf="!loading">
+    <article class="technician-card">
+      <div class="technician-card__head">
+        <span class="technician-card__badge">Generar</span>
+        <h2>Generar Reporte</h2>
+        <p>
+          Cuando el servicio asignado aun no tiene informe tecnico, podras registrar descripcion, duracion, recomendacion y mediciones antes y despues.
+        </p>
+      </div>
+      <div class="technician-card__note">
+        Boton esperado en la tabla: <strong>Generar Reporte</strong>
+      </div>
+      <button
+        type="button"
+        class="technician-card__action"
+        (click)="openSelectedServiceReportModal()"
+        [disabled]="!selectedServiceForCards || hasReport(selectedServiceForCards.id)"
+      >
+        Generar Reporte
+      </button>
+    </article>
+
+    <article class="technician-card">
+      <div class="technician-card__head">
+        <span class="technician-card__badge">Editar</span>
+        <h2>Editar Reporte</h2>
+        <p>
+          Si el servicio ya cuenta con reporte tecnico, el tecnico puede reabrir el formulario y actualizar los datos tecnicos del mantenimiento.
+        </p>
+      </div>
+      <div class="technician-card__note">
+        Boton esperado en la tabla: <strong>Editar Reporte</strong>
+      </div>
+      <button
+        type="button"
+        class="technician-card__action"
+        (click)="openSelectedServiceReportModal()"
+        [disabled]="!selectedServiceForCards || !hasReport(selectedServiceForCards.id)"
+      >
+        Editar Reporte
+      </button>
+    </article>
+
+    <article class="technician-card technician-card--highlight">
+      <div class="technician-card__head">
+        <span class="technician-card__badge">Ver</span>
+        <h2>Ver Reporte</h2>
+        <p>
+          Una vez creado el informe, el tecnico puede descargar el PDF del reporte para revisarlo o compartirlo segun el flujo operativo actual.
+        </p>
+      </div>
+      <div class="technician-card__note">
+        Boton esperado en la tabla: <strong>Ver Reporte</strong>
+      </div>
+      <button
+        type="button"
+        class="technician-card__action"
+        (click)="viewSelectedServiceReport()"
+        [disabled]="!selectedServiceForCards || !hasReport(selectedServiceForCards.id)"
+      >
+        Ver Reporte
+      </button>
+    </article>
+  </section>
+
+  <div class="technician-reports__table-wrap" *ngIf="!loading">
+    <table class="technician-reports__table" *ngIf="services.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Estado</th>
+          <th>Reporte</th>
+          <th>Calificacion</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let service of services; trackBy: trackById">
+          <td>#{{ service.id }}</td>
+          <td>{{ service.client_name }}</td>
+          <td>{{ service.service_type }}</td>
+          <td>{{ formatearFecha(service.request_date) }}</td>
+          <td>{{ formatearHora(service.request_time) }}</td>
+          <td [innerHTML]="getStatusHTML(service.current_status)"></td>
+          <td>
+            <span class="report-flag" [class.report-flag--ok]="hasReport(service.id)">
+              {{ hasReport(service.id) ? 'Generado' : 'Pendiente' }}
+            </span>
+          </td>
+          <td>
+            <ng-container *ngIf="hasReport(service.id); else noRatingState">
+              <div class="client-feedback-inline">
+                <span
+                  class="client-feedback-inline__rating"
+                  [class.client-feedback-inline__rating--empty]="!reportsByServiceId.get(service.id)?.client_rating"
+                >
+                  {{ getRatingStars(reportsByServiceId.get(service.id)?.client_rating ?? null) }}
+                </span>
+                <span
+                  class="client-feedback-inline__comment"
+                  *ngIf="reportsByServiceId.get(service.id)?.client_comments as comment"
+                >
+                  {{ comment }}
+                </span>
+              </div>
+            </ng-container>
+            <ng-template #noRatingState>
+              <span class="client-feedback-inline__rating client-feedback-inline__rating--empty">
+                Sin reporte
+              </span>
+            </ng-template>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="openReportModal(service)"
+            >
+              {{ hasReport(service.id) ? 'Editar Reporte' : 'Generar Reporte' }}
+            </button>
+            <button
+              *ngIf="hasReport(service.id)"
+              type="button"
+              class="action-btn action-btn--secondary"
+              (click)="viewReport(service.id)"
+            >
+              Ver Reporte
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="technician-reports__state" *ngIf="services.length === 0">
+      No tienes servicios asignados para reportar.
+    </div>
+  </div>
+</div>
+
+<div class="technician-reports" *ngIf="roleId !== 2">
+  <div class="technician-reports__state">
+    Esta vista de reportes tecnicos solo esta disponible para tecnicos.
+  </div>
+</div>
+
+<div class="report-modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+  <div class="report-modal" (click)="$event.stopPropagation()">
+    <div class="report-modal__header">
+      <div>
+        <h2>{{ selectedReport ? 'Editar Reporte Tecnico' : 'Generar Reporte Tecnico' }}</h2>
+        <p *ngIf="selectedService">
+          Servicio #{{ selectedService.id }} · {{ selectedService.client_name }}
+        </p>
+      </div>
+
+      <button type="button" class="report-modal__close" (click)="closeModal()">x</button>
+    </div>
+
+    <form class="report-modal__form" [formGroup]="reportForm" (ngSubmit)="saveReport()">
+      <label class="report-field report-field--full">
+        <span>Descripcion del servicio</span>
+        <textarea rows="4" formControlName="service_description"></textarea>
+      </label>
+
+      <label class="report-field">
+        <span>Duracion del servicio</span>
+        <div class="report-field__input-wrap">
+          <input type="text" formControlName="service_duration" placeholder="Ej: 2" />
+          <span class="report-field__unit">horas</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Recomendacion</span>
+        <input type="text" formControlName="recommendation" placeholder="Recomendacion tecnica" />
+      </label>
+
+      <label class="report-field">
+        <span>Temperatura antes</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="temperature_before" />
+          <span class="report-field__unit">°C</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Temperatura despues</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="temperature_after" />
+          <span class="report-field__unit">°C</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Voltaje antes</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="voltage_before" />
+          <span class="report-field__unit">V</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Voltaje despues</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="voltage_after" />
+          <span class="report-field__unit">V</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Humedad antes</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="humidity_before" />
+          <span class="report-field__unit">%</span>
+        </div>
+      </label>
+
+      <label class="report-field">
+        <span>Humedad despues</span>
+        <div class="report-field__input-wrap">
+          <input type="number" step="0.01" formControlName="humidity_after" />
+          <span class="report-field__unit">%</span>
+        </div>
+      </label>
+
+      <section class="client-feedback-panel" *ngIf="selectedReport">
+        <div class="client-feedback-panel__header">
+          <h3>Valoracion del cliente</h3>
+          <span
+            class="client-feedback-panel__rating"
+            [class.client-feedback-panel__rating--empty]="selectedReport.client_rating == null"
+          >
+            {{ getRatingStars(selectedReport.client_rating) }}
+          </span>
+        </div>
+
+        <p class="client-feedback-panel__note" *ngIf="selectedReport.client_rating == null">
+          El cliente aun no ha calificado este servicio.
+        </p>
+
+        <div class="client-feedback-panel__comment" *ngIf="selectedReport.client_comments; else noClientComment">
+          {{ selectedReport.client_comments }}
+        </div>
+
+        <ng-template #noClientComment>
+          <p class="client-feedback-panel__note" *ngIf="selectedReport.client_rating != null">
+            El cliente no dejo comentario adicional.
+          </p>
+        </ng-template>
+      </section>
+
+      <div class="report-modal__actions">
+        <button type="submit" class="save-btn" [disabled]="saving">
+          {{ saving ? 'Guardando...' : 'Guardar Reporte' }}
+        </button>
+        <button type="button" class="cancel-btn" (click)="closeModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="report-modal-backdrop" *ngIf="showPreviewModal" (click)="closePreviewModal()">
+  <div class="report-preview-modal" (click)="$event.stopPropagation()">
+    <div class="report-preview-modal__header">
+      <div>
+        <h2>Previsualizacion del reporte</h2>
+        <p>{{ previewReportName }}</p>
+      </div>
+
+      <button type="button" class="report-modal__close" (click)="closePreviewModal()">x</button>
+    </div>
+
+    <div class="report-preview-modal__body" *ngIf="previewUrl; else previewFallback">
+      <iframe [src]="previewUrl" title="Previsualizacion PDF"></iframe>
+    </div>
+
+    <ng-template #previewFallback>
+      <div class="technician-reports__state">No se pudo cargar la previsualizacion del PDF.</div>
+    </ng-template>
+
+    <div class="report-preview-modal__actions">
+      <button type="button" class="save-btn" (click)="downloadPreview()">Descargar PDF</button>
+      <button type="button" class="cancel-btn" (click)="closePreviewModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
