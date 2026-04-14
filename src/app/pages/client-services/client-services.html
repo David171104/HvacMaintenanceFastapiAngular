@@ -36,14 +36,79 @@
         </tr>
       </thead>
 
-          <tbody>
-            <tr>
-              <td colspan="6" style="text-align:center;">
-                Sin servicios aún
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <tbody>
+        <ng-container *ngFor="let servicio of servicios; trackBy: trackByServiceId">
+          <!-- Fila principal del servicio -->
+          <tr>
+            <td>{{ formatearFecha(servicio.request_date) }}</td>
+            <td>{{ formatearHora(servicio.request_time) }}</td>
+            <td>{{ servicio.service_type }}</td>
+            <td>{{ servicio.address }}</td>
+            <td [innerHTML]="getStatusHTML(servicio.current_status)"></td>
+            <td>
+              <!-- Misión 3: botón habilitado con toggle de panel de detalles -->
+              <button
+                class="client-btn"
+                type="button"
+                (click)="toggleDetalle(servicio.id)"
+                [attr.aria-expanded]="selectedServiceId === servicio.id"
+              >
+                {{ selectedServiceId === servicio.id ? 'Cerrar' : 'Ver' }}
+              </button>
+            </td>
+          </tr>
+
+          <!-- Panel de detalles expandible (Misión 3) -->
+          <tr *ngIf="selectedServiceId === servicio.id" class="cs-detail-row">
+            <td colspan="6">
+              <div class="cs-detail-panel">
+                <div class="cs-detail-grid">
+                  <div class="cs-detail-item">
+                    <span class="cs-detail-label">ID de servicio</span>
+                    <span class="cs-detail-value">#{{ servicio.id }}</span>
+                  </div>
+                  <div class="cs-detail-item">
+                    <span class="cs-detail-label">Tipo</span>
+                    <span class="cs-detail-value">{{ servicio.service_type }}</span>
+                  </div>
+                  <div class="cs-detail-item">
+                    <span class="cs-detail-label">Fecha agendada</span>
+                    <span class="cs-detail-value">{{ formatearFecha(servicio.request_date) }}</span>
+                  </div>
+                  <div class="cs-detail-item">
+                    <span class="cs-detail-label">Hora agendada</span>
+                    <span class="cs-detail-value">{{ formatearHora(servicio.request_time) }}</span>
+                  </div>
+                  <div class="cs-detail-item cs-detail-item--full">
+                    <span class="cs-detail-label">Dirección completa</span>
+                    <span class="cs-detail-value">{{ servicio.address }}</span>
+                  </div>
+                  <div class="cs-detail-item">
+                    <span class="cs-detail-label">Estado actual</span>
+                    <span [innerHTML]="getStatusHTML(servicio.current_status)"></span>
+                  
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loadingServices && servicios.length === 0" class="empty-state">
+      Sin servicios aún
+    </div>
+  </div>
+</div>
+
+<!-- Modal Solicitar Servicio -->
+<div *ngIf="showModal" class="cs-modal-backdrop" (click)="cerrarModal()">
+  <div class="cs-modal" (click)="$event.stopPropagation()">
+    <div class="cs-modal__header">
+      <div>
+        <h3 class="cs-modal__title">Solicitar Servicio</h3>
+        <p class="cs-modal__subtitle">Completa los datos para agendar tu cita de mantenimiento.</p>
       </div>
       <button class="cs-modal__close" type="button" (click)="cerrarModal()" aria-label="Cerrar formulario">
         ×
