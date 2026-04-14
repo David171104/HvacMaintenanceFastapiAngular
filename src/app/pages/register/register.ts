@@ -81,6 +81,16 @@ export class RegisterComponent {
   submitted = false;
   isSubmitting = false;
   serverError = '';
+  showPassword = false;
+  showConfirmPassword = false;
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   constructor(
     private readonly router: Router,

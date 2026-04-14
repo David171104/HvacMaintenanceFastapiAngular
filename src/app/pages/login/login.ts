@@ -43,6 +43,11 @@ export class LoginComponent implements OnInit {
   submitted = false;
   isSubmitting = false;
   serverError = '';
+  showPassword = false;
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   private msalInstance:
     | {
