@@ -214,6 +214,25 @@
           </a>
         </div>
       </ui-card>
+
+      <!-- Nueva sección: Operaciones del Sistema -->
+      <ui-card class="dashboard-panel ds-surface-card">
+        <ui-section-header
+          eyebrow="Operaciones del Sistema"
+          title="Notificaciones"
+          subtitle="Dispara la revisión y envío de correos manualmente."
+        />
+        <div style="margin-top: 1rem;">
+          <button class="ds-button ds-button-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                  [disabled]="isSendingEmails" (click)="dispararCorreosManual()">
+            <svg *ngIf="!isSendingEmails" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2 11 13"/>
+              <path d="M22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            {{ isSendingEmails ? 'Procesando correos...' : 'Auditar y Enviar Correos Pendientes' }}
+          </button>
+        </div>
+      </ui-card>
     </aside>
   </section>
 

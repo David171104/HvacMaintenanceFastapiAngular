@@ -1,0 +1,83 @@
+<section class="cp-page">
+  <header class="cp-header">
+    <p class="cp-eyebrow">Mi Perfil</p>
+    <h1 class="cp-title">Actualiza tu información personal</h1>
+    <p class="cp-subtitle">
+      Mantén tus datos de contacto al día para recibir notificaciones y servicios de mantenimiento.
+    </p>
+  </header>
+
+  <div class="cp-card-wrapper">
+    <div class="cp-surface-card ds-surface-card">
+      <form class="cp-form" [formGroup]="perfilForm" (ngSubmit)="guardarCambios()" novalidate>
+        
+        <div class="cp-form-grid">
+          <!-- TODO: Nombres -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="profile_name">Nombres *</label>
+            <input 
+              id="profile_name" 
+              type="text" 
+              class="cs-control" 
+              formControlName="name"
+              placeholder="Ej. Juan" />
+          </div>
+
+          <!-- TODO: Apellidos -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="profile_lastname">Apellidos *</label>
+            <input 
+              id="profile_lastname" 
+              type="text" 
+              class="cs-control" 
+              formControlName="last_name"
+              placeholder="Ej. Pérez" />
+          </div>
+
+          <!-- TODO: Email (CRÍTICO: Disabled/Readonly) -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="profile_email">Correo Electrónico</label>
+            <input 
+              id="profile_email" 
+              type="email" 
+              class="cs-control cs-control--disabled" 
+              formControlName="email"
+              readonly />
+          </div>
+
+          <!-- TODO: Teléfono -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="profile_phone">Teléfono de Contacto</label>
+            <input 
+              id="profile_phone" 
+              type="tel" 
+              class="cs-control" 
+              formControlName="phone"
+              placeholder="+57 300 000 0000" />
+          </div>
+
+          <!-- TODO: Dirección Completa (Full Width) -->
+          <div class="cs-form-group cs-form-group--full">
+            <label class="cs-label" for="profile_address">Dirección de tus Equipos</label>
+            <input 
+              id="profile_address" 
+              type="text" 
+              class="cs-control" 
+              formControlName="address"
+              placeholder="Ej. Calle 123 #45-67, Edificio Centro" />
+          </div>
+        </div>
+
+        <div class="cp-form-actions">
+          <button 
+            type="submit" 
+            class="ds-button ds-button-primary"
+            [disabled]="perfilForm.invalid || isSaving">
+            {{ isSaving ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>

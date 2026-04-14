@@ -13,10 +13,12 @@ import { AnaliticaComponent } from './pages/analitica/analitica';
 import { ClientHome } from './pages/client-home/client-home';
 import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
+import { ClientProfileComponent } from './pages/client-profile/client-profile';
 import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 import { ClientLayoutComponent } from './layouts/client-layout/client-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
+import { MaintenanceControlComponent } from './pages/maintenance-control/maintenance-control';
 
 
 export const routes: Routes = [
@@ -45,6 +47,7 @@ export const routes: Routes = [
         { path: 'lecturas', component: LecturasComponent },
         { path: 'tecnic-home', component: TecnicHome },
         { path: 'techniccian-services', component: TechniccianServices },
+        { path: 'maintenance-control', component: MaintenanceControlComponent },
       ],
     },
 
@@ -55,6 +58,7 @@ export const routes: Routes = [
       children: [
         { path: 'client-home', component: ClientHome },
         { path: 'client-services', component: ClientServices },
+        { path: 'profile', component: ClientProfileComponent },
       ],
     },
 
