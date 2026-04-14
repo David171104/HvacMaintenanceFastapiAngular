@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { getStatusLabel } from '../../shared/service-status.util';
-
+import Swal from 'sweetalert2';
 /* ===============================
    INTERFACES
 ================================ */
@@ -212,6 +212,59 @@ formatearFecha(fecha: string): string {
   });
 }
 
+
+ confirmComplete(service: Service): void {
+    Swal.fire({
+      title: '¿Completar servicio?',
+      text: `El servicio #${service.id} será marcado como completado.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, completar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.completeService(service.id);
+      }
+    });
+  }
+
+
+  completeService(serviceId: number): void {
+      const url = `http://localhost:8000/services/${serviceId}/complete`;
+  
+      Swal.fire({
+        title: 'Procesando...',
+        text: 'Actualizando servicio',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+  
+      this.http.put(url, {}).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Servicio completado',
+            text: 'El servicio fue actualizado correctamente',
+          });
+  
+          this.getTechnicianServices();
+        },
+        error: (err) => {
+          console.error(err);
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo completar el servicio',
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonColor: '#ef4444',
+          });
+        },
+      });
+    }
 pad(value: number): string {
   return value < 10 ? '0' + value : value.toString();
 }
