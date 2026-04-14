@@ -96,13 +96,13 @@
 }
 
 .user-table thead {
-  background: rgba(255, 255, 255, 0.03);
+  background: #121a31;
 }
 
 .user-table th {
   text-align: left;
   padding: 1rem 1.15rem;
-  color: var(--on-surface-soft);
+  color: #7f96d6;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;

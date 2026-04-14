@@ -67,9 +67,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   get environmentLabel(): string {
-    if (this.userRole === 'cliente') return 'Panel de usuario';
-    if (this.userRole === 'tecnico') return 'Panel de técnico';
-    return 'Entorno administrativo';
+    if (this.userRole === 'cliente') return 'Panel de Usuario';
+    if (this.userRole === 'tecnico') return 'Panel de Técnico';
+    return 'Entorno Administrativo';
   }
 
   private readonly allNavItems: NavItem[] = [

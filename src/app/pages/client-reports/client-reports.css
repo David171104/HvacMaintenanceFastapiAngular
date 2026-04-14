@@ -77,10 +77,13 @@
 }
 
 .client-reports__table th {
-  background: #0f172a;
+  background: #121a31;
   padding: 14px;
-  color: #00ffc6;
+  color: #7f96d6;
   text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .client-reports__table td {
@@ -182,7 +185,7 @@
 
 .report-preview-modal__header h2 {
   margin: 0 0 6px;
-  color: #00ffc6;
+  color: #f8fafc;
 }
 
 .report-preview-modal__header p {

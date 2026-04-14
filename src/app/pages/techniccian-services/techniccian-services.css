@@ -76,9 +76,12 @@
 }
 
 .services-table th {
-  background: #0f172a;
+  background: #121a31;
   padding: 14px;
-  color: #00ffc6;
+  color: #7f96d6;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .services-table td {
