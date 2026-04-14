@@ -1337,3 +1337,39 @@ th, td {
   background: #6b728020;
   color: #9ca3af;
 }
+
+/* =====================================================
+   PASSWORD TOGGLE STYLES
+===================================================== */
+
+.cs-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cs-password-wrapper .ds-control {
+  padding-right: 3rem;
+}
+
+.cs-password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 1.8rem;
+  background: none;
+  border: none;
+  color: var(--on-surface-muted, #94a3b8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  padding: 0;
+  z-index: 2;
+}
+
+.cs-password-toggle:hover {
+  color: #00ffc6;
+}
+

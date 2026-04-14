@@ -90,19 +90,22 @@
 
       <div class="modal-state" *ngIf="loadingTechnicians">Cargando técnicos disponibles...</div>
 
-      <label class="modal-label">Técnico asignado</label>
+      <p class="cs-current-tech">Técnico actual: <span>{{ currentTechnicianName || 'Sin asignar' }}</span></p>
 
-      <select [(ngModel)]="selectedTechnicianId" *ngIf="!loadingTechnicians">
-        <option [ngValue]="null">Selecciona un técnico</option>
-        <option *ngFor="let tech of technicians" [ngValue]="tech.id">
-          {{ tech.name }} {{ tech.last_name }}
-        </option>
-      </select>
+      <div class="cs-form-group" *ngIf="!loadingTechnicians">
+        <label class="cs-label" for="assign-tech">Técnico asignado</label>
+        <select id="assign-tech" class="cs-control" [(ngModel)]="selectedTechnicianId">
+          <option [ngValue]="null">Selecciona un técnico</option>
+          <option *ngFor="let tech of technicians" [ngValue]="tech.id">
+            {{ tech.name }} {{ tech.last_name }}
+          </option>
+        </select>
+      </div>
 
-      <div class="modal-actions">
-        <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
+      <div class="cs-modal-actions">
+        <button class="ds-button ds-button-ghost" (click)="closeModal()">Cancelar</button>
         <button
-          class="modal-btn modal-btn--primary"
+          class="ds-button ds-button-primary"
           [disabled]="!selectedTechnicianId"
           (click)="assignTechnician(selectedTechnicianId)"
         >

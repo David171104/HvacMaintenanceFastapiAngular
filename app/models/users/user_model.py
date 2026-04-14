@@ -58,3 +58,9 @@ class User(BaseModel):
         if value is None:
             return None
         return validate_password_strength(value)
+
+class UserUpdateProfile(BaseModel):
+    name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
