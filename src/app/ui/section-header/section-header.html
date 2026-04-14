@@ -1,0 +1,10 @@
+<header class="ds-section-header">
+  <div>
+    <p class="ds-section-header__eyebrow" *ngIf="eyebrow">{{ eyebrow }}</p>
+    <h2 class="ds-section-header__title">{{ title }}</h2>
+    <p class="ds-section-header__subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+  </div>
+  <div class="ui-section-header__actions">
+    <ng-content></ng-content>
+  </div>
+</header>

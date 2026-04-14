@@ -1,11 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { finalize } from 'rxjs';
-import Swal from 'sweetalert2';
-
+import { Subject } from 'rxjs';
+import { finalize, takeUntil, timeout } from 'rxjs/operators';
 import { dateNotPast, requiredTrimmed, timeRange } from '../../shared/validation/custom-validators';
 import {
   controlInvalid,
@@ -15,40 +14,21 @@ import {
 } from '../../shared/validation/form-utils';
 
 import { NotificationService } from '../../shared/notifications/notification.service';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
-
-/* ===============================
-   INTERFACE
-================================ */
-
-interface ClientService {
-  id: number;
-  client_id: number;
-  request_date: string;
-  request_time: string | number;
-  service_type: string;
-  address: string;
-  current_status: string;
-}
-
-/* ===============================
-   COMPONENT
-================================ */
+import { ServicesStateService, ServicioCliente } from '../../shared/services-state/services-state.service';
+import { getStatusLabel } from '../../shared/service-status.util';
+/** Timeout en milisegundos para las peticiones HTTP al backend */
+const API_TIMEOUT_MS = 15_000;
 
 @Component({
   selector: 'app-client-services',
   standalone: true,
   templateUrl: './client-services.html',
   styleUrls: ['./client-services.css'],
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, SidebarComponent],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule],
 })
-export class ClientServices implements OnInit {
-
+export class ClientServices implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
-
-  /* ===============================
-     FORM
-  =============================== */
+  private readonly destroy$ = new Subject<void>();
 
   readonly serviceForm = this.fb.nonNullable.group({
     request_date: ['', [Validators.required, dateNotPast]],
@@ -68,10 +48,13 @@ export class ClientServices implements OnInit {
   submitted = false;
   isSubmitting = false;
   submitError = '';
-
-  servicios: ClientService[] = [];
   loadingServices = false;
+  servicesError = '';
+  /** Misión 3: ID del servicio cuyo panel de detalle está abierto (null = ninguno) */
+  selectedServiceId: number | null = null;
 
+  // La vista lee directamente del estado compartido
+  servicios: ServicioCliente[] = [];
   clientId = '';
 
   /* ===============================
@@ -80,65 +63,100 @@ export class ClientServices implements OnInit {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly servicesState: ServicesStateService,
+    private readonly cdr: ChangeDetectorRef,
   ) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-
     if (user?.id) {
       this.clientId = String(user.id);
     }
   }
 
-  /* ===============================
-     INIT
-  =============================== */
-
   ngOnInit(): void {
-    this.loadServices();
+    // Sincronizar la vista local con el estado compartido
+    this.servicesState.servicios$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((list) => {
+        this.servicios = list;
+        this.cdr.detectChanges();
+      });
+
+    this.cargarServicios();
   }
 
-  /* ===============================
-     LOAD SERVICES
-  =============================== */
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-  loadServices(): void {
+  // ── CARGA DE SERVICIOS ──────────────────────────────────────────────────────
 
-    if (!this.clientId) return;
-
+  cargarServicios(): void {
     this.loadingServices = true;
-    this.servicios = [];
+    this.servicesError = '';
+    this.servicesState.setLoading(true);
+
+    if (!this.clientId) {
+      this.loadingServices = false;
+      this.servicesState.setLoading(false);
+      this.servicesError = 'No se encontró el cliente autenticado.';
+      this.cdr.detectChanges();
+      return;
+    }
 
     this.http
-      .get<any>(`http://localhost:8000/users/services/list/${this.clientId}`)
-      .pipe(finalize(() => (this.loadingServices = false)))
+      .get<{ resultado: ServicioCliente[] }>(
+        `http://localhost:8000/users/services/list/${this.clientId}`,
+      )
+      .pipe(
+        timeout(API_TIMEOUT_MS),
+        finalize(() => {
+          this.loadingServices = false;
+          this.servicesState.setLoading(false);
+          this.cdr.detectChanges();
+        }),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: (response) => {
-          this.servicios = response?.resultado ?? [];
+          const lista = response.resultado ?? [];
+          this.servicesState.setServicios(lista);   // ← propaga al dashboard
         },
-
         error: (error) => {
-          console.error('Error cargando servicios:', error);
+          console.error('Error al cargar servicios:', error);
 
-          // Si backend manda 404 → lista vacía
           if (error.status === 404) {
-            this.servicios = [];
+            this.servicesState.setServicios([]);
+            this.servicesError = '';
+            this.cdr.detectChanges();
             return;
           }
 
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudieron cargar los servicios',
-          });
+          // timeout() lanza un TimeoutError con name: 'TimeoutError'
+          if (error.name === 'TimeoutError') {
+            this.servicesError = 'El servidor tardó demasiado. Intenta nuevamente.';
+            this.cdr.detectChanges();
+            return;
+          }
+
+          this.servicesError =
+            error.error?.detail || 'No se pudieron cargar los servicios.';
+          this.servicesState.setServicios([]);
+          this.cdr.detectChanges();
         },
       });
   }
 
-  /* ===============================
-     MODAL
-  =============================== */
+  // ── MODAL ───────────────────────────────────────────────────────────────────
+
+  /** Misión 3: abre/cierra el panel de detalles de la fila clickeada */
+  toggleDetalle(id: number): void {
+    this.selectedServiceId = this.selectedServiceId === id ? null : id;
+  }
 
   solicitarServicio(): void {
+    console.log('Botón clickeado, abriendo modal...');
     this.submitted = false;
     this.submitError = '';
     this.showModal = true;
@@ -176,31 +194,32 @@ export class ClientServices implements OnInit {
     if (this.isSubmitting) return;
 
     const token = localStorage.getItem('access_token');
-
     if (!token || !this.clientId) {
-      this.notificationService.error(
-        'Sesión requerida',
-        'Debes iniciar sesión.'
-      );
+      this.submitError = 'Debes iniciar sesion para solicitar un servicio.';
+      this.notificationService.error('Sesion requerida', this.submitError);
       return;
     }
 
     this.isSubmitting = true;
 
     this.http
-      .post(
+      .post<ServicioCliente>(
         'http://localhost:8000/users/services/create',
         {
           client_id: Number(this.clientId),
           ...this.serviceForm.getRawValue(),
         },
         {
-          headers: new HttpHeaders({
-            Authorization: `Bearer ${token}`,
-          }),
-        }
+          headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+        },
       )
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        // Misión 1: timeout de 15 s — si el servidor no responde, lanza error
+        timeout(API_TIMEOUT_MS),
+        // Misión 1: finalize garantiza que isSubmitting siempre vuelve a false
+        finalize(() => (this.isSubmitting = false)),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: () => {
 
@@ -213,23 +232,29 @@ export class ClientServices implements OnInit {
           });
 
           this.cerrarModal();
-          this.loadServices(); // 🔥 refresca tabla
+          // Recarga la lista y actualiza el BehaviorSubject (propagará al dashboard)
+          this.cargarServicios();
         },
 
         error: (error) => {
-          console.error(error);
+          console.error('Error al solicitar servicio:', error);
 
-          this.submitError =
-            error.error?.detail || 'Error al solicitar servicio';
+          if (error.name === 'TimeoutError') {
+            this.submitError =
+              'El servidor no respondió a tiempo. Revisa tu conexión e intenta de nuevo.';
+          } else {
+            this.submitError =
+              error.error?.detail || 'Error al solicitar el servicio. Intenta nuevamente.';
+          }
 
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: this.submitError,
-          });
+          this.notificationService.error('No se pudo guardar', this.submitError);
         },
       });
   }
+
+  // ── HELPERS ─────────────────────────────────────────────────────────────────
+
+  // ── HELPERS ─────────────────────────────────────────────────────────────────
 
   /* ===============================
      FORMAT HOUR

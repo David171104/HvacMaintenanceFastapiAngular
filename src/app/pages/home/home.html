@@ -1,49 +1,354 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
+<section class="dashboard" *ngIf="!loading; else loadingState">
+  <header class="dashboard-hero">
+    <div class="dashboard-hero__copy">
+      <p class="dashboard-hero__eyebrow">Panel administrativo</p>
+      <h1>Hola, {{ greetingName }}</h1>
+      <p class="dashboard-hero__subtitle">
+        Supervisa la operación IoT de climatización, revisa el estado general del sistema y actúa
+        rápido sobre usuarios, servicios y lecturas.
+      </p>
+    </div>
 
-  <main class="home-content">
-    <div class="admin-container">
-      <div class="admin-header">
-<h1 class="admin-title">
-  Bienvenido
-  <span class="admin-gradient">
-    {{ userName }} ({{ userRole | titlecase }})
-  </span>
-</h1>
+    <div class="dashboard-hero__status">
+      <ui-badge [tone]="systemIndicatorTone">{{ systemIndicator }}</ui-badge>
+      <p>{{ platformStatusText }}</p>
+    </div>
+  </header>
 
-<p class="admin-subtitle">
-  Panel de {{ userRole | titlecase }}
-</p>
-        <p class="admin-subtitle">
-          Gestiona usuarios, servicios y el sistema desde este panel.
-        </p>
+  <div class="dashboard-state" *ngIf="error">
+    <ui-badge tone="error">Error de carga</ui-badge>
+    <p>{{ error }}</p>
+  </div>
+
+  <section class="dashboard-kpis">
+    <ui-stat-card
+      label="Temperatura promedio"
+      [value]="formatMetric(promedioTemperatura, '°C')"
+      meta="Últimas lecturas IoT"
+      accent="primary"
+    />
+    <ui-stat-card
+      label="Humedad promedio"
+      [value]="formatMetric(promedioHumedad, '%')"
+      meta="Condición ambiental"
+      accent="primary"
+    />
+    <ui-stat-card
+      label="Corriente promedio"
+      [value]="formatMetric(promedioCorriente, 'A')"
+      meta="Carga eléctrica"
+      accent="primary"
+    />
+    <ui-stat-card
+      label="Lecturas registradas"
+      [value]="totalLecturas.toString()"
+      meta="Base de monitoreo reciente"
+      accent="success"
+    />
+    <ui-stat-card
+      label="Usuarios activos"
+      [value]="totalUsuarios.toString()"
+      meta="Operadores y clientes"
+      accent="primary"
+    />
+    <ui-stat-card
+      label="Servicios registrados"
+      [value]="totalServicios.toString()"
+      [meta]="serviciosPendientes + ' pendientes por gestionar'"
+      [accent]="serviciosPendientes > 0 ? 'error' : 'success'"
+    />
+  </section>
+
+  <section class="dashboard-grid">
+    <ui-card class="dashboard-panel dashboard-panel--monitor" [glass]="true">
+      <ui-section-header
+        eyebrow="Monitoreo"
+        title="Tendencias operativas"
+        subtitle="Series construidas con las lecturas más recientes para analizar comportamiento térmico y consumo del sistema."
+      />
+
+      <div class="trend-grid">
+        <article class="trend-card">
+          <div class="trend-card__header trend-card__header--stacked">
+            <div>
+              <h3>Temperatura</h3>
+              <p>Últimas {{ temperatureChartData.labels?.length || 0 }} lecturas registradas.</p>
+            </div>
+            <ui-badge [tone]="temperatureSummary.statusTone">{{ temperatureSummary.statusLabel }}</ui-badge>
+          </div>
+
+          <div class="trend-summary">
+            <div class="trend-summary__item">
+              <span>Promedio</span>
+              <strong>{{ formatMetric(temperatureSummary.average, '°C') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Mínimo</span>
+              <strong>{{ formatMetric(temperatureSummary.min, '°C') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Máximo</span>
+              <strong>{{ formatMetric(temperatureSummary.max, '°C') }}</strong>
+            </div>
+          </div>
+
+          <div class="trend-chart" *ngIf="temperatureChartData.labels?.length; else emptyTrend">
+            <canvas
+              baseChart
+              [data]="temperatureChartData"
+              [options]="temperatureChartOptions"
+              [type]="'line'"
+            ></canvas>
+          </div>
+        </article>
+
+        <article class="trend-card">
+          <div class="trend-card__header trend-card__header--stacked">
+            <div>
+              <h3>Humedad</h3>
+              <p>Comportamiento ambiental en el rango reciente.</p>
+            </div>
+            <ui-badge [tone]="humiditySummary.statusTone">{{ humiditySummary.statusLabel }}</ui-badge>
+          </div>
+
+          <div class="trend-summary">
+            <div class="trend-summary__item">
+              <span>Promedio</span>
+              <strong>{{ formatMetric(humiditySummary.average, '%') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Mínimo</span>
+              <strong>{{ formatMetric(humiditySummary.min, '%') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Máximo</span>
+              <strong>{{ formatMetric(humiditySummary.max, '%') }}</strong>
+            </div>
+          </div>
+
+          <div class="trend-chart" *ngIf="humidityChartData.labels?.length; else emptyTrend">
+            <canvas
+              baseChart
+              [data]="humidityChartData"
+              [options]="humidityChartOptions"
+              [type]="'line'"
+            ></canvas>
+          </div>
+        </article>
+
+        <article class="trend-card">
+          <div class="trend-card__header trend-card__header--stacked">
+            <div>
+              <h3>Corriente</h3>
+              <p>Perfil de carga y detección de consumos atípicos.</p>
+            </div>
+            <ui-badge [tone]="currentSummary.statusTone">{{ currentSummary.statusLabel }}</ui-badge>
+          </div>
+
+          <div class="trend-summary">
+            <div class="trend-summary__item">
+              <span>Promedio</span>
+              <strong>{{ formatMetric(currentSummary.average, 'A') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Mínimo</span>
+              <strong>{{ formatMetric(currentSummary.min, 'A') }}</strong>
+            </div>
+            <div class="trend-summary__item">
+              <span>Máximo</span>
+              <strong>{{ formatMetric(currentSummary.max, 'A') }}</strong>
+            </div>
+          </div>
+
+          <div class="trend-chart" *ngIf="currentChartData.labels?.length; else emptyTrend">
+            <canvas
+              baseChart
+              [data]="currentChartData"
+              [options]="currentChartOptions"
+              [type]="'bar'"
+            ></canvas>
+          </div>
+        </article>
       </div>
+    </ui-card>
 
-      <div class="admin-cards">
-        <div class="admin-card">
-          <h3>Usuarios</h3>
-          <p>Gestionar clientes y técnicos registrados.</p>
-          <button class="admin-btn" routerLink="/users">
-            Ver usuarios
-          </button>
+    <aside class="dashboard-side">
+      <ui-card class="dashboard-panel">
+        <ui-section-header
+          eyebrow="Estado operativo"
+          title="Resumen del sistema"
+          subtitle="Indicadores clave del entorno HVAC y de la plataforma administrativa."
+        />
+
+        <div class="status-list">
+          <div class="status-list__item">
+            <span>Equipos operativos</span>
+            <strong>{{ equiposOperativos }}</strong>
+          </div>
+          <div class="status-list__item">
+            <span>Lecturas fuera de rango</span>
+            <strong>{{ alertasActivas }}</strong>
+          </div>
+          <div class="status-list__item">
+            <span>Servicios pendientes</span>
+            <strong>{{ serviciosPendientes }}</strong>
+          </div>
+          <div class="status-list__item">
+            <span>Plataforma</span>
+            <ui-badge [tone]="systemIndicatorTone">{{ systemIndicator }}</ui-badge>
+          </div>
+        </div>
+      </ui-card>
+
+      <ui-card class="dashboard-panel">
+        <ui-section-header
+          eyebrow="Accesos rápidos"
+          title="Atajos del panel"
+          subtitle="Acciones frecuentes para administración y seguimiento."
+        />
+
+        <div class="quick-links">
+          <a *ngFor="let item of quickLinks" [routerLink]="item.route" class="quick-link">
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.description }}</span>
+          </a>
+        </div>
+      </ui-card>
+    </aside>
+  </section>
+
+  <section class="dashboard-grid dashboard-grid--bottom">
+    <ui-card class="dashboard-panel dashboard-panel--table">
+      <ui-section-header
+        eyebrow="Actividad reciente"
+        [title]="recentActivityTitle"
+        subtitle="Detalle de telemetría reciente para revisar comportamiento por equipo, origen y observaciones."
+      />
+
+      <div class="readings-table" *ngIf="recentRows.length; else emptyRows">
+        <div class="readings-table__head">
+          <span>Equipo</span>
+          <span>Fecha y hora</span>
+          <span>Temperatura</span>
+          <span>Humedad</span>
+          <span>Corriente</span>
+          <span>Origen</span>
+          <span>Observación</span>
         </div>
 
-        <div class="admin-card">
-          <h3>Servicios</h3>
-          <p>Administrar servicios pendientes y completados.</p>
-          <button class="admin-btn" routerLink="/services">
-            Ver servicios
-          </button>
+        <div class="readings-table__row" *ngFor="let row of recentRows">
+          <span class="readings-table__cell">
+            <small class="readings-table__label">Equipo</small>
+            <strong>{{ row.equipo }}</strong>
+          </span>
+          <span class="readings-table__cell">
+            <small class="readings-table__label">Fecha</small>
+            {{ row.fecha }}
+          </span>
+          <span class="readings-table__cell">
+            <small class="readings-table__label">Temperatura</small>
+            {{ row.temperatura }}
+          </span>
+          <span class="readings-table__cell">
+            <small class="readings-table__label">Humedad</small>
+            {{ row.humedad }}
+          </span>
+          <span class="readings-table__cell">
+            <small class="readings-table__label">Corriente</small>
+            {{ row.corriente }}
+          </span>
+          <span class="readings-table__cell readings-table__cell--badge">
+            <small class="readings-table__label">Origen</small>
+            <ui-badge [tone]="row.origenTone">{{ row.origen }}</ui-badge>
+          </span>
+          <span class="readings-table__cell readings-table__cell--observation" [attr.title]="row.observacion">
+            <small class="readings-table__label">Observación</small>
+            {{ row.observacion }}
+          </span>
         </div>
+      </div>
+    </ui-card>
 
-        <div class="admin-card">
-          <h3>Reportes</h3>
-          <p>Revisar estadísticas y rendimiento del sistema.</p>
-          <button class="admin-btn" routerLink="/reports">
-            Ver reportes
-          </button>
+    <ui-card class="dashboard-panel dashboard-panel--alerts" [glass]="true">
+      <ui-section-header
+        eyebrow="Alertas"
+        title="Lecturas que requieren atención"
+        subtitle="Eventos recientes fuera de umbral para facilitar seguimiento operativo."
+      />
+
+      <div class="alert-list" *ngIf="alertItems.length; else emptyAlerts">
+        <div class="alert-list__item" *ngFor="let alert of alertItems">
+          <div class="alert-list__copy">
+            <strong>{{ alert.equipo }}</strong>
+            <p>{{ alert.variable }} fuera de rango</p>
+            <small>{{ alert.motivo }} · {{ alert.fecha }}</small>
+          </div>
+          <ui-badge [tone]="alert.severidad">
+            {{ alert.severidad === 'error' ? 'Crítica' : 'Revisar' }}
+          </ui-badge>
         </div>
+      </div>
+    </ui-card>
+  </section>
+</section>
+
+<ng-template #loadingState>
+  <section class="dashboard dashboard--loading">
+    <div class="dashboard-hero dashboard-skeleton">
+      <div class="skeleton-block skeleton-block--title"></div>
+      <div class="skeleton-chip"></div>
+    </div>
+
+    <div class="dashboard-kpis">
+      <div class="skeleton-card" *ngFor="let item of [1, 2, 3, 4, 5, 6]">
+        <div class="skeleton-block skeleton-block--eyebrow"></div>
+        <div class="skeleton-block skeleton-block--value"></div>
+        <div class="skeleton-block skeleton-block--meta"></div>
       </div>
     </div>
-  </main>
-</div>
+
+    <section class="dashboard-grid">
+      <div class="skeleton-panel skeleton-panel--large">
+        <div class="skeleton-block skeleton-block--section"></div>
+        <div class="skeleton-trends">
+          <div class="skeleton-mini-chart" *ngFor="let item of [1, 2, 3]"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-side">
+        <div class="skeleton-panel">
+          <div class="skeleton-block skeleton-block--section"></div>
+          <div class="skeleton-list-item" *ngFor="let item of [1, 2, 3, 4]"></div>
+        </div>
+        <div class="skeleton-panel">
+          <div class="skeleton-block skeleton-block--section"></div>
+          <div class="skeleton-list-item" *ngFor="let item of [1, 2, 3, 4]"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid dashboard-grid--bottom">
+      <div class="skeleton-panel skeleton-panel--large">
+        <div class="skeleton-block skeleton-block--section"></div>
+        <div class="skeleton-table-row" *ngFor="let item of [1, 2, 3, 4, 5]"></div>
+      </div>
+
+      <div class="skeleton-panel">
+        <div class="skeleton-block skeleton-block--section"></div>
+        <div class="skeleton-list-item" *ngFor="let item of [1, 2, 3, 4]"></div>
+      </div>
+    </section>
+  </section>
+</ng-template>
+
+<ng-template #emptyTrend>
+  <div class="empty-state">Todavía no hay datos suficientes para visualizar la tendencia.</div>
+</ng-template>
+
+<ng-template #emptyRows>
+  <div class="empty-state">Todavía no hay lecturas recientes para mostrar en la tabla.</div>
+</ng-template>
+
+<ng-template #emptyAlerts>
+  <div class="empty-state">No hay alertas recientes disponibles.</div>
+</ng-template>

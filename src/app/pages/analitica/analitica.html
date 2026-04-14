@@ -1,0 +1,62 @@
+<section class="analytics-page">
+  <header class="analytics-hero">
+    <div class="analytics-hero__copy">
+      <p class="analytics-hero__eyebrow">Analítica ejecutiva</p>
+      <h2>Analítica avanzada</h2>
+      <p>
+        Dashboard ejecutivo y análisis histórico del sistema para complementar el monitoreo
+        operativo del panel administrativo.
+      </p>
+    </div>
+
+    <div class="analytics-hero__meta">
+      <ui-badge tone="primary">Power BI embebido</ui-badge>
+      <span>Vista preparada para indicadores estratégicos y comparativos históricos.</span>
+    </div>
+  </header>
+
+  <!-- <section class="analytics-summary">
+    <ui-card class="analytics-summary__card">
+      <div class="analytics-summary__item">
+        <small>Ubicación del enlace</small>
+        <strong>`powerBiEmbedUrl` en el componente</strong>
+      </div>
+      <div class="analytics-summary__item">
+        <small>Estado</small>
+        <strong>{{ hasEmbedUrl ? 'Dashboard configurado' : 'Pendiente de configuración' }}</strong>
+      </div>
+      <div class="analytics-summary__item">
+        <small>Uso recomendado</small>
+        <strong>KPIs ejecutivos, históricos y análisis comparativo</strong>
+      </div>
+    </ui-card>
+  </section> -->
+
+  <ui-card class="analytics-panel" [glass]="true">
+    <ui-section-header
+      eyebrow="Panel embebido"
+      title="Dashboard de Power BI"
+      subtitle="Pega tu enlace de Power BI en la propiedad del componente para mostrar el dashboard aquí sin mezclarlo con el inicio operativo."
+    />
+
+    <div class="analytics-embed" *ngIf="safeEmbedUrl; else emptyEmbed">
+      <iframe
+        [src]="safeEmbedUrl"
+        title="Dashboard de Power BI"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+    </div>
+  </ui-card>
+</section>
+
+<ng-template #emptyEmbed>
+  <div class="analytics-empty">
+    <div class="analytics-empty__icon">BI</div>
+    <h3>Configura el enlace de Power BI para visualizar el dashboard</h3>
+    <p>
+      Abre <code>src/app/pages/analitica/analitica.ts</code> y reemplaza el valor de
+      <strong>powerBiEmbedUrl</strong> por el enlace de Power BI embebido.
+    </p>
+  </div>
+</ng-template>

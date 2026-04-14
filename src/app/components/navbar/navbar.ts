@@ -1,22 +1,23 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+
+import { ButtonComponent } from '../../ui/button/button';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FormsModule, RouterModule],
+  standalone: true,
+  imports: [RouterModule, ButtonComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar {
+  constructor(private readonly router: Router) {}
 
-  constructor(private router: Router) {}
-
-  goToRegister() {
+  goToRegister(): void {
     this.router.navigate(['/register']);
   }
 
-  goToLogin() {
+  goToLogin(): void {
     this.router.navigate(['/login']);
   }
 }

@@ -1,0 +1,11 @@
+<div class="ds-tabs">
+  <button
+    *ngFor="let item of items"
+    type="button"
+    class="ds-tab"
+    [class.is-active]="item.id === activeId"
+    (click)="activeIdChange.emit(item.id)"
+  >
+    {{ item.label }}
+  </button>
+</div>

@@ -5,6 +5,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
+import { ButtonComponent } from '../../ui/button/button';
+import { CardComponent } from '../../ui/card/card';
+import { InputComponent } from '../../ui/input/input';
 import { requiredTrimmed } from '../../shared/validation/custom-validators';
 import {
   controlInvalid,
@@ -24,7 +27,7 @@ declare global {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ButtonComponent, CardComponent, InputComponent],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
 })
@@ -34,6 +37,7 @@ export class LoginComponent implements OnInit {
   readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email, requiredTrimmed]],
     password: ['', [Validators.required, requiredTrimmed]],
+    keepSession: [false],
   });
 
   submitted = false;
@@ -125,6 +129,12 @@ export class LoginComponent implements OnInit {
 
     this.isSubmitting = true;
 
+    const formValue = this.loginForm.getRawValue();
+    const payload = {
+      email: formValue.email,
+      password: formValue.password,
+    };
+
     this.http
       .post<{
         access_token: string;
@@ -135,7 +145,7 @@ export class LoginComponent implements OnInit {
           email: string;
           role_id: number;
         };
-      }>('http://localhost:8000/users/user_login', this.loginForm.getRawValue())
+      }>('http://localhost:8000/users/user_login', payload)
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (response) => {
@@ -165,7 +175,7 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('userLastName', response.user.last_name);
 
           this.notificationService.success(
-            'Sesion iniciada',
+            'Sesión iniciada',
             'Tu acceso fue validado correctamente.',
           );
 
@@ -183,7 +193,7 @@ export class LoginComponent implements OnInit {
         error: (error) => {
           console.error('Error login:', error);
           this.serverError = error.error?.detail || 'Error conectando con el servidor.';
-          this.notificationService.error('No se pudo iniciar sesion', this.serverError);
+          this.notificationService.error('No se pudo iniciar sesión', this.serverError);
         },
       });
   }

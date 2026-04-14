@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.ds-card {
+  padding: 1.75rem;
+  height: 100%;
+}
+
+.ui-card--flush {
+  padding: 0;
+}

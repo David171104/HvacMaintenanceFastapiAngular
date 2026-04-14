@@ -1,0 +1,193 @@
+/* =====================================================
+   CLIENT LAYOUT — Prefijo: client-layout
+   Clon del admin-layout con identidad visual del cliente
+===================================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.client-layout {
+  --client-sidebar-width: 288px;
+  --client-shell-gap: 1rem;
+  display: grid;
+  grid-template-columns: var(--client-sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(105, 246, 184, 0.06), transparent 22%),
+    linear-gradient(180deg, #07101f 0%, #060b18 100%);
+}
+
+.client-layout.sidebar-collapsed {
+  --client-sidebar-width: 96px;
+}
+
+.client-layout__backdrop {
+  display: none;
+}
+
+.client-layout__sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  min-width: 0;
+  height: 100vh;
+  padding: 1rem 0 1rem 1rem;
+}
+
+.client-layout__main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--client-shell-gap);
+  min-width: 0;
+  min-height: 100vh;
+  padding: 1rem 1rem 1rem 0;
+}
+
+.client-layout__topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 1rem;
+  z-index: 15;
+  padding: 1rem 1.25rem;
+  border-radius: 1.6rem;
+  background:
+    linear-gradient(180deg, rgba(10, 17, 34, 0.92), rgba(8, 14, 29, 0.9));
+  border: 1px solid rgba(116, 128, 156, 0.14);
+  box-shadow:
+    0 20px 50px rgba(2, 8, 24, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.client-layout__menu {
+  display: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 1rem;
+  background: rgba(105, 246, 184, 0.12);
+  color: var(--secondary);
+  font-size: 1.1rem;
+}
+
+.client-layout__topbar-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.client-layout__eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.client-layout__title {
+  margin: 0;
+  color: var(--on-surface-strong);
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+
+.client-layout__description {
+  margin: 0;
+  color: #9fb0cf;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.client-layout__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  background: rgba(105, 246, 184, 0.08);
+  color: var(--secondary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.client-layout__status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--secondary);
+  box-shadow: 0 0 10px rgba(105, 246, 184, 0.45);
+  animation: client-status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes client-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.client-layout__content {
+  min-width: 0;
+  min-height: 0;
+  padding: 0 0.2rem 0.2rem;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────── */
+@media (max-width: 960px) {
+  .client-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .client-layout__sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(22rem, calc(100vw - 2rem));
+    height: 100vh;
+    transform: translateX(calc(-100% - 1rem));
+    transition: transform var(--transition-slow);
+    padding: 1rem;
+  }
+
+  .client-layout.mobile-sidebar-open .client-layout__sidebar {
+    transform: translateX(0);
+  }
+
+  .client-layout__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+    z-index: 20;
+    display: block;
+  }
+
+  .client-layout.mobile-sidebar-open .client-layout__backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .client-layout__main {
+    padding: 1rem;
+  }
+
+  .client-layout__topbar {
+    top: 0;
+  }
+
+  .client-layout__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .client-layout__description,
+  .client-layout__status {
+    display: none;
+  }
+}

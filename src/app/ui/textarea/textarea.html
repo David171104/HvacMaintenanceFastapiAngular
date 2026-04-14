@@ -1,0 +1,16 @@
+<label class="ds-field">
+  <span class="ds-label" *ngIf="label">{{ label }}</span>
+  <textarea
+    class="ds-control ds-textarea"
+    [class.ds-control--invalid]="!!error"
+    [id]="inputId || null"
+    [rows]="rows"
+    [value]="value"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  ></textarea>
+  <small class="ds-hint" *ngIf="hint && !error">{{ hint }}</small>
+  <small class="ds-error" *ngIf="error">{{ error }}</small>
+</label>

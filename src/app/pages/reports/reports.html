@@ -1,63 +1,174 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
-
-  <main class="home-content">
-    <div class="admin-container">
-
-      <div class="admin-header">
-        <h1 class="admin-title">Gestión de Reportes</h1>
-        <p class="admin-subtitle">Estadísticas y administración del sistema</p>
-      </div>
-
-      <div class="admin-card">
-
-        <ul class="admin-tabs" role="tablist">
-          <li class="admin-tab-item">
-            <button class="admin-tab-link active"
-                    data-bs-toggle="tab"
-                    data-bs-target="#estadisticas"
-                    type="button">
-              Estadísticas
-            </button>
-          </li>
-          <li class="admin-tab-item">
-            <button class="admin-tab-link"
-                    data-bs-toggle="tab"
-                    data-bs-target="#listado"
-                    type="button">
-              Listado
-            </button>
-          </li>
-          <li class="admin-tab-item">
-            <button class="admin-tab-link"
-                    data-bs-toggle="tab"
-                    data-bs-target="#lecturas"
-                    type="button">
-              Lecturas
-            </button>
-          </li>
-        </ul>
-
-        <div class="tab-content admin-tab-content">
-          <div class="tab-pane fade show active" id="estadisticas">
-            <app-statistics></app-statistics>
-          </div>
-
-          <div class="tab-pane fade" id="listado">
-            <app-user-list></app-user-list>
-          </div>
-
-          <div class="tab-pane fade" id="lecturas">
-            <app-lecturascomponent></app-lecturascomponent>
-          </div>
-
-          <div class="tab-pane fade" id="contact">
-            <!-- <app-nuevousuario></app-nuevousuario> -->
-          </div>
-        </div>
-
-      </div>
-
+<div class="reports-page">
+  <header class="reports-hero">
+    <div>
+      <p class="reports-eyebrow">Documentos administrativos</p>
+      <h1>Centro de reportes ClimaTech</h1>
+      <p class="reports-lead">
+        Genera PDFs reales a partir de usuarios, servicios y lecturas IoT. La vista de
+        Lecturas queda para operación diaria; aquí concentramos la salida documental.
+      </p>
     </div>
-  </main>
+
+    <button
+      type="button"
+      class="reports-refresh"
+      (click)="loadOptions()"
+      [disabled]="optionsLoading"
+    >
+      {{ optionsLoading ? 'Actualizando filtros...' : 'Actualizar filtros' }}
+    </button>
+  </header>
+
+  <p class="reports-state reports-state-error" *ngIf="optionsError">{{ optionsError }}</p>
+  <p class="reports-state reports-state-info" *ngIf="optionsLoading">
+    Cargando catalogos de reportes y filtros disponibles...
+  </p>
+
+  <section class="reports-grid">
+    <article class="report-card">
+      <div class="report-card__head">
+        <span class="report-card__badge">PDF 01</span>
+        <h2>Historial de lecturas IoT</h2>
+        <p>
+          Exporta lecturas reales desde PostgreSQL con fecha, equipo, temperatura, humedad,
+          corriente, observación y origen manual o IoT.
+        </p>
+      </div>
+
+      <div class="report-filters">
+        <label class="report-field">
+          <span>Desde</span>
+          <input type="date" [(ngModel)]="readingsFilters.date_from" />
+        </label>
+
+        <label class="report-field">
+          <span>Hasta</span>
+          <input type="date" [(ngModel)]="readingsFilters.date_to" />
+        </label>
+
+        <label class="report-field">
+          <span>Equipo IoT</span>
+          <select [(ngModel)]="readingsFilters.equipment_id">
+            <option value="">Todos los equipos</option>
+            <option *ngFor="let equipment of equipmentOptions" [value]="equipment.id">
+              {{ equipment.name }} · {{ equipment.location }}
+            </option>
+          </select>
+        </label>
+
+        <label class="report-field">
+          <span>Limite de filas</span>
+          <input type="number" min="1" max="500" [(ngModel)]="readingsFilters.limit" />
+        </label>
+      </div>
+
+      <button
+        type="button"
+        class="report-download"
+        (click)="downloadReadingsReport()"
+        [disabled]="downloadingReadings || optionsLoading"
+      >
+        {{ downloadingReadings ? 'Generando PDF...' : 'Descargar PDF' }}
+      </button>
+    </article>
+
+    <article class="report-card">
+      <div class="report-card__head">
+        <span class="report-card__badge">PDF 02</span>
+        <h2>Servicios y mantenimientos</h2>
+        <p>
+          Consolida solicitudes, tecnico asignado, estado, tipo de servicio y detalle del
+          informe tecnico cuando exista en MySQL.
+        </p>
+      </div>
+
+      <div class="report-filters">
+        <label class="report-field">
+          <span>Desde</span>
+          <input type="date" [(ngModel)]="servicesFilters.date_from" />
+        </label>
+
+        <label class="report-field">
+          <span>Hasta</span>
+          <input type="date" [(ngModel)]="servicesFilters.date_to" />
+        </label>
+
+        <label class="report-field">
+          <span>Técnico</span>
+          <select [(ngModel)]="servicesFilters.technician_id">
+            <option [ngValue]="null">Todos los técnicos</option>
+            <option *ngFor="let technician of technicians" [ngValue]="technician.id">
+              {{ technician.name }}
+            </option>
+          </select>
+        </label>
+
+        <label class="report-field">
+          <span>Estado</span>
+          <select [(ngModel)]="servicesFilters.status">
+            <option value="">Todos los estados</option>
+            <option *ngFor="let status of serviceStatuses" [value]="status">
+              {{ status | titlecase }}
+            </option>
+          </select>
+        </label>
+
+        <label class="report-field report-field-wide">
+          <span>Tipo de servicio</span>
+          <select [(ngModel)]="servicesFilters.service_type">
+            <option value="">Todos los tipos</option>
+            <option *ngFor="let serviceType of serviceTypes" [value]="serviceType">
+              {{ serviceType }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <button
+        type="button"
+        class="report-download"
+        (click)="downloadServicesReport()"
+        [disabled]="downloadingServices || optionsLoading"
+      >
+        {{ downloadingServices ? 'Generando PDF...' : 'Descargar PDF' }}
+      </button>
+    </article>
+
+    <article class="report-card report-card-summary">
+      <div class="report-card__head">
+        <span class="report-card__badge">PDF 03</span>
+        <h2>Resumen administrativo consolidado</h2>
+        <p>
+          Cruza métricas reales de usuarios, servicios, equipos cliente y lecturas IoT para
+          entregar un resumen ejecutivo de operación.
+        </p>
+      </div>
+
+      <div class="report-filters report-filters-inline">
+        <label class="report-field">
+          <span>Desde</span>
+          <input type="date" [(ngModel)]="summaryFilters.date_from" />
+        </label>
+
+        <label class="report-field">
+          <span>Hasta</span>
+          <input type="date" [(ngModel)]="summaryFilters.date_to" />
+        </label>
+      </div>
+
+      <div class="report-summary-note">
+        Incluye total de usuarios, servicios, equipos IoT, equipos de clientes, promedios de
+        lecturas y distribución por roles y estados.
+      </div>
+
+      <button
+        type="button"
+        class="report-download"
+        (click)="downloadSummaryReport()"
+        [disabled]="downloadingSummary || optionsLoading"
+      >
+        {{ downloadingSummary ? 'Generando PDF...' : 'Descargar PDF' }}
+      </button>
+    </article>
+  </section>
 </div>

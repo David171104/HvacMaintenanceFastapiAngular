@@ -1,146 +1,221 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
+<section class="admin-page">
+  <header class="admin-page__hero">
+    <div>
+      <p class="admin-page__eyebrow">Operación de servicios</p>
+      <h1 class="admin-page__title">Gestión de servicios</h1>
+      <p class="admin-page__subtitle">
+        Controla asignaciones técnicas, seguimiento de solicitudes y cierre operativo desde un solo lugar.
+      </p>
+    </div>
+  </header>
 
-  <main class="home-content">
+  <p class="admin-page__error" *ngIf="error">{{ error }}</p>
 
-    <div class="services-container">
+  <section class="admin-surface">
+    <div class="admin-surface__header">
+      <div>
+        <h2>Servicios registrados</h2>
+        <p>Tabla operativa con asignación, estado actual y acciones disponibles.</p>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="admin-surface__meta">{{ services.length }} registros</span>
+        <button class="ds-button ds-button-primary" (click)="abrirModalCreacion()">+ Nuevo Servicio Manual</button>
+      </div>
+    </div>
 
-  <!-- HEADER -->
-  <div class="services-header">
-    <h1 class="services-title">Gestión de Servicios</h1>
-    <p class="services-subtitle">
-      Control y seguimiento de solicitudes de servicio
-    </p>
+    <div class="services-state" *ngIf="loading">
+      <div class="services-skeleton-row" *ngFor="let item of [1, 2, 3, 4, 5]"></div>
+    </div>
+
+    <div class="services-table-shell" *ngIf="!loading && services.length > 0">
+      <table class="services-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let service of services; trackBy: trackById">
+            <td>#{{ service.id }}</td>
+            <td>{{ service.client_name }}</td>
+            <td>{{ service.technician_name || 'Sin asignar' }}</td>
+            <td>{{ service.service_type }}</td>
+            <td>{{ formatearFecha(service.request_date) }}</td>
+            <td>{{ formatearHora(service.request_time) }}</td>
+            <td>{{ service.address }}</td>
+            <td [innerHTML]="getStatusHTML(service.current_status)"></td>
+            <td class="actions">
+              <button
+                *ngIf="service.current_status === 'pending' || service.current_status === 'assigned'"
+                class="action-btn"
+                [ngClass]="{
+                  'action-btn--secondary': service.current_status === 'pending',
+                  'action-btn--reassign': service.current_status === 'assigned'
+                }"
+                (click)="openAssignModal(service)"
+              >
+                {{ service.current_status === 'assigned' ? 'Reasignar técnico' : 'Asignar técnico' }}
+              </button>
+
+              <!-- <button
+                *ngIf="service.current_status === 'assigned'"
+                class="action-btn action-btn--primary"
+                (click)="confirmComplete(service)"
+              >
+                Completar servicio
+              </button> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admin-empty" *ngIf="!loading && services.length === 0">
+      No hay servicios para mostrar en este momento.
+    </div>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal">
+      <h2 class="modal-title">Seleccionar técnico</h2>
+
+      <div class="modal-state" *ngIf="loadingTechnicians">Cargando técnicos disponibles...</div>
+
+      <label class="modal-label">Técnico asignado</label>
+
+      <select [(ngModel)]="selectedTechnicianId" *ngIf="!loadingTechnicians">
+        <option [ngValue]="null">Selecciona un técnico</option>
+        <option *ngFor="let tech of technicians" [ngValue]="tech.id">
+          {{ tech.name }} {{ tech.last_name }}
+        </option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
+        <button
+          class="modal-btn modal-btn--primary"
+          [disabled]="!selectedTechnicianId"
+          (click)="assignTechnician(selectedTechnicianId)"
+        >
+          Asignar técnico
+        </button>
+      </div>
+    </div>
   </div>
 
-      <div class="services-table-wrapper">
+  <!-- Modal de Creación de Servicio Manual -->
+  <div class="modal-backdrop" *ngIf="showModalCreacion">
+    <div class="modal modal--large">
+      <div class="modal__header">
+        <h2 class="modal-title">Nuevo Servicio Manual</h2>
+        <p class="modal-subtitle">Asigna un servicio manualmente a un cliente.</p>
+      </div>
+      <p class="admin-page__error" *ngIf="creacionError">{{ creacionError }}</p>
 
-        <!-- ERROR -->
-        <p class="services-error" *ngIf="error">{{ error }}</p>
+      <form class="modal__form" [formGroup]="creacionForm" (ngSubmit)="guardarServicioManual()" novalidate>
+        
+        <div class="cs-form-grid">
+          <!-- Cliente -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="client_id_select">Cliente *</label>
+            <select
+              id="client_id_select"
+              class="cs-control"
+              formControlName="client_id"
+            >
+              <option [ngValue]="null">Selecciona un cliente</option>
+              <option *ngFor="let client of clientesList" [ngValue]="client.id">
+                {{ client.name }} {{ client.last_name }}
+              </option>
+            </select>
+            <div class="modal-state" *ngIf="loadingClientes">Cargando clientes...</div>
+          </div>
 
-        <!-- LOADING -->
-        <div class="services-state" *ngIf="loading">
-          ⏳ Cargando servicios...
+          <!-- Técnico Asignado -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="technician_id_select">Técnico Asignado</label>
+            <select
+              id="technician_id_select"
+              class="cs-control"
+              formControlName="technician_id"
+            >
+              <option [ngValue]="null">Pendiente de asignación</option>
+              <option *ngFor="let tech of technicians" [ngValue]="tech.id">
+                {{ tech.name }} {{ tech.last_name }}
+              </option>
+            </select>
+            <div class="modal-state" *ngIf="loadingTechnicians">Cargando técnicos...</div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="request_date_input">Fecha *</label>
+            <input
+              type="date"
+              id="request_date_input"
+              class="cs-control"
+              formControlName="request_date"
+            />
+          </div>
+
+          <!-- Hora -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="request_time_input">Hora *</label>
+            <input
+              type="time"
+              id="request_time_input"
+              class="cs-control"
+              formControlName="request_time"
+            />
+          </div>
+
+          <!-- Tipo de Servicio -->
+          <div class="cs-form-group">
+            <label class="cs-label" for="service_type_select">Tipo de Servicio *</label>
+            <select
+              id="service_type_select"
+              class="cs-control"
+              formControlName="service_type"
+            >
+              <option value="Preventivo">Preventivo</option>
+              <option value="Correctivo">Correctivo</option>
+              <option value="Instalación">Instalación</option>
+            </select>
+          </div>
+
+          <!-- Dirección (Full Width) -->
+          <div class="cs-form-group cs-form-group--full">
+            <label class="cs-label" for="address_input">Dirección *</label>
+            <input
+              type="text"
+              id="address_input"
+              class="cs-control"
+              formControlName="address"
+              placeholder="Dirección completa del servicio"
+            />
+          </div>
         </div>
 
-    <!-- TABLA -->
-    <table
-      class="services-table"
-      *ngIf="!loading && services.length > 0"
-    >
-
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Técnico</th>
-          <th>Tipo</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-
-          <tbody>
-
-        <tr *ngFor="let service of services; trackBy: trackById">
-
-          <td>#{{ service.id }}</td>
-          <td>{{ service.client_name }}</td>
-          <td>{{ service.technician_name || '—' }}</td>
-          <td>{{ service.service_type }}</td>
-          <td>{{ service.request_date }}</td>
-          <td>{{ service.request_time }}</td>
-          <td>{{ service.address }}</td>
-
-          <td [innerHTML]="getStatusHTML(service.current_status)"></td>
-
-          <td class="actions">
-
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-btn--ghost" (click)="cerrarModalCreacion()">Cancelar</button>
           <button
-            *ngIf="service.current_status !== 'completed'"
-            class="assign-btn"
-            [class.reassign]="service.technician_name"
-            (click)="openAssignModal(service)">
-            {{ service.technician_name ? 'Reasignar Técnico' : 'Asignar Técnico' }}
+            type="submit"
+            class="modal-btn modal-btn--primary"
+            [disabled]="creacionForm.invalid || isCreando"
+          >
+            {{ isCreando ? 'Guardando...' : 'Crear Servicio' }}
           </button>
-
-            <button
-              *ngIf="service.current_status === ''"
-              class="complete-btn"
-              (click)="confirmComplete(service)"
-              >
-              Marcar como completado
-            </button>
-
-            
-
-          </td>
-
-        </tr>
-
-      </tbody>
-    </table>
-
-  </div>
-</div>
-
-
-<!-- =====================================================
-                     MODAL TECNICOS
-===================================================== -->
-
-<div class="modal-backdrop" *ngIf="showModal">
-
-  <div class="modal">
-
-    <h2 class="modal-title">
-      Seleccionar Técnico
-    </h2>
-
-    <!-- LOADING -->
-    <div *ngIf="loadingTechnicians">
-      Cargando técnicos...
+        </div>
+      </form>
     </div>
-
-    <!-- LISTA TECNICOS -->
-    <label>Seleccione un técnico:</label>
-
-    <select
-      [(ngModel)]="selectedTechnicianId"
-      *ngIf="!loadingTechnicians"
-    >
-      <option [ngValue]="null">-- Seleccionar --</option>
-
-      <option
-        *ngFor="let tech of technicians"
-        [ngValue]="tech.id"
-      >
-        {{ tech.name }} {{ tech.last_name }}
-      </option>
-    </select>
-
-
-    <!-- BOTONES -->
-    <div class="modal-actions">
-
-      <button
-        class="cancel-btn"
-        (click)="closeModal()">
-        Cancelar
-      </button>
-
-      <button
-        class="save-btn"
-        [disabled]="!selectedTechnicianId"
-        (click)="assignTechnician()">
-        Asignar Técnico
-      </button>
-
-    </div>
-
   </div>
-
-</div>
+</section>

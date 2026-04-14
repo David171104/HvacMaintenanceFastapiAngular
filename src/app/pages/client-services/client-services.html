@@ -1,52 +1,30 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
+<div class="client-container">
+  <div class="client-header">
+    <h1 class="client-title">
+      Mis <span class="client-gradient">Servicios</span>
+    </h1>
+    <p class="client-subtitle">
+      Aquí puedes ver todos los servicios que has solicitado.
+    </p>
+  </div>
 
-  <main class="home-content">
-    <div class="client-container">
-      <div class="client-header">
-        <h1 class="client-title">
-          Mis <span class="client-gradient">Servicios</span>
-        </h1>
+  <div class="client-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3>Lista de Servicios</h3>
+      <button class="client-btn" type="button" (click)="solicitarServicio()">
+        Solicitar Servicio
+      </button>
+    </div>
 
-        <p class="client-subtitle">
-          Aquí puedes ver todos los servicios que has solicitado.
-        </p>
-      </div>
+    <p *ngIf="servicesError" class="services-error">
+      {{ servicesError }}
+    </p>
 
-      <div class="client-card">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-          <h3>Lista de Servicios</h3>
-
-          <button class="client-btn" type="button" (click)="solicitarServicio()">
-            Solicitar Servicio
-          </button>
-        </div>
-
-         <!-- ======================
-       LOADING
-  ======================= -->
-  @if (loadingServices) {
-    <div class="loading">
+    <p *ngIf="loadingServices" class="services-loading">
       Cargando servicios...
-    </div>
-  }
+    </p>
 
-  <!-- ======================
-       SIN SERVICIOS
-  ======================= -->
-  @if (!loadingServices && servicios.length === 0) {
-    <div class="empty-state">
-      No tienes servicios registrados.
-    </div>
-  }
-
-  <!-- ======================
-       TABLA
-  ======================= -->
-  @if (!loadingServices && servicios.length > 0) {
-
-    <table class="services-table">
-
+    <table class="user-table" *ngIf="!loadingServices && servicios.length > 0">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -54,117 +32,88 @@
           <th>Tipo</th>
           <th>Dirección</th>
           <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
 
-      <tbody>
-
-        @for (service of servicios; track service.id) {
-
-          <tr>
-
-            <td>
-              {{ service.request_date | date:'dd/MM/yyyy' }}
-            </td>
-
-            <td>
-              {{ formatearHora(service.request_time) }}
-            </td>
-
-            <td>
-              {{ service.service_type }}
-            </td>
-
-            <td class="address">
-              {{ service.address }}
-            </td>
-
-            <td>
-              <span
-                class="status"
-                [ngClass]="{
-                  pending: service.current_status === 'pending',
-                  assigned: service.current_status === 'assigned',
-                  completed: service.current_status === 'completed',
-                  cancelled: service.current_status === 'cancelled'
-                }"
-              >
-                {{ service.current_status }}
-              </span>
-            </td>
-
-          </tr>
-
-        }
-
-      </tbody>
-
-    </table>
-
-  }
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align:center;">
+                Sin servicios aún
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <button class="cs-modal__close" type="button" (click)="cerrarModal()" aria-label="Cerrar formulario">
+        ×
+      </button>
     </div>
 
-    <div *ngIf="showModal" class="modal-backdrop">
-      <div class="modal">
-        <h3>Solicitar Servicio</h3>
-
-        <form [formGroup]="serviceForm" (ngSubmit)="guardarServicio()" novalidate>
-          <label>Fecha del servicio *</label>
-          <input
-            type="date"
-            formControlName="request_date"
-            [min]="minServiceDate"
-          />
-          <small *ngIf="isInvalid('request_date')">
-            {{ getError('request_date', 'Fecha del servicio') }}
-          </small>
-
-          <label>Hora del servicio *</label>
-          <input
-            type="time"
-            formControlName="request_time"
-            min="08:00"
-            max="17:00"
-          />
-          <small *ngIf="isInvalid('request_time')">
-            {{ getError('request_time', 'Hora del servicio') }}
-          </small>
-
-          <label>Tipo de servicio *</label>
-          <select formControlName="service_type">
-            <option value="Correctivo">Correctivo</option>
-            <option value="Preventivo">Preventivo</option>
-          </select>
-          <small *ngIf="isInvalid('service_type')">
-            {{ getError('service_type', 'Tipo de servicio') }}
-          </small>
-
-          <label>Dirección *</label>
-          <input
-            type="text"
-            placeholder="Dirección del servicio"
-            formControlName="address"
-          />
-          <small *ngIf="isInvalid('address')">
-            {{ getError('address', 'Dirección') }}
-          </small>
-
-          <p *ngIf="submitError" class="services-error">
-            {{ submitError }}
-          </p>
-
-          <div class="modal-actions">
-            <button class="client-btn" type="submit" [disabled]="isSubmitting">
-              {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
-            </button>
-
-            <button class="cancel-btn" type="button" (click)="cerrarModal()">
-              Cancelar
-            </button>
-          </div>
-        </form>
+    <form class="cs-modal__form" [formGroup]="serviceForm" (ngSubmit)="guardarServicio()" novalidate>
+      <div class="cs-form-group">
+        <label class="cs-label">Fecha del servicio *</label>
+        <input
+          class="cs-control"
+          type="date"
+          formControlName="request_date"
+          [min]="minServiceDate"
+        />
+        <small class="cs-error" *ngIf="isInvalid('request_date')">
+          {{ getError('request_date', 'Fecha del servicio') }}
+        </small>
       </div>
-    </div>
-  </main>
+
+      <div class="cs-form-group">
+        <label class="cs-label">Hora del servicio *</label>
+        <input
+          class="cs-control"
+          type="time"
+          formControlName="request_time"
+          min="08:00"
+          max="17:00"
+        />
+        <small class="cs-error" *ngIf="isInvalid('request_time')">
+          {{ getError('request_time', 'Hora del servicio') }}
+        </small>
+      </div>
+
+      <div class="cs-form-group">
+        <label class="cs-label">Tipo de servicio *</label>
+        <select class="cs-control" formControlName="service_type">
+          <option value="Correctivo">Correctivo</option>
+          <option value="Preventivo">Preventivo</option>
+        </select>
+        <small class="cs-error" *ngIf="isInvalid('service_type')">
+          {{ getError('service_type', 'Tipo de servicio') }}
+        </small>
+      </div>
+
+      <div class="cs-form-group">
+        <label class="cs-label">Dirección *</label>
+        <input
+          class="cs-control"
+          type="text"
+          placeholder="Ej: Calle 45 #12-30, Bogotá"
+          formControlName="address"
+        />
+        <small class="cs-error" *ngIf="isInvalid('address')">
+          {{ getError('address', 'Dirección') }}
+        </small>
+      </div>
+
+      <p *ngIf="submitError" class="cs-error cs-error--block">
+        {{ submitError }}
+      </p>
+
+      <div class="cs-modal__actions">
+        <button class="ds-button ds-button-primary" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <button class="ds-button ds-button-secondary" type="button" (click)="cerrarModal()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

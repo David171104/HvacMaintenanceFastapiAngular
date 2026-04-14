@@ -1,26 +1,20 @@
 <nav class="navbar-container">
   <div class="navbar-left">
-    <a href="#" class="navbar-link">Inicio</a>
-    <a routerLink="/" fragment="servicios" class="navbar-link">Servicios</a>
-    <a routerLink="/" fragment="contacto" class="navbar-link">Contacto</a>
+    <a routerLink="/" class="navbar-brand">
+      <span class="navbar-brand__mark">CT</span>
+      <span>ClimaTech</span>
+    </a>
+
+    <div class="navbar-links">
+      <a routerLink="/" class="navbar-link">Inicio</a>
+      <a routerLink="/" fragment="beneficios" class="navbar-link">Beneficios</a>
+      <a routerLink="/" fragment="servicios" class="navbar-link">Servicios</a>
+    </div>
   </div>
 
   <div class="navbar-right">
-    <button
-      type="button"
-      class="navbar-btn navbar-btn-outline"
-      (click)="goToRegister()"
-    >
-      Crear cuenta
-    </button>
-
-    
-    <button
-      type="button"
-      class="main-btn-primary"
-      (click)="goToLogin()"
-    >
-      Ingresar
-    </button>
+    <a routerLink="/login" class="navbar-link navbar-link--muted">Ingresar</a>
+    <ui-button variant="ghost" (click)="goToRegister()">Crear cuenta</ui-button>
+    <ui-button variant="primary" (click)="goToLogin()">Ir al panel</ui-button>
   </div>
 </nav>

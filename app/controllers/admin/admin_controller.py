@@ -8,11 +8,14 @@ from fastapi.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema
 from app.config.email_config import mail_config
 from werkzeug.security import *
+from app.controllers.admin.report_pdf_service import AdminReportService
 
 
 
 
 class AdminController:
+    def __init__(self):
+        self.report_service = AdminReportService()
     
     def get_user(self, user_id: int):
         try:
@@ -292,6 +295,33 @@ class AdminController:
             conn.close()
 
 
+    def get_users_by_role_name(self, role_name: str):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            # Usamos LIKE para que sea case-insensitive y soporte posibles espacios ("Técnico ", "Cliente")
+            query = """
+                SELECT u.id, u.name, u.last_name, u.email
+                FROM users u
+                INNER JOIN roles r ON u.role_id = r.id
+                WHERE LOWER(r.name) LIKE LOWER(%s) AND u.deleted_at IS NULL AND u.status = 1
+                ORDER BY u.name ASC
+            """
+            cursor.execute(query, (f"%{role_name}%",))
+            result = cursor.fetchall()
+            
+            return {"resultado": result}
+            
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al obtener usuarios para select: {e}")
+            
+        finally:
+            if conn:
+                conn.close()
+
+
     async def assign_technician(self, service_id: int, technician_id: int):
         conn = None
         try:
@@ -425,6 +455,37 @@ class AdminController:
                 cursor.close()
                 conn.close()
 
+    def get_report_options(self):
+        return self.report_service.get_report_options()
+
+    def generate_iot_readings_report_pdf(
+        self,
+        date_from=None,
+        date_to=None,
+        equipment_id=None,
+        limit=200,
+    ):
+        return self.report_service.download_iot_readings_pdf(date_from, date_to, equipment_id, limit)
+
+    def generate_services_report_pdf(
+        self,
+        date_from=None,
+        date_to=None,
+        technician_id=None,
+        status=None,
+        service_type=None,
+    ):
+        return self.report_service.download_services_pdf(
+            date_from,
+            date_to,
+            technician_id,
+            status,
+            service_type,
+        )
+
+    def generate_admin_summary_report_pdf(self, date_from=None, date_to=None):
+        return self.report_service.download_admin_summary_pdf(date_from, date_to)
+
     def verify_password(self, user_id, data):
         print("old_password", data["old_password"])
         try:
@@ -497,3 +558,37 @@ class AdminController:
 
         finally:
             conn.close()
+
+    def create_service_manual(self, service: object):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            current_status = "assigned" if service.technician_id else "pending"
+            
+            cursor.execute('''
+                INSERT INTO services (client_id, technician_id, request_date, request_time, service_type, address, current_status, created_at, updated_at, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), 1)
+            ''', (
+                service.client_id,
+                service.technician_id,
+                service.request_date,
+                service.request_time,
+                service.service_type,
+                service.address,
+                current_status
+            ))
+            
+            conn.commit()
+            return {"message": "Servicio manual creado correctamente."}
+        
+        except mysql.connector.Error as e:
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error al crear el servicio: {e}")
+            
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()

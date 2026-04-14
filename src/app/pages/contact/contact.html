@@ -1,1 +1,118 @@
-<p>contact works!</p>
+<section class="support-page">
+  <div class="ds-container support-shell">
+    <ui-section-header
+      eyebrow="Centro de soporte"
+      title="¿Necesitas soporte para tu operación HVAC?"
+      subtitle="Nuestro equipo técnico está listo para ayudarte con implementación, monitoreo y optimización."
+    />
+
+    <div class="support-options">
+      <ui-card class="support-option-card">
+        <h3>Soporte técnico</h3>
+        <p>Atención especializada para incidentes, telemetría, alarmas y diagnóstico en campo.</p>
+        <ui-button variant="secondary">Solicitar soporte</ui-button>
+      </ui-card>
+
+      <ui-card class="support-option-card">
+        <h3>Solicitud comercial</h3>
+        <p>Evaluamos tu operación, alcance y objetivos para diseñar una propuesta a medida.</p>
+        <ui-button variant="secondary">Hablar con ventas</ui-button>
+      </ui-card>
+
+      <ui-card class="support-option-card">
+        <h3>Onboarding e implementación</h3>
+        <p>Acompañamiento técnico para despliegue, configuración y adopción de la plataforma.</p>
+        <ui-button variant="secondary">Iniciar proceso</ui-button>
+      </ui-card>
+    </div>
+
+    <div class="support-grid">
+      <ui-card class="support-form-card" [glass]="true">
+        <h3>Formulario de contacto</h3>
+        <p class="support-form-card__subtitle">
+          Comparte tu necesidad y te responderemos con un plan de atención claro.
+        </p>
+
+        <form class="support-form" [formGroup]="supportForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="support-form__grid support-form__grid--two">
+            <ui-input
+              label="Nombre"
+              type="text"
+              inputId="support-name"
+              formControlName="name"
+              autocomplete="name"
+              placeholder="Tu nombre completo"
+              [error]="isInvalid('name') ? (getError('name', 'Nombre') || '') : ''"
+            />
+
+            <ui-input
+              label="Correo electrónico"
+              type="email"
+              inputId="support-email"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="correo@empresa.com"
+              [error]="isInvalid('email') ? (getError('email', 'Correo electrónico') || '') : ''"
+            />
+          </div>
+
+          <div class="support-form__grid support-form__grid--two">
+            <ui-input
+              label="Empresa (opcional)"
+              type="text"
+              inputId="support-company"
+              formControlName="company"
+              autocomplete="organization"
+              placeholder="Nombre de la empresa"
+              [error]="isInvalid('company') ? (getError('company', 'Empresa') || '') : ''"
+            />
+
+            <ui-select
+              label="Tipo de solicitud"
+              inputId="support-type"
+              formControlName="requestType"
+              placeholder="Selecciona una opción"
+              [options]="supportOptions"
+              [error]="isInvalid('requestType') ? (getError('requestType', 'Tipo de solicitud') || '') : ''"
+            />
+          </div>
+
+          <ui-textarea
+            label="Mensaje"
+            inputId="support-message"
+            formControlName="message"
+            placeholder="Describe tu requerimiento técnico o comercial."
+            [rows]="5"
+            [error]="isInvalid('message') ? (getError('message', 'Mensaje') || '') : ''"
+          />
+
+          <small class="support-success" *ngIf="successMessage">{{ successMessage }}</small>
+
+          <ui-button type="submit" variant="primary" [block]="true" [loading]="sending">
+            {{ sending ? 'Enviando solicitud...' : 'Enviar solicitud' }}
+          </ui-button>
+        </form>
+      </ui-card>
+
+      <ui-card class="support-direct-card">
+        <h3>Contacto directo</h3>
+        <div class="support-direct-card__items">
+          <div>
+            <span>Correo de soporte</span>
+            <p>soporte@climatech.io</p>
+          </div>
+
+          <div>
+            <span>Horario de atención</span>
+            <p>Lunes a viernes · 7:00 a.m. - 6:00 p.m.</p>
+          </div>
+
+          <div>
+            <span>Tiempo de respuesta estimado</span>
+            <p>Entre 30 y 90 minutos en horario operativo.</p>
+          </div>
+        </div>
+      </ui-card>
+    </div>
+  </div>
+</section>

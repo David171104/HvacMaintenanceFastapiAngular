@@ -26,14 +26,13 @@ import {
   LecturasService,
   ManualReadingPayload,
 } from '../../services/lecturas/lecturas.service';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-lecturascomponent',
   standalone: true,
 
   // 👇 IMPORTANTE
-  imports: [NgIf, NgFor, SidebarComponent,ReactiveFormsModule],
+  imports: [NgIf, NgFor, ReactiveFormsModule],
 
   templateUrl: './lecturas.component.html',
   styleUrls: ['./lecturas.component.css'],

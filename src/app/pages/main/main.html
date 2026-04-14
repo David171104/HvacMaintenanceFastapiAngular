@@ -1,190 +1,178 @@
-<!-- NAVBAR -->
-<app-navbar></app-navbar>
+<main class="landing">
+  <section class="landing-hero">
+    <div class="ds-container landing-hero__grid">
+      <div class="landing-hero__copy">
+        <span class="landing-pill">Plataforma IoT para climatización industrial</span>
+        <h1>Monitorea y optimiza tus sistemas de climatización en tiempo real</h1>
+        <p>
+          Centraliza telemetría, servicios y análisis operativo en una sola plataforma diseñada para
+          instalaciones HVAC que necesitan control, trazabilidad y eficiencia.
+        </p>
 
-<!-- MAIN CONTENT -->
-<main class="main-container">
-  <section class="main-hero">
-    <div class="main-hero-overlay">
-      <div class="page-container main-hero-content">
-        <div class="main-hero-text">
-          <h1 class="main-gradient-text">Climatizacion Total</h1>
+        <div class="landing-hero__actions">
+          <ui-button variant="secondary" (click)="scrollToSection('servicios')">Ver servicios</ui-button>
+          <ui-button variant="primary" (click)="goToLogin()">Ir al panel</ui-button>
+        </div>
 
-          <p>
-            Innovacion, eficiencia y tecnologia en sistemas de aire acondicionado. Monitorea y
-            optimiza tus equipos los 365 dias del ano.
-          </p>
+        <div class="landing-hero__trust">
+          <span>Telemetría en vivo</span>
+          <span>Alertas operativas</span>
+          <span>Gestión administrativa</span>
+        </div>
+      </div>
 
-          <div class="main-hero-cta">
-            <a href="#servicios" class="main-btn-primary">Ver servicios</a>
-            <a href="/login" class="main-btn-outline">Ir al panel</a>
+      <ui-card class="landing-mockup" [glass]="true">
+        <div class="landing-mockup__frame">
+          <div class="landing-mockup__toolbar">
+            <span class="landing-mockup__brand">ClimaTech Core</span>
+            <span class="landing-mockup__status">Sistema estable</span>
           </div>
 
-          <div class="main-hero-meta">Monitoreo en tiempo real · Reportes de consumo</div>
+          <div class="landing-mockup__stats">
+            <div class="landing-mockup__mini-card">
+              <span>Temperatura promedio</span>
+              <strong>24.8 °C</strong>
+              <small>Actualizado hace 2 min</small>
+            </div>
+            <div class="landing-mockup__mini-card">
+              <span>Humedad</span>
+              <strong>42%</strong>
+              <small>Nivel óptimo</small>
+            </div>
+            <div class="landing-mockup__mini-card">
+              <span>Consumo diario</span>
+              <strong>120 kWh</strong>
+              <small>- 4.2% vs ayer</small>
+            </div>
+          </div>
+
+          <div class="landing-mockup__chart">
+            <div class="landing-mockup__chart-grid"></div>
+            <div class="landing-mockup__curve"></div>
+          </div>
+
+          <div class="landing-mockup__table">
+            <div class="landing-mockup__row landing-mockup__row--head">
+              <span>Equipo</span>
+              <span>Estado</span>
+              <span>Lectura</span>
+            </div>
+            <div class="landing-mockup__row">
+              <span>HVAC-01</span>
+              <span class="landing-mockup__ok">Operativo</span>
+              <span>22.4 °C</span>
+            </div>
+            <div class="landing-mockup__row">
+              <span>Compresor-A</span>
+              <span class="landing-mockup__ok">Monitoreado</span>
+              <span>45%</span>
+            </div>
+          </div>
         </div>
+      </ui-card>
+    </div>
+  </section>
+
+  <section class="landing-section" id="beneficios">
+    <div class="ds-container landing-stack">
+      <ui-section-header
+        eyebrow="Beneficios"
+        title="Control operativo con una experiencia clara y accionable"
+        subtitle="La plataforma combina monitoreo, contexto técnico y visualización limpia para que las decisiones sean más rápidas."
+      />
+
+      <div class="landing-grid landing-grid--benefits">
+        <ui-card *ngFor="let benefit of benefits" class="landing-feature-card">
+          <div class="landing-feature-card__icon">{{ benefit.icon }}</div>
+          <h3>{{ benefit.title }}</h3>
+          <p>{{ benefit.description }}</p>
+        </ui-card>
       </div>
     </div>
   </section>
 
-  <section class="main-section main-section-dark" id="servicios">
-    <div class="page-container">
-      <h2 class="main-section-title">Quienes Somos?</h2>
-      <p class="main-section-text">
-        Somos especialistas en soluciones integrales de climatizacion con enfoque en
-        <strong>tecnologia IoT y eficiencia energetica</strong>.
-      </p>
-    </div>
-  </section>
+  <section class="landing-section landing-section--metrics" id="metricas">
+    <div class="ds-container landing-stack">
+      <ui-section-header
+        eyebrow="Métricas clave"
+        title="Indicadores pensados para equipos que necesitan eficiencia real"
+        subtitle="Presenta resultados y capacidad operativa con métricas que comunican valor de negocio y salud técnica."
+      />
 
-  <section class="main-section main-section-dark" id="servicios">
-    <div class="page-container">
-      <h2 class="main-section-title">Nuestros Servicios</h2>
-
-      <p class="main-section-text">
-        Ofrecemos soluciones completas en climatizacion con tecnologia avanzada, monitoreo
-        inteligente y mantenimiento especializado para maximizar el rendimiento de tus equipos.
-      </p>
-
-      <div class="main-services-grid">
-        <div class="main-service-card">
-          <h3>Instalacion Profesional</h3>
-          <p>
-            Instalacion de sistemas de aire acondicionado con estandares de calidad, eficiencia
-            energetica y configuracion optimizada.
-          </p>
-        </div>
-
-        <div class="main-service-card">
-          <h3>Mantenimiento Preventivo</h3>
-          <p>
-            Revisiones periodicas para evitar fallas, reducir costos operativos y prolongar la vida
-            util de los equipos.
-          </p>
-        </div>
-
-        <div class="main-service-card">
-          <h3>Monitoreo Inteligente IoT</h3>
-          <p>
-            Control en tiempo real de temperatura, consumo y estado de los sistemas mediante
-            sensores inteligentes.
-          </p>
-        </div>
-
-        <div class="main-service-card">
-          <h3>Diagnostico Avanzado</h3>
-          <p>
-            Analisis digital del rendimiento del sistema para detectar fallas y optimizar el
-            funcionamiento.
-          </p>
-        </div>
+      <div class="landing-grid landing-grid--metrics">
+        <ui-stat-card
+          *ngFor="let metric of metrics"
+          [label]="metric.label"
+          [value]="metric.value"
+          [meta]="metric.meta"
+          [accent]="metric.accent"
+        />
       </div>
     </div>
   </section>
 
-  <section class="main-section main-section-alt" id="contacto">
-    <div class="page-container">
-      <h2 class="main-section-title"><i class="fa-solid fa-envelope"></i> Contactanos</h2>
+  <section class="landing-section" id="servicios">
+    <div class="ds-container landing-stack">
+      <ui-section-header
+        eyebrow="Servicios"
+        title="Acompañamiento técnico para cada etapa de tu operación"
+        subtitle="Desde la instalación inicial hasta el diagnóstico avanzado, ClimaTech une ejecución física e inteligencia de datos."
+      />
 
-      <p class="main-section-text">
-        Tienes dudas o necesitas asesoria en climatizacion? Nuestro equipo esta listo para
-        ayudarte.
-      </p>
+      <div class="landing-grid landing-grid--services">
+        <ui-card *ngFor="let service of services" class="landing-service-card" [glass]="true">
+          <div class="landing-service-card__icon">{{ service.icon }}</div>
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.description }}</p>
+          <span class="landing-service-card__link">Solución preparada para escalar</span>
+        </ui-card>
+      </div>
+    </div>
+  </section>
 
-      <div class="main-contact-container">
-        <form
-          class="main-contact-form"
-          [formGroup]="contactForm"
-          (ngSubmit)="submitContact()"
-          novalidate
-        >
-          <div class="main-form-group">
-            <label>Nombre</label>
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              formControlName="name"
-              [class.is-invalid]="isContactInvalid('name')"
-            />
-            <small class="field-error" *ngIf="isContactInvalid('name')">
-              {{ getContactError('name', 'Nombre') }}
-            </small>
+  <section class="landing-section landing-section--trust" id="confianza">
+    <div class="ds-container landing-stack">
+      <ui-section-header
+        eyebrow="Confianza operativa"
+        title="Resultados visibles para equipos tecnicos y de gestion"
+        subtitle="ClimaTech ya permite supervisar infraestructura critica con datos en tiempo real y decisiones mejor informadas."
+      />
+
+      <div class="landing-grid landing-grid--trust">
+        <ui-card *ngFor="let item of trustItems" class="landing-trust-card">
+          <strong>{{ item.value }}</strong>
+          <span>{{ item.label }}</span>
+        </ui-card>
+      </div>
+
+      <div class="landing-trust-logos">
+        <span>Industria</span>
+        <span>Comercial</span>
+        <span>Logistica</span>
+        <span>Salud</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-section--cta" id="cta">
+    <div class="ds-container">
+      <ui-card class="landing-cta" [glass]="true">
+        <div class="landing-cta__shell">
+          <div class="landing-cta__copy">
+            <span class="landing-pill landing-pill--soft">Listo para centralizar tu operación</span>
+            <h2>Convierte tu infraestructura HVAC en una plataforma conectada, visible y medible.</h2>
+            <p>
+              Empieza con un acceso seguro al sistema y lleva tu operación desde monitoreo reactivo
+              hasta gestión inteligente.
+            </p>
           </div>
 
-          <div class="main-form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="correo@email.com"
-              formControlName="email"
-              [class.is-invalid]="isContactInvalid('email')"
-            />
-            <small class="field-error" *ngIf="isContactInvalid('email')">
-              {{ getContactError('email', 'Email') }}
-            </small>
-          </div>
-
-          <div class="main-form-group">
-            <label>Telefono</label>
-            <input
-              type="tel"
-              placeholder="+57 300 000 0000"
-              formControlName="phone"
-              [class.is-invalid]="isContactInvalid('phone')"
-            />
-            <small class="field-error" *ngIf="isContactInvalid('phone')">
-              {{ getContactError('phone', 'Telefono') }}
-            </small>
-          </div>
-
-          <div class="main-form-group">
-            <label>Mensaje</label>
-            <textarea
-              rows="5"
-              placeholder="Escribe tu mensaje"
-              formControlName="message"
-              [class.is-invalid]="isContactInvalid('message')"
-            ></textarea>
-            <small class="field-error" *ngIf="isContactInvalid('message')">
-              {{ getContactError('message', 'Mensaje') }}
-            </small>
-          </div>
-
-          <small class="contact-success" *ngIf="contactSuccess">{{ contactSuccess }}</small>
-
-          <button
-            type="submit"
-            class="main-btn-primary"
-            [disabled]="contactForm.invalid || contactSending"
-          >
-            <span class="button-spinner" *ngIf="contactSending"></span>
-            {{ contactSending ? 'Validando...' : 'Enviar mensaje' }}
-          </button>
-        </form>
-
-        <div class="main-contact-info">
-          <div class="main-contact-item">
-            <h3><i class="fa-solid fa-location-dot"></i> Ubicacion</h3>
-            <p>Bucaramanga, Santander - Colombia</p>
-          </div>
-
-          <div class="main-contact-item">
-            <h3><i class="fa-solid fa-phone"></i> Telefono</h3>
-            <p>+57 300 000 0000</p>
-          </div>
-
-          <div class="main-contact-item">
-            <h3><i class="fa-solid fa-envelope-circle-check"></i> Email</h3>
-            <p>contacto@climatizaciontotal.com</p>
-          </div>
-
-          <div class="main-contact-item">
-            <h3><i class="fa-solid fa-clock"></i> Horario</h3>
-            <p>Lunes - Viernes | 8:00 AM - 6:00 PM</p>
+          <div class="landing-cta__actions">
+            <ui-button variant="primary" (click)="goToRegister()">Crear cuenta</ui-button>
+            <ui-button variant="ghost" (click)="goToLogin()">Ingresar</ui-button>
           </div>
         </div>
-      </div>
+      </ui-card>
     </div>
   </section>
 </main>
-
-<!-- FOOTER -->
-<app-footer></app-footer>

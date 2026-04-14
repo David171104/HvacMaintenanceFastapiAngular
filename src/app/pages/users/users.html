@@ -1,133 +1,128 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
-
-  <main class="home-content">
-<div class="users-container">
-
-  <div class="users-header">
+<section class="admin-page">
+  <header class="admin-page__hero">
     <div>
-      <h1 class="users-title">Lista de usuarios</h1>
-      <p class="users-subtitle">
-        Gestión y control de usuarios del sistema
+      <p class="admin-page__eyebrow">Administración de accesos</p>
+      <h1 class="admin-page__title">Gestión de usuarios</h1>
+      <p class="admin-page__subtitle">
+        Crea, edita y controla los perfiles del sistema con una vista centralizada y clara.
       </p>
     </div>
 
-    <button class="create-btn" (click)="openCreateModal()">
-      Crear Usuario
-    </button>
-  </div>
+    <button class="create-btn" (click)="openCreateModal()">Crear usuario</button>
+  </header>
 
   @if (error) {
-    <p class="users-error">{{ error }}</p>
+    <p class="admin-page__error">{{ error }}</p>
   }
 
-  <div class="users-table-wrapper">
+  <section class="admin-surface">
+    <div class="admin-surface__header">
+      <div>
+        <h2>Usuarios registrados</h2>
+        <p>Consulta rápida de roles, correos y acciones administrativas.</p>
+      </div>
+      <span class="admin-surface__meta">{{ usuarios.length }} registros</span>
+    </div>
 
     @if (loading) {
-      <div class="users-state">⏳ Cargando usuarios...</div>
+      <div class="users-state">
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+      </div>
     }
 
     @if (!loading && usuarios.length > 0) {
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Documento</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @for (user of usuarios; track user.id) {
+      <div class="users-table-shell">
+        <table class="users-table">
+          <thead>
             <tr>
-              <td>{{ user.name }}</td>
-              <td>{{ user.last_name }}</td>
-              <td>{{ user.document_number }}</td>
-              <td>{{ user.email }}</td>
-
-              <td>
-                <span [class]="getRoleClass(user.role_id)">
-                  {{ getRole(user.role_id) }}
-                </span>
-              </td>
-
-              <td class="actions">
-                <button class="edit-btn"
-                        (click)="openEditModal(user)">
-                  Editar
-                </button>
-
-                <button class="delete-btn"
-                        (click)="deleteUser(user)">
-                  Eliminar
-                </button>
-              </td>
-
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Documento</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Acciones</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            @for (user of usuarios; track user.id) {
+              <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.document_number || 'Sin documento' }}</td>
+                <td>{{ user.email }}</td>
+
+                <td>
+                  <span [class]="getRoleClass(user.role_id)">
+                    {{ getRole(user.role_id) }}
+                  </span>
+                </td>
+
+                <td class="actions">
+                  <button class="action-btn action-btn--secondary" (click)="openEditModal(user)">
+                    Editar
+                  </button>
+
+                  <button class="action-btn action-btn--danger" (click)="deleteUser(user)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
 
-  </div>
-</div>
-
+    @if (!loading && usuarios.length === 0) {
+      <div class="admin-empty">No hay usuarios para mostrar en este momento.</div>
+    }
+  </section>
+</section>
 
 @if (showModal) {
-<div class="modal-backdrop" (click)="closeModal()">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModal()">✕</button>
 
-  <div class="modal" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">
+        {{ isCreating ? 'Crear usuario' : 'Editar usuario' }}
+      </h3>
 
-    <!-- BOTON X -->
-    <button class="modal-close" (click)="closeModal()">✕</button>
+      <label>Nombre *</label>
+      <input [(ngModel)]="selectedUser.name" />
 
-    <h3 class="modal-title">
-      {{ isCreating ? 'Crear Usuario' : 'Editar Usuario' }}
-    </h3>
+      <label>Apellido</label>
+      <input [(ngModel)]="selectedUser.last_name" />
 
-    <label>Nombre *</label>
-    <input [(ngModel)]="selectedUser.name">
+      <label>Correo *</label>
+      <input [(ngModel)]="selectedUser.email" />
 
-    <label>Apellido</label>
-    <input [(ngModel)]="selectedUser.last_name">
+      <label>Documento *</label>
+      <input [(ngModel)]="selectedUser.document_number" />
 
-    <label>Email *</label>
-    <input [(ngModel)]="selectedUser.email">
+      <label>Edad *</label>
+      <input [(ngModel)]="selectedUser.age" />
 
-    <label>Documento *</label>
-    <input [(ngModel)]="selectedUser.document_number">
+      <label>Rol *</label>
+      <select [(ngModel)]="selectedUser.role_id">
+        @for (role of roles; track role.id) {
+          <option [value]="role.id">{{ role.name }}</option>
+        }
+      </select>
 
-    <label>Edad *</label>
-    <input [(ngModel)]="selectedUser.age">
-
-    <label>Rol *</label>
-    <select [(ngModel)]="selectedUser.role_id">
-      @for (role of roles; track role.id) {
-        <option [value]="role.id">{{ role.name }}</option>
+      @if (isCreating) {
+        <label>Contraseña *</label>
+        <input [(ngModel)]="selectedUser.password" type="password" />
       }
-    </select>
 
-    @if (isCreating) {
-      <label>Contraseña *</label>
-      <input [(ngModel)]="selectedUser.password" type="password">
-    }
-
-    <div class="modal-actions">
-      <button class="save-btn" (click)="saveChanges()">
-        Guardar
-      </button>
-
-      <button class="cancel-btn" (click)="closeModal()">
-        Cancelar
-      </button>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn--primary" (click)="saveChanges()">Guardar</button>
+        <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
+      </div>
     </div>
-
   </div>
-
-</div>
 }
-  </main>
-</div>

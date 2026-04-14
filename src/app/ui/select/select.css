@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+.ds-control--invalid {
+  border-color: rgba(255, 113, 108, 0.54);
+  box-shadow: 0 0 0 1px rgba(255, 113, 108, 0.28);
+}
