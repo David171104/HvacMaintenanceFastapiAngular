@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.controllers.users.user_controller import *
-from app.models.users.user_model import User
+from app.models.users.user_model import User, UserUpdateProfile
 from app.models.services.service_model import Service
 from app.models.login.user_login_model import UserLogin
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +14,25 @@ userController = UserController()
 
 
 #FUNCTIONAL ROUTES
+from fastapi import HTTPException
+
+@router.patch("/users/me")
+async def update_my_profile(
+    profile_data: UserUpdateProfile,
+    current_user: dict = Depends(verify_token)
+):
+    try:
+        user_id = current_user.get("id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Token inválido o sin ID")
+        
+        # extraemos el payload descartando todo lo que no se envió explícitamente
+        update_dict = profile_data.model_dump(exclude_unset=True)
+        
+        return userController.update_profile(user_id, update_dict)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.put("/users/update/{user_id}") 
 async def update(user_id: int, user: User, token_data: dict = Depends(verify_token)):
     response = userController.update(user_id, user)

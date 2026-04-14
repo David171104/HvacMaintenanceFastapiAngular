@@ -58,6 +58,7 @@ export class Services implements OnInit {
   showModal = false;
   selectedServiceId: number | null = null;
   selectedTechnicianId: number | null = null;
+  currentTechnicianName = '';
 
   // ── Modal creación manual (nuevo) ──
   showModalCreacion = false;
@@ -123,6 +124,7 @@ export class Services implements OnInit {
   openAssignModal(service: Service): void {
     this.selectedServiceId = service.id;
     this.selectedTechnicianId = null;
+    this.currentTechnicianName = service.technician_name || '';
     this.showModal = true;
     this.loadTechnicians();
   }

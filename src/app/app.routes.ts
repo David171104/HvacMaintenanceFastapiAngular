@@ -13,6 +13,7 @@ import { AnaliticaComponent } from './pages/analitica/analitica';
 import { ClientHome } from './pages/client-home/client-home';
 import { TecnicHome } from './pages/tecnic-home/tecnic-home';
 import { ClientServices } from './pages/client-services/client-services';
+import { ClientProfileComponent } from './pages/client-profile/client-profile';
 import { TechniccianServices } from './pages/techniccian-services/techniccian-services';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
 import { ClientLayoutComponent } from './layouts/client-layout/client-layout';
@@ -55,6 +56,7 @@ export const routes: Routes = [
       children: [
         { path: 'client-home', component: ClientHome },
         { path: 'client-services', component: ClientServices },
+        { path: 'profile', component: ClientProfileComponent },
       ],
     },
 

@@ -49,6 +49,47 @@ class UserController:
         finally:
             conn.close()
 
+    def update_profile(self, user_id: int, update_data: dict):
+        if not update_data:
+            return {"message": "No hay datos para actualizar"}
+        
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            # Select the user
+            cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+            user = cursor.fetchone()
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            # Update only fields provided
+            set_clauses = []
+            values = []
+            for field, value in update_data.items():
+                # Prevent SQL injection by allowing only exact field names defined in schema
+                if field in ["name", "last_name", "phone", "address"]:
+                    set_clauses.append(f"{field} = %s")
+                    values.append(value)
+                
+            if not set_clauses:
+                return {"message": "Sin cambios válidos aplicados"}
+
+            set_query = ", ".join(set_clauses)
+            values.append(user_id)
+            
+            cursor.execute(f"UPDATE users SET {set_query} WHERE id = %s", tuple(values))
+            conn.commit()
+            
+            return {"message": "Perfil actualizado correctamente"}
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {err}")
+        finally:
+            if conn:
+                conn.close()
         
     async def create_service(self, service: Service):   
         try:
