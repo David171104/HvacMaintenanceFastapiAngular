@@ -1,25 +1,11 @@
-.home-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.home-content {
-  margin-left: 260px;
-  width: 100%;
-  padding: 40px;
-  background: var(--dark-bg);
-  color: white;
-  transition: margin-left 0.3s ease;
-}
-
 /* =====================================================
    TECHNIC HOME
 ===================================================== */
 
 .technic-container {
-  padding: 80px 40px;
+  padding: 48px;
   min-height: 100vh;
-  background: var(--dark-bg);
+  background: transparent;
   color: white;
 }
 
@@ -92,4 +78,10 @@
 
 .technic-btn:hover {
   background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  .technic-container {
+    padding: 24px 18px 32px;
+  }
 }

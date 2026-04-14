@@ -1,58 +1,128 @@
-<div class="home-layout">
-  <app-sidebar></app-sidebar>
+<section class="admin-page">
+  <header class="admin-page__hero">
+    <div>
+      <p class="admin-page__eyebrow">Administración de accesos</p>
+      <h1 class="admin-page__title">Gestión de usuarios</h1>
+      <p class="admin-page__subtitle">
+        Crea, edita y controla los perfiles del sistema con una vista centralizada y clara.
+      </p>
+    </div>
 
-  <main class="home-content">
-    <div class="users-container">
+    <button class="create-btn" (click)="openCreateModal()">Crear usuario</button>
+  </header>
 
-      <div class="users-header">
-        <h1 class="users-title">Lista de usuarios</h1>
-        <p class="users-subtitle">Gestión y control de usuarios del sistema</p>
+  @if (error) {
+    <p class="admin-page__error">{{ error }}</p>
+  }
+
+  <section class="admin-surface">
+    <div class="admin-surface__header">
+      <div>
+        <h2>Usuarios registrados</h2>
+        <p>Consulta rápida de roles, correos y acciones administrativas.</p>
       </div>
+      <span class="admin-surface__meta">{{ usuarios.length }} registros</span>
+    </div>
 
-      <p class="users-error" *ngIf="error">{{ error }}</p>
+    @if (loading) {
+      <div class="users-state">
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+        <div class="users-skeleton-row"></div>
+      </div>
+    }
 
-      <div class="users-table-wrapper">
-
-        <div class="users-state" *ngIf="loading">
-          <span class="users-state-icon">⏳</span>
-          <p>Cargando usuarios...</p>
-        </div>
-
-        <table
-          class="users-table"
-          *ngIf="!loading && usuarios.length > 0"
-        >
+    @if (!loading && usuarios.length > 0) {
+      <div class="users-table-shell">
+        <table class="users-table">
           <thead>
             <tr>
               <th>Nombre</th>
               <th>Apellido</th>
-              <th>Número identificación</th>
+              <th>Documento</th>
               <th>Correo</th>
               <th>Rol</th>
+              <th>Acciones</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr *ngFor="let user of usuarios; trackBy: trackById">
-              <td>{{ user.name }}</td>
-              <td>{{ user.last_name }}</td>
-              <td>{{ user.document_number }}</td>
-              <td>{{ user.email }}</td>
-              <td>
-                <span [class]="getRoleClass(user.role_id)">
-                  {{ getRole(user.role_id) }}
-                </span>
-              </td>
-            </tr>
+            @for (user of usuarios; track user.id) {
+              <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.document_number || 'Sin documento' }}</td>
+                <td>{{ user.email }}</td>
+
+                <td>
+                  <span [class]="getRoleClass(user.role_id)">
+                    {{ getRole(user.role_id) }}
+                  </span>
+                </td>
+
+                <td class="actions">
+                  <button class="action-btn action-btn--secondary" (click)="openEditModal(user)">
+                    Editar
+                  </button>
+
+                  <button class="action-btn action-btn--danger" (click)="deleteUser(user)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
           </tbody>
         </table>
+      </div>
+    }
 
-        <div class="users-state" *ngIf="!loading && usuarios.length === 0">
-          <span class="users-state-icon">📭</span>
-          <p>No hay usuarios registrados</p>
-        </div>
+    @if (!loading && usuarios.length === 0) {
+      <div class="admin-empty">No hay usuarios para mostrar en este momento.</div>
+    }
+  </section>
+</section>
 
+@if (showModal) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModal()">✕</button>
+
+      <h3 class="modal-title">
+        {{ isCreating ? 'Crear usuario' : 'Editar usuario' }}
+      </h3>
+
+      <label>Nombre *</label>
+      <input [(ngModel)]="selectedUser.name" />
+
+      <label>Apellido</label>
+      <input [(ngModel)]="selectedUser.last_name" />
+
+      <label>Correo *</label>
+      <input [(ngModel)]="selectedUser.email" />
+
+      <label>Documento *</label>
+      <input [(ngModel)]="selectedUser.document_number" />
+
+      <label>Edad *</label>
+      <input [(ngModel)]="selectedUser.age" />
+
+      <label>Rol *</label>
+      <select [(ngModel)]="selectedUser.role_id">
+        @for (role of roles; track role.id) {
+          <option [value]="role.id">{{ role.name }}</option>
+        }
+      </select>
+
+      @if (isCreating) {
+        <label>Contraseña *</label>
+        <input [(ngModel)]="selectedUser.password" type="password" />
+      }
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn--primary" (click)="saveChanges()">Guardar</button>
+        <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
       </div>
     </div>
-  </main>
-</div>
+  </div>
+}

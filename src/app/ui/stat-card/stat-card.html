@@ -1,0 +1,11 @@
+<article class="ds-kpi-card">
+  <span class="ds-kpi-card__label">{{ label }}</span>
+  <strong class="ds-kpi-card__value">{{ value }}</strong>
+  <span
+    class="ds-kpi-card__meta"
+    [class.ui-stat-card__meta--error]="accent === 'error'"
+    [class.ui-stat-card__meta--success]="accent === 'success'"
+  >
+    {{ meta }}
+  </span>
+</article>

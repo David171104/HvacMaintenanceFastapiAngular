@@ -1,0 +1,17 @@
+<label class="ds-field">
+  <span class="ds-label" *ngIf="label">{{ label }}</span>
+  <select
+    class="ds-control"
+    [class.ds-control--invalid]="!!error"
+    [id]="inputId || null"
+    [value]="value"
+    [disabled]="disabled"
+    (change)="handleChange($event)"
+    (blur)="handleBlur()"
+  >
+    <option *ngIf="placeholder" [value]="">{{ placeholder }}</option>
+    <option *ngFor="let option of options" [value]="option.value">{{ option.label }}</option>
+  </select>
+  <small class="ds-hint" *ngIf="hint && !error">{{ hint }}</small>
+  <small class="ds-error" *ngIf="error">{{ error }}</small>
+</label>

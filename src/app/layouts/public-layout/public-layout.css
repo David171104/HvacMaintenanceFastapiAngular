@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #060b18;
+}
+
+.public-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at top left, rgba(83, 221, 252, 0.08), transparent 26%),
+    linear-gradient(180deg, #07101f 0%, #060b18 100%);
+  overflow-x: clip;
+}
+
+.public-layout__content {
+  min-height: calc(100vh - 11rem);
+  flex: 1;
+  padding-bottom: var(--space-8);
+}

@@ -15,12 +15,12 @@ techniccianController = TechniccianController()
 
 #FUNCTIONAL ROUTES
 @router.get("/services/technician/{technician_id}")
-def get_services_by_technician(technician_id: int, token_data: dict = Depends(verify_token)):
+def get_services_by_technician(technician_id: int):
     response = techniccianController.get_services_by_technician(technician_id)
     return response  
 
 @router.put("/services/{service_id}/complete")
-def complete_service(service_id: int, token_data: dict = Depends(verify_token)):
+def complete_service(service_id: int):
     response = techniccianController.complete_service(service_id)
     return response
 

@@ -1,4 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
 from app.routes.registerAndLogin.register_routes import router as register_router
 from app.routes.registerAndLogin.login_routes import router as login_router
 from app.routes.users.user_routes import router as user_router
@@ -6,10 +11,21 @@ from app.routes.users.admin_routes import router as admin_router
 from app.routes.users.techniccian_routes import router as techniccian_router
 from app.routes.permissions.permissions_routes import router as permission_router
 from app.routes.roles.roles_routes import router as roles_router
+from app.routes.notifications.notification_routes import router as notification_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.models.validation_utils import format_validation_errors
+from app.scheduler.maintenance_scheduler import start_scheduler, stop_scheduler
 
-app = FastAPI()
+# ── Lifespan: arranca y para el scheduler con la app ─────────────────────────
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()   # ← al iniciar
+    yield
+    stop_scheduler()    # ← al cerrar
+
+
+app = FastAPI(lifespan=lifespan) 
 
 
 
@@ -35,6 +51,13 @@ app.include_router(admin_router)
 app.include_router(techniccian_router)
 app.include_router(permission_router)
 app.include_router(roles_router)
+app.include_router(notification_router)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    detail, errors = format_validation_errors(exc)
+    return JSONResponse(status_code=422, content={"detail": detail, "errors": errors})
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,48 +1,108 @@
-<div class="page-wrapper">
-  <div class="form-container">
-    <h2>Registro de Usuario</h2>
+<section class="register-page">
+  <div class="register-page__backdrop"></div>
 
-    <form (ngSubmit)="onSubmit()">
-
-      <div class="form-group">
-        <label>Nombres <span class="required">*</span></label>
-        <input type="text" name="name" [(ngModel)]="user.name" required />
-      </div>
-
-      <div class="form-group">
-        <label>Apellidos <span class="required">*</span></label>
-        <input type="text" name="last_name" [(ngModel)]="user.last_name" required />
-      </div>
-
-      <div class="form-group">
-        <label>Número de documento</label>
-        <input type="text" name="document_number" [(ngModel)]="user.document_number" />
-      </div>
-
-      <div class="form-group">
-        <label>Edad</label>
-        <input type="text" name="age" [(ngModel)]="user.age" />
-      </div>
-
-      <div class="form-group">
-        <label>Correo Electrónico <span class="required">*</span></label>
-        <input type="email" name="email" [(ngModel)]="user.email" required />
-      </div>
-
-      <div class="form-group">
-        <label>Contraseña <span class="required">*</span></label>
-        <input type="password" name="password" [(ngModel)]="user.password" required />
-      </div>
-
-      <div class="form-group">
-        <button type="submit">Registrar</button>
-      </div>
-
-    </form>
-
-    <div style="margin-top: 20px;">
-      <button type="button" (click)="goToLogin()">Iniciar sesión</button>
+  <ui-card class="register-card" [glass]="true">
+    <div class="register-card__header">
+      <p class="register-card__eyebrow">Nuevo acceso</p>
+      <h1>Crear cuenta</h1>
+      <p class="register-card__subtitle">Registra tu acceso al sistema IoT industrial.</p>
     </div>
 
-  </div>
-</div>
+    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Nombres"
+          type="text"
+          inputId="register-name"
+          formControlName="name"
+          autocomplete="given-name"
+          placeholder="Ej. Laura"
+          [error]="isInvalid('name') ? (getError('name', 'Nombres') || '') : ''"
+        />
+
+        <ui-input
+          label="Apellidos"
+          type="text"
+          inputId="register-last-name"
+          formControlName="last_name"
+          autocomplete="family-name"
+          placeholder="Ej. Torres"
+          [error]="isInvalid('last_name') ? (getError('last_name', 'Apellidos') || '') : ''"
+        />
+      </div>
+
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Número de documento"
+          type="text"
+          inputId="register-document"
+          formControlName="document_number"
+          autocomplete="off"
+          placeholder="123456789"
+          [error]="isInvalid('document_number') ? (getError('document_number', 'Documento') || '') : ''"
+        />
+
+        <ui-input
+          label="Edad"
+          type="number"
+          inputId="register-age"
+          formControlName="age"
+          autocomplete="off"
+          placeholder="28"
+          [error]="isInvalid('age') ? (getError('age', 'Edad') || '') : ''"
+        />
+      </div>
+
+      <ui-input
+        label="Correo electrónico"
+        type="email"
+        inputId="register-email"
+        formControlName="email"
+        autocomplete="email"
+        placeholder="operador@climatech.io"
+        [error]="isInvalid('email') ? (getError('email', 'Correo electrónico') || '') : ''"
+      />
+
+      <div class="register-form__grid register-form__grid--two">
+        <ui-input
+          label="Contraseña"
+          type="password"
+          inputId="register-password"
+          formControlName="password"
+          autocomplete="new-password"
+          placeholder="Crea una contraseña segura"
+          [error]="isInvalid('password') ? (getError('password', 'Contraseña') || '') : ''"
+        />
+
+        <ui-input
+          label="Confirmación de contraseña"
+          type="password"
+          inputId="register-password-confirm"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          placeholder="Repite tu contraseña"
+          [error]="isInvalid('confirmPassword') ? (getError('confirmPassword', 'Confirmación') || '') : ''"
+        />
+      </div>
+
+      <small class="register-error" *ngIf="serverError">{{ serverError }}</small>
+
+      <ui-button
+        type="submit"
+        variant="primary"
+        [block]="true"
+        [loading]="isSubmitting"
+        [disabled]="registerForm.invalid || isSubmitting"
+      >
+        {{ isSubmitting ? 'Creando cuenta...' : 'Crear cuenta' }}
+      </ui-button>
+    </form>
+
+    <p class="register-card__footer">
+      ¿Ya tienes cuenta?
+      <button type="button" class="register-link register-link--button" (click)="goToLogin()">
+        Iniciar sesión
+      </button>
+    </p>
+  </ui-card>
+</section>

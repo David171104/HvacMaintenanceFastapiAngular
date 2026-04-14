@@ -1,0 +1,42 @@
+<div
+  class="client-layout"
+  [class.sidebar-expanded]="!isSidebarCollapsed"
+  [class.sidebar-collapsed]="isSidebarCollapsed"
+  [class.mobile-sidebar-open]="isMobileSidebarOpen"
+>
+  <div class="client-layout__backdrop" (click)="closeMobileSidebar()"></div>
+
+  <aside class="client-layout__sidebar">
+    <app-sidebar
+      [isCollapsed]="isSidebarCollapsed"
+      [mobileOpen]="isMobileSidebarOpen"
+      (collapsedChange)="onSidebarCollapsedChange($event)"
+      (closeRequested)="closeMobileSidebar()"
+    ></app-sidebar>
+  </aside>
+
+  <section class="client-layout__main">
+    <header class="client-layout__topbar">
+      <button type="button" class="client-layout__menu" (click)="toggleMobileSidebar()">
+        ☰
+      </button>
+
+      <div class="client-layout__topbar-copy">
+        <p class="client-layout__eyebrow">Portal del Cliente</p>
+        <h1 class="client-layout__title">Mis Servicios</h1>
+        <p class="client-layout__description">
+          Gestiona tus solicitudes y revisa el estado de tu climatización en tiempo real.
+        </p>
+      </div>
+
+      <div class="client-layout__status">
+        <span class="client-layout__status-dot"></span>
+        <span>Sesión activa</span>
+      </div>
+    </header>
+
+    <main class="client-layout__content">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
+</div>

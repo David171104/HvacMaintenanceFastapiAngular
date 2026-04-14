@@ -1,32 +1,87 @@
-<div class="page-wrapper">
-  <div class="form-container">
-    <h2>Iniciar Sesión</h2>
+<section class="login-page">
+  <div class="login-page__panel login-page__panel--brand">
+    <div class="login-brand">
+      <span class="login-brand__tag">System Core v2.6</span>
+      <h1>Ingeniería de precisión para climatización industrial</h1>
+      <p>Accede a la plataforma de monitoreo, diagnóstico y control IoT.</p>
 
-    <form (ngSubmit)="onSubmit()">
-
-      <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" name="email" [(ngModel)]="loginData.email" required />
+      <div class="login-brand__badges">
+        <span>Monitoreo en tiempo real</span>
+        <span>Infraestructura segura</span>
+        <span>Datos cifrados</span>
       </div>
-
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" name="password" [(ngModel)]="loginData.password" required />
-      </div>
-
-      <div class="form-group">
-        <button type="submit">Ingresar</button>
-      </div>
-      
-    </form>
-    <button type="submit" class="btn-microsoft" (click)="loginMicrosoft($event)">
-      <i class="fab fa-microsoft"></i>
-      Ingresar con Microsoft 365
-    </button>
-
-    <div style="margin-top: 20px;">
-      <button type="button"  (click)="logoutMicrosoft()">Crear cuenta</button>
     </div>
-
   </div>
-</div>
+
+  <div class="login-page__panel login-page__panel--form">
+    <ui-card class="login-card" [glass]="true">
+      <div class="login-card__header">
+        <p class="login-card__eyebrow">ACCESO SEGURO</p>
+        <h2>Iniciar sesión</h2>
+        <p class="login-card__subtitle">Ingresa a tu plataforma de monitoreo IoT.</p>
+      </div>
+
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <ui-input
+          label="Correo electrónico"
+          type="email"
+          inputId="login-email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="operador@climatech.io"
+          [error]="isInvalid('email') ? (getError('email', 'Correo electrónico') || '') : ''"
+        />
+
+        <ui-input
+          label="Contraseña"
+          type="password"
+          inputId="login-password"
+          formControlName="password"
+          autocomplete="current-password"
+          placeholder="Ingresa tu contraseña"
+          [error]="isInvalid('password') ? (getError('password', 'Contraseña') || '') : ''"
+        />
+
+        <div class="login-form__meta">
+          <label class="login-checkbox">
+            <input type="checkbox" formControlName="keepSession" />
+            <span>Mantener sesión activa</span>
+          </label>
+
+          <a class="login-link" routerLink="/contact">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <small class="login-error" *ngIf="serverError">{{ serverError }}</small>
+
+        <ui-button
+          type="submit"
+          variant="primary"
+          [block]="true"
+          [loading]="isSubmitting"
+          [disabled]="loginForm.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? 'Ingresando...' : 'Ingresar' }}
+        </ui-button>
+      </form>
+
+      <div class="login-divider"><span>O continuar con</span></div>
+
+      <button
+        type="button"
+        class="login-microsoft-btn"
+        (click)="loginMicrosoft($event)"
+        [disabled]="isSubmitting"
+      >
+        <span class="login-microsoft-btn__icon" aria-hidden="true">M</span>
+        <span>Ingresar con Microsoft 365</span>
+      </button>
+
+      <p class="login-card__footer">
+        ¿No tienes cuenta?
+        <button type="button" class="login-link login-link--button" (click)="goToRegister()">
+          Crear cuenta
+        </button>
+      </p>
+    </ui-card>
+  </div>
+</section>

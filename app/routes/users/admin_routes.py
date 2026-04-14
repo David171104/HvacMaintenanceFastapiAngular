@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends,Request
+from fastapi import APIRouter, Depends, Request
+from typing import Optional, List
+from pydantic import BaseModel
 from typing import Optional
 from app.controllers.admin.admin_controller import *
 from app.models.users.user_model import User
@@ -24,16 +26,16 @@ async def get_users():
     return response
 
 @router.post("/users/admin-create_user")
-async def create_user(user: User, token_data: dict = Depends(verify_token)):
+async def create_user(user: User):
     return adminController.create_user(user)
 
 @router.put("/users/update_user/{user_id}") 
-async def update_user(user_id: int, user: User, token_data: dict = Depends(verify_token)):
+async def update_user(user_id: int, user: User):
     response = adminController.update_user(user_id, user)
     return response
 
 @router.delete("/users/delete/{user_id}")
-async def delete_user(user_id: int, token_data: dict = Depends(verify_token)):
+async def delete_user(user_id: int):
     return adminController.delete_user(user_id)
  
 
@@ -44,7 +46,7 @@ async def get_users():
 
 
 @router.get("/users/technicians/all")
-def get_all_technicians(token_data: dict = Depends(verify_token)):
+def get_all_technicians():
     response = adminController.get_all_technicians()
     return response
 
@@ -196,6 +198,46 @@ async def get_reports(
 ):
     response = adminController.get_all_reports(technician_id, status, date_from, date_to)
     return response
+
+
+@router.get("/admin/reports/options")
+async def get_report_options():
+    return adminController.get_report_options()
+
+
+@router.get("/admin/reports/lecturas/pdf")
+async def download_iot_report_pdf(
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    equipment_id: Optional[str] = None,
+    limit: int = 200,
+):
+    return adminController.generate_iot_readings_report_pdf(date_from, date_to, equipment_id, limit)
+
+
+@router.get("/admin/reports/services/pdf")
+async def download_services_report_pdf(
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    technician_id: Optional[int] = None,
+    status: Optional[str] = None,
+    service_type: Optional[str] = None,
+):
+    return adminController.generate_services_report_pdf(
+        date_from,
+        date_to,
+        technician_id,
+        status,
+        service_type,
+    )
+
+
+@router.get("/admin/reports/resumen/pdf")
+async def download_admin_summary_report_pdf(
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+):
+    return adminController.generate_admin_summary_report_pdf(date_from, date_to)
  
 @router.post("/users/verify_password/{user_id}")
 async def verify_password(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
@@ -208,3 +250,32 @@ async def change_password(user_id: int, request: dict, token_data: dict = Depend
 @router.put("/users/update-profile/{user_id}")
 async def update_profile(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
     return adminController.update_profile(user_id, request)
+
+
+class UserSelectResponse(BaseModel):
+    id: int
+    name: str
+    last_name: str
+    email: str
+
+class UserSelectResponseWrapper(BaseModel):
+    resultado: List[UserSelectResponse]
+
+@router.get('/users/select/role/{role_name}', response_model=UserSelectResponseWrapper)
+async def get_users_by_role_for_select(role_name: str, token_data: dict = Depends(verify_token)):
+    response = adminController.get_users_by_role_name(role_name)
+    return response
+
+
+class ManualServiceCreate(BaseModel):
+    client_id: int
+    technician_id: Optional[int] = None
+    request_date: str
+    request_time: str
+    service_type: str
+    address: str
+
+@router.post('/users/services/manual_create')
+async def create_service_manual(service: ManualServiceCreate, token_data: dict = Depends(verify_token)):
+    response = adminController.create_service_manual(service)
+    return response

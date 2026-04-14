@@ -1,0 +1,18 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+  <article
+    class="toast-card"
+    *ngFor="let notification of notificationService.notifications()"
+    [class.toast-success]="notification.type === 'success'"
+    [class.toast-error]="notification.type === 'error'"
+    [class.toast-info]="notification.type === 'info'"
+  >
+    <div class="toast-body">
+      <strong>{{ notification.title }}</strong>
+      <p>{{ notification.message }}</p>
+    </div>
+
+    <button type="button" class="toast-close" (click)="dismiss(notification.id)" aria-label="Cerrar">
+      ×
+    </button>
+  </article>
+</div>
