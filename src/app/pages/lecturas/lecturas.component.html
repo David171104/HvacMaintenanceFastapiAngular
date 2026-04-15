@@ -69,6 +69,58 @@
         </div>
       </div>
 
+      <div class="lecturas-chart-card">
+        <div class="lecturas-section-head">
+          <div>
+            <h2>Grafica de monitoreo</h2>
+            <p>
+              Selecciona las metricas que quieres analizar y compara su comportamiento en una sola vista.
+            </p>
+          </div>
+          <span class="lecturas-badge">Grafica IoT</span>
+        </div>
+
+        <div class="lecturas-metric-picker">
+          <button
+            type="button"
+            class="lecturas-metric-chip lecturas-metric-chip--temperature"
+            [class.is-active]="selectedMetrics.temperatura"
+            (click)="toggleMetric('temperatura')"
+          >
+            Temperatura
+          </button>
+          <button
+            type="button"
+            class="lecturas-metric-chip lecturas-metric-chip--humidity"
+            [class.is-active]="selectedMetrics.humedad"
+            (click)="toggleMetric('humedad')"
+          >
+            Humedad
+          </button>
+          <button
+            type="button"
+            class="lecturas-metric-chip lecturas-metric-chip--current"
+            [class.is-active]="selectedMetrics.corriente"
+            (click)="toggleMetric('corriente')"
+          >
+            Corriente
+          </button>
+        </div>
+
+        <div class="lecturas-chart-shell" *ngIf="lecturas.length > 0; else chartEmptyState">
+          <canvas
+            baseChart
+            [type]="'line'"
+            [data]="historyChartData"
+            [options]="historyChartOptions"
+          ></canvas>
+        </div>
+
+        <ng-template #chartEmptyState>
+          <p class="lecturas-empty">Aun no hay lecturas suficientes para construir la grafica.</p>
+        </ng-template>
+      </div>
+
       <div class="lecturas-table-card">
         <div class="lecturas-section-head">
           <div>
