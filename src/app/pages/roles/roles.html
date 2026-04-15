@@ -1,0 +1,310 @@
+<section class="rl-page">
+
+  <!-- ── PAGE HEADER ────────────────────────────────────────────── -->
+  <header class="rl-header">
+    <div class="rl-header__copy">
+      <p class="rl-eyebrow">Control de accesos</p>
+      <h1 class="rl-title">Roles y Permisos</h1>
+      <p class="rl-subtitle">
+        Gestiona los roles del sistema y configura sus permisos módulo a módulo.
+      </p>
+    </div>
+    <button class="ds-button ds-button-primary rl-create-btn" (click)="openCreateModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Nuevo Rol
+    </button>
+  </header>
+
+  @if (error) {
+  <div class="rl-error-banner">{{ error }}</div>
+  }
+
+  <!-- ── MASTER / DETAIL GRID ───────────────────────────────────── -->
+  <div class="rl-master-detail">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         LEFT  ·  ROLES TABLE
+    ════════════════════════════════════════════════════════════════ -->
+    <div class="rl-panel rl-panel--master">
+      <div class="rl-panel__header">
+        <div>
+          <p class="rl-panel__label">Roles registrados</p>
+          <h2 class="rl-panel__title">Lista de Roles</h2>
+        </div>
+        <span class="rl-count-badge">{{ roles.length }}</span>
+      </div>
+
+      <!-- Skeleton -->
+      @if (loading) {
+      <div class="rl-skeleton-list">
+        @for (i of [1,2,3,4]; track i) {
+        <div class="rl-skeleton-row"></div>
+        }
+      </div>
+      }
+
+      <!-- Empty -->
+      @if (!loading && roles.length === 0 && !error) {
+      <div class="rl-empty-state">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+          stroke-linecap="round" stroke-linejoin="round" style="opacity:.3">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+        <p>No hay roles registrados.</p>
+      </div>
+      }
+
+      <!-- Table -->
+      @if (!loading && roles.length > 0) {
+      <div class="rl-table-shell">
+        <table class="rl-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (rol of roles; track trackByRoleId($index, rol)) {
+            <tr class="rl-table__row" [class.rl-table__row--active]="selectedRole?.id === rol.id">
+              <td class="rl-td-id">#{{ rol.id }}</td>
+              <td class="rl-td-name">{{ rol.name }}</td>
+              <td>
+                @if (rol.status === 1) {
+                <span class="rl-badge rl-badge--active">Activo</span>
+                } @else {
+                <span class="rl-badge rl-badge--inactive">Inactivo</span>
+                }
+              </td>
+              <td>
+                <div class="rl-actions">
+                  <!-- Editar -->
+                  <button class="rl-icon-btn rl-icon-btn--edit" title="Editar rol" (click)="openEditModal(rol, $event)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                  </button>
+
+                  <!-- Eliminar (oculto para roles de sistema: Admin id=1, Técnico id=2) -->
+                  @if (rol.id !== 1 && rol.id !== 2) {
+                    <button class="rl-icon-btn rl-icon-btn--delete" title="Eliminar rol"
+                      (click)="deleteRole(rol, $event)">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6M14 11v6" />
+                        <path d="M9 6V4h6v2" />
+                      </svg>
+                    </button>
+                  }
+
+                  <!-- Tuerca · Configurar permisos -->
+                  <button class="rl-icon-btn rl-icon-btn--gear"
+                    [class.rl-icon-btn--gear-active]="selectedRole?.id === rol.id" title="Configurar permisos"
+                    (click)="seleccionarRol(rol)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3" />
+                      <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         RIGHT  ·  PERMISSIONS PANEL
+    ════════════════════════════════════════════════════════════════ -->
+    <div class="rl-panel rl-panel--detail">
+
+      <!-- Empty State -->
+      @if (!selectedRole) {
+      <div class="rl-perms-empty">
+        <div class="rl-perms-empty__icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </div>
+        <p class="rl-perms-empty__title">Sin rol seleccionado</p>
+        <p class="rl-perms-empty__hint">
+          Selecciona el ícono de configuración (<svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+            style="display:inline;vertical-align:middle">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>)
+          de un rol para gestionar sus accesos.
+        </p>
+      </div>
+      }
+
+      <!-- Active Permissions Panel -->
+      @if (selectedRole) {
+      <div class="rl-perms-panel">
+        <!-- Panel Header -->
+        <div class="rl-perms-header">
+          <div>
+            <p class="rl-perms-eyebrow">Configuración de accesos</p>
+            <h2 class="rl-perms-title">
+              Permisos para:
+              <span class="rl-perms-role-name">{{ selectedRole.name }}</span>
+            </h2>
+          </div>
+          @if (!loadingPermissions) {
+          <span class="rl-count-badge rl-count-badge--accent">
+            {{ activePermissionsCount }} módulos activos
+          </span>
+          }
+        </div>
+
+        <!-- Loading Skeleton -->
+        @if (loadingPermissions) {
+        <div class="rl-perms-skeleton">
+          @for (i of [1,2,3,4,5]; track i) {
+          <div class="rl-perms-skeleton__row"></div>
+          }
+        </div>
+        }
+
+        <!-- Permissions Grid -->
+        @if (!loadingPermissions && permissions.length > 0) {
+        <div class="rl-perms-body">
+          <!-- Column Headers -->
+          <div class="rl-perms-grid rl-perms-grid--header">
+            <span class="rl-perms-col-module">Módulo</span>
+            <span class="rl-perms-col-chk">Ver</span>
+            <span class="rl-perms-col-chk">Crear</span>
+            <span class="rl-perms-col-chk">Editar</span>
+            <span class="rl-perms-col-chk">Borrar</span>
+          </div>
+
+          @for (perm of permissions; track trackByModuleId($index, perm)) {
+          <div class="rl-perms-grid rl-perms-grid--row"
+            [class.rl-perms-grid--row-active]="perm.can_view || perm.can_create || perm.can_edit || perm.can_delete">
+            <div class="rl-perms-module-name">
+              <span class="rl-module-dot"
+                [class.rl-module-dot--on]="perm.can_view || perm.can_create || perm.can_edit || perm.can_delete">
+              </span>
+              {{ perm.module_name }}
+            </div>
+
+            <!-- can_view -->
+            <label class="rl-chk-wrap" title="Ver">
+              <input type="checkbox" class="rl-chk" [checked]="perm.can_view"
+                (change)="togglePermiso(perm.module_id, 'can_view')" />
+              <span class="rl-chk-box"></span>
+            </label>
+
+            <!-- can_create -->
+            <label class="rl-chk-wrap" title="Crear">
+              <input type="checkbox" class="rl-chk" [checked]="perm.can_create"
+                (change)="togglePermiso(perm.module_id, 'can_create')" />
+              <span class="rl-chk-box"></span>
+            </label>
+
+            <!-- can_edit -->
+            <label class="rl-chk-wrap" title="Editar">
+              <input type="checkbox" class="rl-chk" [checked]="perm.can_edit"
+                (change)="togglePermiso(perm.module_id, 'can_edit')" />
+              <span class="rl-chk-box"></span>
+            </label>
+
+            <!-- can_delete -->
+            <label class="rl-chk-wrap" title="Borrar">
+              <input type="checkbox" class="rl-chk" [checked]="perm.can_delete"
+                (change)="togglePermiso(perm.module_id, 'can_delete')" />
+              <span class="rl-chk-box"></span>
+            </label>
+          </div>
+          }
+        </div>
+
+        <!-- Save Button -->
+        <div class="rl-perms-footer">
+          <button class="ds-button ds-button-primary rl-save-btn" [disabled]="saving" (click)="guardarPermisos()">
+            @if (saving) {
+            <span class="rl-spinner"></span>
+            Guardando...
+            } @else {
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            Guardar Cambios
+            }
+          </button>
+        </div>
+        }
+
+        <!-- No modules state -->
+        @if (!loadingPermissions && permissions.length === 0) {
+        <div class="rl-perms-no-modules">
+          No hay módulos configurables disponibles.
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL · Create / Edit Role
+════════════════════════════════════════════════════════════════════ -->
+@if (showModal) {
+<div class="rl-modal-backdrop" (click)="closeModal()">
+  <div class="rl-modal" (click)="$event.stopPropagation()">
+    <button class="rl-modal-close" (click)="closeModal()">✕</button>
+
+    <h3 class="rl-modal-title">
+      {{ isCreating ? 'Crear Rol' : 'Editar Rol' }}
+    </h3>
+
+    <div class="ds-field">
+      <label class="ds-label" for="modal-role-name">Nombre del Rol *</label>
+      <input id="modal-role-name" class="ds-control" [(ngModel)]="modalName" placeholder="Ej. Supervisor"
+        autocomplete="off" />
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label" for="modal-role-status">Estado *</label>
+      <select id="modal-role-status" class="ds-control" [(ngModel)]="modalStatus">
+        <option [ngValue]="1">Activo</option>
+        <option [ngValue]="0">Inactivo</option>
+      </select>
+    </div>
+
+    <div class="rl-modal-actions">
+      <button class="ds-button ds-button-primary" (click)="saveRole()">
+        {{ isCreating ? 'Crear' : 'Guardar cambios' }}
+      </button>
+      <button class="ds-button ds-button-secondary" (click)="closeModal()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+}

@@ -153,15 +153,17 @@
   </div>
 
   <nav class="sidebar__nav">
-    <a *ngFor="let item of navItems"
-       [routerLink]="item.route"
-       routerLinkActive="is-active"
-       class="sidebar__nav-item"
-       (click)="handleNavigate()"
-    >
-      <span class="sidebar__nav-icon">{{ item.icon }}</span>
-      <span class="sidebar__nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
-    </a>
+    <ng-container *ngFor="let item of navItems">
+      <a *ngIf="canRenderItem(item)"
+         [routerLink]="item.route"
+         routerLinkActive="is-active"
+         class="sidebar__nav-item"
+         (click)="handleNavigate()"
+      >
+        <span class="sidebar__nav-icon">{{ item.icon }}</span>
+        <span class="sidebar__nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+    </ng-container>
   </nav>
 
   <div class="sidebar__footer">

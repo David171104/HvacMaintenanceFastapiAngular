@@ -9,6 +9,47 @@ from app.models.login.user_login_model import UserLogin
 
 
 class LoginController:
+    def _get_role_permissions(self, cursor, role_id: int):
+        cursor.execute(
+            """
+            SELECT
+                m.id AS module_id,
+                m.name AS module_name,
+                m.routes AS routes,
+                COALESCE(p.can_view, 0) AS can_view,
+                COALESCE(p.can_create, 0) AS can_create,
+                COALESCE(p.can_edit, 0) AS can_edit,
+                COALESCE(p.can_delete, 0) AS can_delete
+            FROM modules AS m
+            LEFT JOIN permissions AS p
+                ON p.module_id = m.id
+                AND p.role_id = %s
+                AND p.deleted_at IS NULL
+                AND p.status = 1
+            WHERE m.deleted_at IS NULL
+              AND m.status = 1
+            ORDER BY m.id ASC
+            """,
+            (role_id,),
+        )
+
+        permissions = []
+        for row in cursor.fetchall():
+            permissions.append(
+                {
+                    "module_id": row["module_id"],
+                    "module": row["module_name"],
+                    "module_name": row["module_name"],
+                    "routes": row["routes"],
+                    "can_view": bool(row["can_view"]),
+                    "can_create": bool(row["can_create"]),
+                    "can_edit": bool(row["can_edit"]),
+                    "can_delete": bool(row["can_delete"]),
+                }
+            )
+
+        return permissions
+
     def login_user(self, user: UserLogin):
         conn = None
 
@@ -37,6 +78,8 @@ class LoginController:
             if not check_password_hash(user_data["password"], user.password):
                 raise HTTPException(status_code=401, detail="Correo o contrasena incorrectos")
 
+            permissions = self._get_role_permissions(cursor, user_data["role_id"])
+
             access_token = create_access_token(
                 data={
                     "id": user_data["id"],
@@ -50,6 +93,8 @@ class LoginController:
                 content={
                     "message": "Login exitoso",
                     "access_token": access_token,
+                    "token_type": "bearer",
+                    "permissions": permissions,
                     "user": {
                         "id": user_data["id"],
                         "role_id": user_data["role_id"],
