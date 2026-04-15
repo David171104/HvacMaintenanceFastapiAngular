@@ -73,7 +73,7 @@ async def get_report_by_id(report_id: int, token_data: dict = Depends(verify_tok
 
 @router.put("/users/update/reports/{report_id}")
 async def update_report(report_id: int, body: dict, current_user: dict = Depends(verify_token)):
-    return userController.update_report(report_id, body)
+    return userController.update_report(report_id, body, current_user)
 
 
 

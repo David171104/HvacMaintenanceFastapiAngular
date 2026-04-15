@@ -358,6 +358,12 @@ class UserController:
                 sr.service_description,
                 sr.service_duration,
                 sr.recommendation,
+                sr.temperature_before,
+                sr.temperature_after,
+                sr.voltage_before,
+                sr.voltage_after,
+                sr.humidity_before,
+                sr.humidity_after,
                 sr.client_rating,
                 sr.client_comments,
                 sr.created_at
@@ -388,6 +394,18 @@ class UserController:
 
         cursor.execute("""
             SELECT 
+                id,
+                service_id,
+                technician_id,
+                service_description,
+                service_duration,
+                recommendation,
+                temperature_before,
+                temperature_after,
+                voltage_before,
+                voltage_after,
+                humidity_before,
+                humidity_after,
                 client_rating,
                 client_comments
             FROM service_report
@@ -404,26 +422,87 @@ class UserController:
 
         return data
     
-    def update_report(self, report_id: int, body: dict):
-        conn = get_db_connection()
-        cursor = conn.cursor()
+    def update_report(self, report_id: int, body: dict, current_user: dict):
+        conn = None
+        cursor = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("""
-            UPDATE service_report
-            SET client_rating = %s,
-                client_comments = %s
-            WHERE id = %s
-        """, (
-            body.get("client_rating"),
-            body.get("client_comments"),
-            report_id
-        ))
+            cursor.execute("""
+                SELECT id, technician_id
+                FROM service_report
+                WHERE id = %s AND deleted_at IS NULL
+            """, (report_id,))
+            report = cursor.fetchone()
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+            if not report:
+                raise HTTPException(status_code=404, detail="Reporte no encontrado")
 
-        return {"message": "Reporte actualizado correctamente"}
+            role_id = current_user.get("role_id")
+            user_id = current_user.get("id")
+
+            if role_id == 2:
+                if not user_id or int(report["technician_id"] or 0) != int(user_id):
+                    raise HTTPException(status_code=403, detail="No autorizado para editar este reporte")
+
+                updates = {
+                    "service_description": body.get("service_description"),
+                    "service_duration": body.get("service_duration"),
+                    "recommendation": body.get("recommendation"),
+                    "temperature_before": body.get("temperature_before"),
+                    "temperature_after": body.get("temperature_after"),
+                    "voltage_before": body.get("voltage_before"),
+                    "voltage_after": body.get("voltage_after"),
+                    "humidity_before": body.get("humidity_before"),
+                    "humidity_after": body.get("humidity_after"),
+                }
+
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE service_report
+                    SET service_description = %s,
+                        service_duration = %s,
+                        recommendation = %s,
+                        temperature_before = %s,
+                        temperature_after = %s,
+                        voltage_before = %s,
+                        voltage_after = %s,
+                        humidity_before = %s,
+                        humidity_after = %s
+                    WHERE id = %s
+                """, (
+                    updates["service_description"],
+                    updates["service_duration"],
+                    updates["recommendation"],
+                    updates["temperature_before"],
+                    updates["temperature_after"],
+                    updates["voltage_before"],
+                    updates["voltage_after"],
+                    updates["humidity_before"],
+                    updates["humidity_after"],
+                    report_id
+                ))
+            else:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE service_report
+                    SET client_rating = %s,
+                        client_comments = %s
+                    WHERE id = %s
+                """, (
+                    body.get("client_rating"),
+                    body.get("client_comments"),
+                    report_id
+                ))
+
+            conn.commit()
+            return {"message": "Reporte actualizado correctamente"}
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
 
 
 

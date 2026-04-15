@@ -96,13 +96,13 @@
 }
 
 .user-table thead {
-  background: rgba(255, 255, 255, 0.03);
+  background: #121a31;
 }
 
 .user-table th {
   text-align: left;
   padding: 1rem 1.15rem;
-  color: var(--on-surface-soft);
+  color: #7f96d6;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -470,6 +470,34 @@ select.cs-control {
   color: var(--on-surface-strong);
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+.cs-feedback {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cs-feedback__rating {
+  color: #fbbf24;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.cs-feedback__rating--empty {
+  color: var(--on-surface-soft);
+  letter-spacing: normal;
+}
+
+.cs-feedback__comment {
+  color: var(--on-surface);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.cs-feedback__comment--muted {
+  color: var(--on-surface-soft);
 }
 
 @media (max-width: 640px) {
