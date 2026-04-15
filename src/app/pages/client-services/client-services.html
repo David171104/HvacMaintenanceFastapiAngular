@@ -86,7 +86,30 @@
                   <div class="cs-detail-item">
                     <span class="cs-detail-label">Estado actual</span>
                     <span [innerHTML]="getStatusHTML(servicio.current_status)"></span>
-                  
+                  </div>
+                  <div class="cs-detail-item cs-detail-item--full">
+                    <span class="cs-detail-label">Valoracion del servicio</span>
+                    <div class="cs-feedback" *ngIf="getServiceReport(servicio.id) as report; else clientNoRating">
+                      <span
+                        class="cs-feedback__rating"
+                        [class.cs-feedback__rating--empty]="report.client_rating == null"
+                      >
+                        {{ getRatingStars(report.client_rating) }}
+                      </span>
+                      <span class="cs-feedback__comment" *ngIf="report.client_comments; else clientNoComment">
+                        {{ report.client_comments }}
+                      </span>
+                      <ng-template #clientNoComment>
+                        <span class="cs-feedback__comment cs-feedback__comment--muted" *ngIf="report.client_rating != null">
+                          Sin comentario adicional.
+                        </span>
+                      </ng-template>
+                    </div>
+                    <ng-template #clientNoRating>
+                      <div class="cs-feedback">
+                        <span class="cs-feedback__rating cs-feedback__rating--empty">Sin reporte</span>
+                      </div>
+                    </ng-template>
                   </div>
                 </div>
               </div>

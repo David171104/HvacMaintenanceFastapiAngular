@@ -25,7 +25,7 @@ interface MaintenanceRecord {
   selector: 'app-maintenance-control',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './maintenance-control.html',
+  templateUrl: 'maintenance-control.html',
   styleUrls: ['./maintenance-control.css']
 })
 export class MaintenanceControlComponent implements OnInit {

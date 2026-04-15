@@ -67,9 +67,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   get environmentLabel(): string {
-    if (this.userRole === 'cliente') return 'Panel de usuario';
-    if (this.userRole === 'tecnico') return 'Panel de técnico';
-    return 'Entorno administrativo';
+    if (this.userRole === 'cliente') return 'Panel de Usuario';
+    if (this.userRole === 'tecnico') return 'Panel de Técnico';
+    return 'Entorno Administrativo';
   }
 
   private readonly allNavItems: NavItem[] = [
@@ -82,9 +82,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { route: '/maintenance-control', label: 'Control Mantenimiento', icon: 'CM', roles: ['administrador'] },
     { route: '/tecnic-home',         label: 'Resumen',          icon: 'RS', roles: ['tecnico'] },
     { route: '/techniccian-services',label: 'Servicios',        icon: 'SV', roles: ['tecnico'] },
+    { route: '/technician-reports',  label: 'Reportes',         icon: 'RP', roles: ['tecnico'] },
+    { route: '/profile',             label: 'Mi Perfil',        icon: 'PR', roles: ['tecnico'] },
     { route: '/client-home',         label: 'Resumen',          icon: 'RS', roles: ['cliente'] },
     { route: '/client-services',     label: 'Mis servicios',    icon: 'MS', roles: ['cliente'] },
     { route: '/profile',             label: 'Mi Perfil',        icon: 'PR', roles: ['cliente'] },
+    { route: '/client-reports',      label: 'Reportes',         icon: 'RP', roles: ['cliente'] },
   ];
 
   constructor(

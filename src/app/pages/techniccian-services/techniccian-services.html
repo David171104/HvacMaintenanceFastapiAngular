@@ -33,6 +33,7 @@
       <th>Hora</th>
       <th>Dirección</th>
       <th>Estado</th>
+      <th>Valoracion</th>
       <th>Accion</th>
     </tr>
   </thead>
@@ -52,6 +53,22 @@
       <td>{{ service.address }}</td>
 
       <td [innerHTML]="getStatusHTML(service.current_status)"></td>
+      <td>
+        <div class="service-feedback" *ngIf="getServiceReport(service.id) as report; else techNoRating">
+          <span
+            class="service-feedback__rating"
+            [class.service-feedback__rating--empty]="report.client_rating == null"
+          >
+            {{ getRatingStars(report.client_rating) }}
+          </span>
+          <span class="service-feedback__comment" *ngIf="report.client_comments">
+            {{ report.client_comments }}
+          </span>
+        </div>
+        <ng-template #techNoRating>
+          <span class="service-feedback__rating service-feedback__rating--empty">Sin reporte</span>
+        </ng-template>
+      </td>
       <td class="actions">
         <button
           *ngIf="service.current_status === 'assigned'"

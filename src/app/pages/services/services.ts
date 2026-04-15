@@ -17,12 +17,20 @@ import { ServicesStateService } from '../../shared/services-state/services-state
 interface Service {
   id: number;
   client_name: string;
+  technician_id?: number | null;
   technician_name?: string;
   service_type: string;
   request_date: string;
   request_time: string;
   address: string;
   current_status: string;
+}
+
+interface ServiceReportSummary {
+  id: number;
+  service_id: number;
+  client_rating: number | null;
+  client_comments: string | null;
 }
 
 interface Technician {
@@ -46,6 +54,7 @@ interface Client {
 })
 export class Services implements OnInit {
   services: Service[] = [];
+  reportsByServiceId = new Map<number, ServiceReportSummary>();
   technicians: Technician[] = [];
   clientesList: Client[] = [];
 
@@ -105,6 +114,7 @@ export class Services implements OnInit {
           console.log('Servicios API:', response);
 
           this.services = [...(response.resultado ?? [])];
+          this.loadServiceRatings();
           this.cd.detectChanges();
         },
         error: (err) => {
@@ -119,6 +129,18 @@ export class Services implements OnInit {
 
   getStatusHTML(status: string): string {
     return getStatusLabel(status?.toLowerCase());
+  }
+
+  getRatingStars(rating: number | null | undefined): string {
+    if (!rating || rating < 1) {
+      return 'Sin calificar';
+    }
+
+    return '\u2605'.repeat(rating) + '\u2606'.repeat(5 - rating);
+  }
+
+  getServiceReport(serviceId: number): ServiceReportSummary | null {
+    return this.reportsByServiceId.get(serviceId) ?? null;
   }
 
   openAssignModal(service: Service): void {
@@ -287,21 +309,52 @@ export class Services implements OnInit {
 
   assignTechnician(technicianId: number | null): void {
     if (!technicianId || !this.selectedServiceId) {
+      void Swal.fire({
+        icon: 'warning',
+        title: 'Campos requeridos',
+        text: 'Debes seleccionar un técnico.',
+        background: '#0f172a',
+        color: '#f8fafc',
+        confirmButtonColor: '#1D9E75',
+      });
       return;
     }
+
+    void Swal.fire({
+      title: 'Asignando técnico...',
+      allowOutsideClick: false,
+      background: '#0f172a',
+      color: '#f8fafc',
+      didOpen: () => Swal.showLoading(),
+    });
 
     const url = `http://localhost:8000/users/services/${this.selectedServiceId}/assign`;
     const body = { technician_id: technicianId };
 
     this.http.put(url, body).subscribe({
       next: () => {
-        console.log('Técnico asignado');
+        void Swal.fire({
+          icon: 'success',
+          title: '¡Técnico asignado!',
+          text: 'El servicio fue asignado correctamente.',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#0f172a',
+          color: '#f8fafc',
+        });
         this.closeModal();
         this.getServices();
       },
       error: (err) => {
-        console.error('Error asignando técnico', err);
-        alert('No se pudo asignar el técnico');
+        console.error('Error asignando técnico:', err);
+        void Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err?.error?.detail || 'No se pudo asignar el técnico.',
+          background: '#0f172a',
+          color: '#f8fafc',
+          confirmButtonColor: '#ef4444',
+        });
       },
     });
   }
@@ -407,5 +460,47 @@ export class Services implements OnInit {
 
   trackById(index: number, item: Service): number {
     return item.id;
+  }
+
+  private loadServiceRatings(): void {
+    const technicianIds = [...new Set(
+      this.services
+        .map((service) => Number(service.technician_id || 0))
+        .filter((technicianId) => technicianId > 0),
+    )];
+
+    if (technicianIds.length === 0) {
+      this.reportsByServiceId = new Map();
+      this.cd.detectChanges();
+      return;
+    }
+
+    const headers = this.buildAuthHeaders();
+    const requests = technicianIds.map((technicianId) =>
+      this.http.get<ServiceReportSummary[]>(
+        `http://localhost:8000/reports/technician/${technicianId}`,
+        { headers },
+      ),
+    );
+
+    forkJoin(requests).subscribe({
+      next: (responses) => {
+        const reports = responses.flatMap((response) => response ?? []);
+        this.reportsByServiceId = new Map(
+          reports.map((report) => [Number(report.service_id), report]),
+        );
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading service ratings for admin:', error);
+        this.reportsByServiceId = new Map();
+        this.cd.detectChanges();
+      },
+    });
+  }
+
+  private buildAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token') || '';
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 }

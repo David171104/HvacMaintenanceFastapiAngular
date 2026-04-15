@@ -104,9 +104,32 @@ export class Users implements OnInit {
         this.closeModal();
         this.getUsers();
       },
-      error: () => {
-        Swal.fire('Error', 'No se pudo guardar', 'error');
-      },
+      error: (err) => {
+        console.error('Error completo:', err);
+        
+        let mensaje = 'No se pudo guardar el usuario';
+
+        if (err.status === 422) {
+          // Error de validación del backend
+          const errors = err.error?.errors;
+          if (errors && Array.isArray(errors)) {
+            mensaje = errors.map((e: any) => e.msg).join('\n');
+          } else {
+            mensaje = err.error?.detail || mensaje;
+          }
+        } else if (err.status === 500) {
+          mensaje = err.error?.detail || 'Error interno del servidor';
+        }
+
+        void Swal.fire({
+          icon: 'error',
+          title: `Error ${err.status}`,
+          text: mensaje,
+          background: '#0f172a',
+          color: '#f8fafc',
+          confirmButtonColor: '#ef4444',
+        });
+      }
     });
   }
 

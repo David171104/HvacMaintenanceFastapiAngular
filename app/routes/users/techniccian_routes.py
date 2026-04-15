@@ -26,7 +26,7 @@ def complete_service(service_id: int):
 
 @router.post("/reports")
 def create_report(report: dict, token_data: dict = Depends(verify_token)):
-    return techniccianController.create_report(report)
+    return techniccianController.create_report(report, token_data)
 
 
 @router.get("/reports/technician/{technician_id}")

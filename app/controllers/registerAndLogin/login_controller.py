@@ -39,6 +39,7 @@ class LoginController:
 
             access_token = create_access_token(
                 data={
+                    "id": user_data["id"],
                     "sub": user_data["email"],
                     "role_id": user_data["role_id"],
                 }
