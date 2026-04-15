@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './shared/guards/auth.guard';
 import { Main } from './pages/main/main';
 import { Contact } from './pages/contact/contact';
 import { Notfound } from './pages/notfound/notfound';
@@ -48,73 +49,73 @@ export const routes: Routes = [
         {
           path: 'home',
           component: HomeComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard], 
           data: { permission: { roles: ['administrador'] } },
         },
         {
           path: 'users',
           component: Users,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Usuarios', action: 'can_view', roles: ['administrador'] } },
         },
         {
           path: 'services',
           component: Services,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Servicios', action: 'can_view', roles: ['administrador'] } },
         },
         {
           path: 'reports',
           component: Reports,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Reportes', action: 'can_view', roles: ['administrador'] } },
         },
         {
           path: 'analitica',
           component: AnaliticaComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Analitica avanzada', action: 'can_view', roles: ['administrador'] } },
         },
         {
           path: 'lecturas',
           component: LecturasComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Lecturas IoT', action: 'can_view', roles: ['administrador', 'tecnico'] } },
         },
         {
           path: 'tecnic-home',
           component: TecnicHome,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { roles: ['tecnico'] } },
         },
         {
           path: 'techniccian-services',
           component: TechniccianServices,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Servicios', action: 'can_view', roles: ['tecnico'] } },
         },
         {
           path: 'technician-reports',
           component: TechnicianReports,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Reportes', action: 'can_view', roles: ['tecnico'] } },
         },
         {
           path: 'profile',
           component: ClientProfileComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { roles: ['tecnico'] } },
         },
         {
           path: 'maintenance-control',
           component: MaintenanceControlComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Control Mantenimiento', action: 'can_view', roles: ['administrador'] } },
         },
         {
           path: 'roles',
           component: RolesComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Roles y Permisos', action: 'can_view', roles: ['administrador'] } },
         },
       ],
@@ -129,25 +130,25 @@ export const routes: Routes = [
         {
           path: 'client-home',
           component: ClientHome,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { roles: ['cliente'] } },
         },
         {
           path: 'client-services',
           component: ClientServices,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Servicios', action: 'can_view', roles: ['cliente'] } },
         },
         {
           path: 'client-reports',
           component: ClientReports,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { module: 'Reportes', action: 'can_view', roles: ['cliente'] } },
         },
         {
           path: 'profile',
           component: ClientProfileComponent,
-          canActivate: [routePermissionGuard],
+          canActivate: [routePermissionGuard, authGuard],
           data: { permission: { roles: ['cliente'] } },
         },
       ],
