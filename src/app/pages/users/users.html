@@ -93,30 +93,54 @@
       </h3>
 
       <label>Nombre *</label>
-      <input [(ngModel)]="selectedUser.name" />
+      <input [(ngModel)]="selectedUser.name" (blur)="validateField('name')" />
+      @if (fieldErrors.name) {
+        <p class="modal-error">{{ fieldErrors.name }}</p>
+      }
 
-      <label>Apellido</label>
-      <input [(ngModel)]="selectedUser.last_name" />
+      <label>Apellido *</label>
+      <input [(ngModel)]="selectedUser.last_name" (blur)="validateField('last_name')" />
+      @if (fieldErrors.last_name) {
+        <p class="modal-error">{{ fieldErrors.last_name }}</p>
+      }
 
       <label>Correo *</label>
-      <input [(ngModel)]="selectedUser.email" />
+      <input [(ngModel)]="selectedUser.email" (blur)="validateField('email')" />
+      @if (fieldErrors.email) {
+        <p class="modal-error">{{ fieldErrors.email }}</p>
+      }
 
       <label>Documento *</label>
-      <input [(ngModel)]="selectedUser.document_number" />
+      <input [(ngModel)]="selectedUser.document_number" (blur)="validateField('document_number')" />
+      @if (fieldErrors.document_number) {
+        <p class="modal-error">{{ fieldErrors.document_number }}</p>
+      }
 
       <label>Edad *</label>
-      <input [(ngModel)]="selectedUser.age" />
+      <input [(ngModel)]="selectedUser.age" (blur)="validateField('age')" />
+      @if (fieldErrors.age) {
+        <p class="modal-error">{{ fieldErrors.age }}</p>
+      }
 
       <label>Rol *</label>
-      <select [(ngModel)]="selectedUser.role_id">
+      <select [(ngModel)]="selectedUser.role_id" (blur)="validateField('role_id')">
         @for (role of roles; track role.id) {
           <option [value]="role.id">{{ role.name }}</option>
         }
       </select>
+      @if (fieldErrors.role_id) {
+        <p class="modal-error">{{ fieldErrors.role_id }}</p>
+      }
 
       @if (isCreating) {
         <label>Contraseña *</label>
-        <input [(ngModel)]="selectedUser.password" type="password" />
+        <input [(ngModel)]="selectedUser.password" type="password" (blur)="validateField('password')" />
+        @if (fieldErrors.password) {
+          <p class="modal-error">{{ fieldErrors.password }}</p>
+        }
+        <p class="modal-helper">
+          Debe tener minimo 8 caracteres, con mayuscula, minuscula, numero y caracter especial.
+        </p>
       }
 
       <div class="modal-actions">

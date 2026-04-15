@@ -1373,3 +1373,7 @@ th, td {
   color: #00ffc6;
 }
 
+.swal2-container {
+  z-index: 999999 !important;
+}
+

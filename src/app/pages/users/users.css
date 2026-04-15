@@ -100,42 +100,42 @@
 
 .users-table-shell {
   overflow-x: auto;
+  border-radius: 0.9rem;
+  background: #111827;
+  border: 1px solid #1f2937;
 }
 
 .users-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 0.45rem;
+  border-collapse: collapse;
+  overflow: hidden;
 }
 
 .users-table th {
-  padding: 0 0.8rem 0.7rem;
+  background: #121a31;
+  padding: 14px;
   text-align: left;
-  color: #8f9dba;
+  color: #7f96d6;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  border-bottom: 1px solid #1f2937;
 }
 
 .users-table td {
-  padding: 1rem 0.8rem;
+  padding: 12px;
   color: #dbe5f8;
-  background: rgba(12, 22, 40, 0.72);
-  border-top: 1px solid rgba(116, 128, 156, 0.12);
-  border-bottom: 1px solid rgba(116, 128, 156, 0.12);
+  background: transparent;
+  border-bottom: 1px solid #1f2937;
 }
 
-.users-table td:first-child {
-  border-left: 1px solid rgba(116, 128, 156, 0.12);
-  border-top-left-radius: var(--radius-lg);
-  border-bottom-left-radius: var(--radius-lg);
+.users-table tbody tr {
+  transition: background-color 0.18s ease;
 }
 
-.users-table td:last-child {
-  border-right: 1px solid rgba(116, 128, 156, 0.12);
-  border-top-right-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
+.users-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
 }
 
 .users-state,
@@ -255,6 +255,20 @@
   color: #c7d4ea;
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+.modal-helper {
+  margin: -0.25rem 0 0.25rem;
+  color: #8fa2c7;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.modal-error {
+  margin: -0.35rem 0 0.15rem;
+  color: #ff9b98;
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 
 .modal input,

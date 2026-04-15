@@ -309,21 +309,52 @@ export class Services implements OnInit {
 
   assignTechnician(technicianId: number | null): void {
     if (!technicianId || !this.selectedServiceId) {
+      void Swal.fire({
+        icon: 'warning',
+        title: 'Campos requeridos',
+        text: 'Debes seleccionar un técnico.',
+        background: '#0f172a',
+        color: '#f8fafc',
+        confirmButtonColor: '#1D9E75',
+      });
       return;
     }
+
+    void Swal.fire({
+      title: 'Asignando técnico...',
+      allowOutsideClick: false,
+      background: '#0f172a',
+      color: '#f8fafc',
+      didOpen: () => Swal.showLoading(),
+    });
 
     const url = `http://localhost:8000/users/services/${this.selectedServiceId}/assign`;
     const body = { technician_id: technicianId };
 
     this.http.put(url, body).subscribe({
       next: () => {
-        console.log('Técnico asignado');
+        void Swal.fire({
+          icon: 'success',
+          title: '¡Técnico asignado!',
+          text: 'El servicio fue asignado correctamente.',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#0f172a',
+          color: '#f8fafc',
+        });
         this.closeModal();
         this.getServices();
       },
       error: (err) => {
-        console.error('Error asignando técnico', err);
-        alert('No se pudo asignar el técnico');
+        console.error('Error asignando técnico:', err);
+        void Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err?.error?.detail || 'No se pudo asignar el técnico.',
+          background: '#0f172a',
+          color: '#f8fafc',
+          confirmButtonColor: '#ef4444',
+        });
       },
     });
   }

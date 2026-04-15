@@ -6,6 +6,7 @@ import { inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 import { NotificationService } from '../../shared/notifications/notification.service';
 import { getStatusLabel } from '../../shared/service-status.util';
@@ -174,8 +175,9 @@ export class TechnicianReports implements OnInit {
   }
 
   openReportModal(service: TechnicianServiceRow): void {
+    const existingReport = this.reportsByServiceId.get(service.id) ?? null;
     this.selectedService = service;
-    this.selectedReport = this.reportsByServiceId.get(service.id) ?? null;
+    this.selectedReport = existingReport;
     this.showModal = true;
 
     this.reportForm.reset({
@@ -219,13 +221,36 @@ export class TechnicianReports implements OnInit {
     }
   }
 
-  saveReport(): void {
+  async saveReport(): Promise<void> {
     if (!this.selectedService) {
       return;
     }
 
     if (this.reportForm.invalid) {
       this.reportForm.markAllAsTouched();
+      void Swal.fire({
+        title: 'Campos incompletos',
+        text: 'Completa la descripción, la duración y la recomendación antes de guardar el reporte.',
+        icon: 'warning',
+        confirmButtonText: 'Entendido',
+      });
+      return;
+    }
+
+    const isEditing = !!this.selectedReport;
+    const confirmation = await Swal.fire({
+      title: isEditing ? '¿Guardar cambios del reporte?' : '¿Guardar reporte técnico?',
+      text: isEditing
+        ? 'Se actualizará la información actual del reporte.'
+        : 'Se creará el reporte técnico para este servicio.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: isEditing ? 'Sí, guardar cambios' : 'Sí, guardar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    });
+
+    if (!confirmation.isConfirmed) {
       return;
     }
 
@@ -261,12 +286,17 @@ export class TechnicianReports implements OnInit {
       }))
       .subscribe({
         next: () => {
-          this.notificationService.success(
-            'Reporte guardado',
-            this.selectedReport
-              ? 'El reporte tecnico fue actualizado correctamente.'
-              : 'El reporte tecnico fue creado correctamente.',
-          );
+          const successMessage = isEditing
+            ? 'El reporte tecnico fue actualizado correctamente.'
+            : 'El reporte tecnico fue creado correctamente.';
+
+          this.notificationService.success('Reporte guardado', successMessage);
+          void Swal.fire({
+            title: isEditing ? 'Reporte actualizado' : 'Reporte guardado',
+            text: successMessage,
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+          });
           this.closeModal();
           this.loadData();
         },
@@ -359,8 +389,22 @@ export class TechnicianReports implements OnInit {
       });
   }
 
-  downloadPreview(): void {
+  async downloadPreview(): Promise<void> {
     if (!this.previewObjectUrl) {
+      return;
+    }
+
+    const confirmation = await Swal.fire({
+      title: '¿Descargar PDF?',
+      text: 'Se descargará el reporte técnico en formato PDF.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, descargar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    });
+
+    if (!confirmation.isConfirmed) {
       return;
     }
 
@@ -369,6 +413,14 @@ export class TechnicianReports implements OnInit {
     anchor.download = this.previewReportName || 'reporte.pdf';
     anchor.click();
     anchor.remove();
+
+    void Swal.fire({
+      title: 'Descarga iniciada',
+      text: 'El reporte técnico se descargó correctamente.',
+      icon: 'success',
+      timer: 1800,
+      showConfirmButton: false,
+    });
   }
 
   getStatusHTML(status: string): string {
