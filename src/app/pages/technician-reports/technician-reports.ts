@@ -9,6 +9,7 @@ import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 import { NotificationService } from '../../shared/notifications/notification.service';
+import { PermissionService } from '../../shared/permissions/permission.service';
 import { getStatusLabel } from '../../shared/service-status.util';
 
 interface TechnicianServiceRow {
@@ -92,6 +93,7 @@ export class TechnicianReports implements OnInit {
     private readonly cdr: ChangeDetectorRef,
     private readonly notificationService: NotificationService,
     private readonly sanitizer: DomSanitizer,
+    public readonly permissionService: PermissionService,
   ) {}
 
   ngOnInit(): void {
@@ -176,6 +178,23 @@ export class TechnicianReports implements OnInit {
 
   openReportModal(service: TechnicianServiceRow): void {
     const existingReport = this.reportsByServiceId.get(service.id) ?? null;
+
+    if (existingReport && !this.canEditReports) {
+      this.notificationService.error(
+        'Sin permiso',
+        'No tienes permiso para editar reportes.',
+      );
+      return;
+    }
+
+    if (!existingReport && !this.canCreateReports) {
+      this.notificationService.error(
+        'Sin permiso',
+        'No tienes permiso para crear reportes.',
+      );
+      return;
+    }
+
     this.selectedService = service;
     this.selectedReport = existingReport;
     this.showModal = true;
@@ -223,6 +242,16 @@ export class TechnicianReports implements OnInit {
 
   async saveReport(): Promise<void> {
     if (!this.selectedService) {
+      return;
+    }
+
+    if (this.selectedReport && !this.canEditReports) {
+      this.notificationService.error('Sin permiso', 'No tienes permiso para editar reportes.');
+      return;
+    }
+
+    if (!this.selectedReport && !this.canCreateReports) {
+      this.notificationService.error('Sin permiso', 'No tienes permiso para crear reportes.');
       return;
     }
 
@@ -314,6 +343,14 @@ export class TechnicianReports implements OnInit {
     return this.reportsByServiceId.has(serviceId);
   }
 
+  get canCreateReports(): boolean {
+    return this.permissionService.hasPermission('Reportes', 'can_create');
+  }
+
+  get canEditReports(): boolean {
+    return this.permissionService.hasPermission('Reportes', 'can_edit');
+  }
+
   get selectedServiceForCards(): TechnicianServiceRow | null {
     if (!this.selectedServiceIdForCards) {
       return null;
@@ -328,6 +365,17 @@ export class TechnicianReports implements OnInit {
         'Servicio requerido',
         'Debes seleccionar un servicio antes de generar o editar el reporte.',
       );
+      return;
+    }
+
+    const hasExistingReport = this.hasReport(this.selectedServiceForCards.id);
+    if (hasExistingReport && !this.canEditReports) {
+      this.notificationService.error('Sin permiso', 'No tienes permiso para editar reportes.');
+      return;
+    }
+
+    if (!hasExistingReport && !this.canCreateReports) {
+      this.notificationService.error('Sin permiso', 'No tienes permiso para crear reportes.');
       return;
     }
 

@@ -10,6 +10,7 @@ interface User {
   last_name: string;
   email: string;
   role_id: number;
+  status?: number;
   document_number?: string;
   age?: string;
   password?: string;
@@ -55,6 +56,7 @@ export class Users implements OnInit {
       last_name: '',
       email: '',
       role_id: 3,
+      status: 1,
       document_number: '',
       age: '',
       password: '',
@@ -178,6 +180,100 @@ export class Users implements OnInit {
     });
   }
 
+  suspendUser(): void {
+    if (this.isCreating || !this.selectedUser.id || this.selectedUser.status === 0) {
+      return;
+    }
+
+    void Swal.fire({
+      title: '¿Suspender usuario?',
+      text: `La cuenta de ${this.selectedUser.name} pasará a estado inactivo.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, suspender',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ef4444',
+      background: '#0f172a',
+      color: '#f8fafc',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      this.http.put(`${this.api}/suspend/${this.selectedUser.id}`, {}).subscribe({
+        next: () => {
+          void Swal.fire({
+            icon: 'success',
+            title: 'Usuario suspendido',
+            text: 'La cuenta fue suspendida correctamente.',
+            background: '#0f172a',
+            color: '#f8fafc',
+            confirmButtonColor: '#0ef0d1',
+          });
+          this.closeModal();
+          this.getUsers();
+        },
+        error: (err) => {
+          void Swal.fire({
+            icon: 'error',
+            title: `Error ${err.status}`,
+            text: err.error?.detail || 'No se pudo suspender el usuario.',
+            background: '#0f172a',
+            color: '#f8fafc',
+            confirmButtonColor: '#ef4444',
+          });
+        },
+      });
+    });
+  }
+
+  reactivateUser(): void {
+    if (this.isCreating || !this.selectedUser.id || this.selectedUser.status === 1) {
+      return;
+    }
+
+    void Swal.fire({
+      title: '¿Reactivar usuario?',
+      text: `La cuenta de ${this.selectedUser.name} volverá a estado activo.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, reactivar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#0ef0d1',
+      background: '#0f172a',
+      color: '#f8fafc',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      this.http.put(`${this.api}/reactivate/${this.selectedUser.id}`, {}).subscribe({
+        next: () => {
+          void Swal.fire({
+            icon: 'success',
+            title: 'Usuario reactivado',
+            text: 'La cuenta fue reactivada correctamente.',
+            background: '#0f172a',
+            color: '#f8fafc',
+            confirmButtonColor: '#0ef0d1',
+          });
+          this.closeModal();
+          this.getUsers();
+        },
+        error: (err) => {
+          void Swal.fire({
+            icon: 'error',
+            title: `Error ${err.status}`,
+            text: err.error?.detail || 'No se pudo reactivar el usuario.',
+            background: '#0f172a',
+            color: '#f8fafc',
+            confirmButtonColor: '#ef4444',
+          });
+        },
+      });
+    });
+  }
+
   getUsers(): void {
     this.loading = true;
 
@@ -202,6 +298,16 @@ export class Users implements OnInit {
     if (roleId === 1) return 'users-role users-role-admin';
     if (roleId === 2) return 'users-role users-role-tech';
     return 'users-role users-role-client';
+  }
+
+  getUserStatusLabel(status?: number): string {
+    return status === 0 ? 'Suspendido' : 'Activo';
+  }
+
+  getUserStatusClass(status?: number): string {
+    return status === 0
+      ? 'users-status users-status--suspended'
+      : 'users-status users-status--active';
   }
 
   validateField(field: keyof User): void {

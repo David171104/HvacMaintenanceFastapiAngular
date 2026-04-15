@@ -5,7 +5,7 @@ from app.models.services.service_model import Service
 from app.models.login.user_login_model import UserLogin
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from app.auth import verify_token 
+from app.auth import ensure_module_permission, verify_token 
 
 router = APIRouter()
 
@@ -73,6 +73,13 @@ async def get_report_by_id(report_id: int, token_data: dict = Depends(verify_tok
 
 @router.put("/users/update/reports/{report_id}")
 async def update_report(report_id: int, body: dict, current_user: dict = Depends(verify_token)):
+    if current_user.get("role_id") == 2:
+        ensure_module_permission(
+            current_user,
+            "Reportes",
+            "can_edit",
+            "No tienes permiso para editar reportes",
+        )
     return userController.update_report(report_id, body, current_user)
 
 

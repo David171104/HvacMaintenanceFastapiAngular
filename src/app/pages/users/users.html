@@ -43,6 +43,7 @@
               <th>Documento</th>
               <th>Correo</th>
               <th>Rol</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -58,6 +59,12 @@
                 <td>
                   <span [class]="getRoleClass(user.role_id)">
                     {{ getRole(user.role_id) }}
+                  </span>
+                </td>
+
+                <td>
+                  <span [class]="getUserStatusClass(user.status)">
+                    {{ getUserStatusLabel(user.status) }}
                   </span>
                 </td>
 
@@ -86,64 +93,104 @@
 @if (showModal) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="closeModal()">✕</button>
+      <button class="modal-close" (click)="closeModal()">×</button>
 
       <h3 class="modal-title">
         {{ isCreating ? 'Crear usuario' : 'Editar usuario' }}
       </h3>
 
-      <label>Nombre *</label>
-      <input [(ngModel)]="selectedUser.name" (blur)="validateField('name')" />
-      @if (fieldErrors.name) {
-        <p class="modal-error">{{ fieldErrors.name }}</p>
-      }
-
-      <label>Apellido *</label>
-      <input [(ngModel)]="selectedUser.last_name" (blur)="validateField('last_name')" />
-      @if (fieldErrors.last_name) {
-        <p class="modal-error">{{ fieldErrors.last_name }}</p>
-      }
-
-      <label>Correo *</label>
-      <input [(ngModel)]="selectedUser.email" (blur)="validateField('email')" />
-      @if (fieldErrors.email) {
-        <p class="modal-error">{{ fieldErrors.email }}</p>
-      }
-
-      <label>Documento *</label>
-      <input [(ngModel)]="selectedUser.document_number" (blur)="validateField('document_number')" />
-      @if (fieldErrors.document_number) {
-        <p class="modal-error">{{ fieldErrors.document_number }}</p>
-      }
-
-      <label>Edad *</label>
-      <input [(ngModel)]="selectedUser.age" (blur)="validateField('age')" />
-      @if (fieldErrors.age) {
-        <p class="modal-error">{{ fieldErrors.age }}</p>
-      }
-
-      <label>Rol *</label>
-      <select [(ngModel)]="selectedUser.role_id" (blur)="validateField('role_id')">
-        @for (role of roles; track role.id) {
-          <option [value]="role.id">{{ role.name }}</option>
+      <div class="modal-field">
+        <label>Nombre *</label>
+        <input [(ngModel)]="selectedUser.name" (blur)="validateField('name')" />
+        @if (fieldErrors.name) {
+          <p class="modal-error">{{ fieldErrors.name }}</p>
         }
-      </select>
-      @if (fieldErrors.role_id) {
-        <p class="modal-error">{{ fieldErrors.role_id }}</p>
-      }
+      </div>
+
+      <div class="modal-field">
+        <label>Apellido *</label>
+        <input [(ngModel)]="selectedUser.last_name" (blur)="validateField('last_name')" />
+        @if (fieldErrors.last_name) {
+          <p class="modal-error">{{ fieldErrors.last_name }}</p>
+        }
+      </div>
+
+      <div class="modal-field">
+        <label>Correo *</label>
+        <input [(ngModel)]="selectedUser.email" (blur)="validateField('email')" />
+        @if (fieldErrors.email) {
+          <p class="modal-error">{{ fieldErrors.email }}</p>
+        }
+      </div>
+
+      <div class="modal-field">
+        <label>Documento *</label>
+        <input [(ngModel)]="selectedUser.document_number" (blur)="validateField('document_number')" />
+        @if (fieldErrors.document_number) {
+          <p class="modal-error">{{ fieldErrors.document_number }}</p>
+        }
+      </div>
+
+      <div class="modal-field">
+        <label>Edad *</label>
+        <input [(ngModel)]="selectedUser.age" (blur)="validateField('age')" />
+        @if (fieldErrors.age) {
+          <p class="modal-error">{{ fieldErrors.age }}</p>
+        }
+      </div>
+
+      <div class="modal-field">
+        <label>Rol *</label>
+        <select [(ngModel)]="selectedUser.role_id" (blur)="validateField('role_id')">
+          @for (role of roles; track role.id) {
+            <option [value]="role.id">{{ role.name }}</option>
+          }
+        </select>
+        @if (fieldErrors.role_id) {
+          <p class="modal-error">{{ fieldErrors.role_id }}</p>
+        }
+      </div>
+
+      <div class="modal-field">
+        <label>Estado</label>
+        <div class="modal-status">
+          <span [class]="getUserStatusClass(selectedUser.status)">
+            {{ getUserStatusLabel(selectedUser.status) }}
+          </span>
+        </div>
+      </div>
 
       @if (isCreating) {
-        <label>Contraseña *</label>
-        <input [(ngModel)]="selectedUser.password" type="password" (blur)="validateField('password')" />
-        @if (fieldErrors.password) {
-          <p class="modal-error">{{ fieldErrors.password }}</p>
-        }
-        <p class="modal-helper">
-          Debe tener minimo 8 caracteres, con mayuscula, minuscula, numero y caracter especial.
-        </p>
+        <div class="modal-field">
+          <label>Contraseña *</label>
+          <input [(ngModel)]="selectedUser.password" type="password" (blur)="validateField('password')" />
+          @if (fieldErrors.password) {
+            <p class="modal-error">{{ fieldErrors.password }}</p>
+          }
+          <p class="modal-helper">
+            Debe tener mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial.
+          </p>
+        </div>
       }
 
       <div class="modal-actions">
+        @if (!isCreating) {
+          @if (selectedUser.status === 0) {
+            <button
+              class="modal-btn modal-btn--success"
+              (click)="reactivateUser()"
+            >
+              Reactivar
+            </button>
+          } @else {
+            <button
+              class="modal-btn modal-btn--danger"
+              (click)="suspendUser()"
+            >
+              Suspender
+            </button>
+          }
+        }
         <button class="modal-btn modal-btn--primary" (click)="saveChanges()">Guardar</button>
         <button class="modal-btn modal-btn--ghost" (click)="closeModal()">Cancelar</button>
       </div>

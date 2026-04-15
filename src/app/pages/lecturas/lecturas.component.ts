@@ -39,6 +39,8 @@ import {
 })
 export class LecturasComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
+  userRole = '';
+  currentTab: 'historial' | 'comparativa' | 'registro' = 'historial';
 
   readonly manualReadingForm = this.fb.nonNullable.group({
     temperatura: [
@@ -109,6 +111,7 @@ export class LecturasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.resolveCurrentRole();
     this.resetManualForm();
     this.resetComparisonForm();
     this.cargarCatalogoEquipos();
@@ -169,6 +172,15 @@ export class LecturasComponent implements OnInit, OnDestroy {
   actualizarPanel(): void {
     this.cargarDatos();
     this.cargarCatalogoEquipos(true);
+  }
+
+  changeTab(tabName: 'historial' | 'comparativa' | 'registro'): void {
+    if (tabName === 'registro' && !this.canAccessManualTab) {
+      this.currentTab = 'historial';
+      return;
+    }
+
+    this.currentTab = tabName;
   }
 
   registrarLecturaManual(): void {
@@ -389,6 +401,10 @@ export class LecturasComponent implements OnInit, OnDestroy {
     return !!this.comparisonForm.errors?.['afterRangeOrder'] && this.comparisonSubmitted;
   }
 
+  get canAccessManualTab(): boolean {
+    return ['tecnico', 'supervisor'].includes(this.userRoleNormalized);
+  }
+
   get comparisonStatusLabel(): string {
     switch (this.comparisonResult?.status) {
       case 'improved':
@@ -402,6 +418,18 @@ export class LecturasComponent implements OnInit, OnDestroy {
       default:
         return 'Sin datos';
     }
+  }
+
+  private get userRoleNormalized(): string {
+    return (this.userRole || '')
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
+  private resolveCurrentRole(): string {
+    return localStorage.getItem('userRole') || '';
   }
 
   private ensureSelectedEquipmentStillExists(): void {
