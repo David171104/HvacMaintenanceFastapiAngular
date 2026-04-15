@@ -65,7 +65,8 @@ class AdminController:
                     'email':data[3],
                     'document_number':data[4],
                     'age':data[5],
-                    'role_id':data[7]
+                    'role_id':data[7],
+                    'status':data[11],
                 }
                 payload.append(content)
                 content = {}
@@ -217,6 +218,84 @@ class AdminController:
 
         except mysql.connector.Error as e:
             raise HTTPException(status_code=500, detail=f"Error al eliminar usuario: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
+    def suspend_user(self, user_id: int):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT id, status FROM users WHERE id = %s AND deleted_at IS NULL",
+                (user_id,),
+            )
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+            if user[1] == 0:
+                raise HTTPException(status_code=400, detail="El usuario ya se encuentra suspendido.")
+
+            cursor.execute(
+                """
+                UPDATE users
+                SET status = 0,
+                    updated_at = NOW()
+                WHERE id = %s
+                """,
+                (user_id,),
+            )
+            conn.commit()
+
+            return {"message": "Usuario suspendido correctamente."}
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al suspender usuario: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
+    def reactivate_user(self, user_id: int):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "SELECT id, status FROM users WHERE id = %s AND deleted_at IS NULL",
+                (user_id,),
+            )
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+            if user[1] == 1:
+                raise HTTPException(status_code=400, detail="El usuario ya se encuentra activo.")
+
+            cursor.execute(
+                """
+                UPDATE users
+                SET status = 1,
+                    updated_at = NOW()
+                WHERE id = %s
+                """,
+                (user_id,),
+            )
+            conn.commit()
+
+            return {"message": "Usuario reactivado correctamente."}
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al reactivar usuario: {e}")
 
         finally:
             if conn:
