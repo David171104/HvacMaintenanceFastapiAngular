@@ -1,1 +1,41 @@
-<p>404 NOT FOUND </p>
+<section class="notfound-page">
+  <div class="notfound-page__ambient notfound-page__ambient--left"></div>
+  <div class="notfound-page__ambient notfound-page__ambient--right"></div>
+
+  <div class="notfound-shell">
+    <div class="notfound-shell__signal">
+      <span class="notfound-shell__noise notfound-shell__noise--left"></span>
+      <span class="notfound-shell__noise notfound-shell__noise--right"></span>
+      <span class="notfound-shell__scanlines"></span>
+      <span class="notfound-shell__signal-ring"></span>
+      <span class="notfound-shell__signal-ring"></span>
+      <span class="notfound-shell__signal-core">
+        <span class="notfound-shell__glitch" data-text="404">404</span>
+        <span class="notfound-shell__glitch-caption" data-text="page not found">page not found</span>
+      </span>
+    </div>
+
+    <div class="notfound-copy">
+      <p class="notfound-copy__eyebrow">Ruta no disponible</p>
+      <h1 class="notfound-copy__title">La página se perdió fuera del mapa operativo.</h1>
+      <p class="notfound-copy__text">
+        La dirección que abriste no existe, cambió de ubicación o ya no forma parte del flujo actual de ClimaTech.
+      </p>
+    </div>
+
+    <div class="notfound-panel">
+      <div class="notfound-panel__row">
+        <span class="notfound-panel__label">Estado</span>
+        <strong>Enlace no encontrado</strong>
+      </div>
+      <div class="notfound-panel__row">
+        <span class="notfound-panel__label">Sugerencia</span>
+        <strong>Vuelve al inicio o regresa a la vista anterior</strong>
+      </div>
+    </div>
+
+    <div class="notfound-actions">
+      <button type="button" class="notfound-actions__ghost" (click)="goBack()">Volver</button>
+    </div>
+  </div>
+</section>

@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgIf, NgFor } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize, forkJoin, Subscription, interval } from 'rxjs';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartData, ChartDataset, ChartOptions, TooltipItem, TooltipOptions } from 'chart.js';
 
 import {
   dateRangeOrder,
@@ -32,13 +34,23 @@ import {
   standalone: true,
 
   // 👇 IMPORTANTE
-  imports: [NgIf, NgFor, ReactiveFormsModule],
+  imports: [CommonModule, NgIf, NgFor, ReactiveFormsModule, BaseChartDirective],
 
   templateUrl: './lecturas.component.html',
   styleUrls: ['./lecturas.component.css'],
 })
 export class LecturasComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
+  @ViewChild(BaseChartDirective) historyChart?: BaseChartDirective;
+  userRole = '';
+  currentTab: 'historial' | 'comparativa' | 'registro' = 'historial';
+  selectedMetrics: Record<'temperatura' | 'humedad' | 'corriente', boolean> = {
+    temperatura: true,
+    humedad: true,
+    corriente: true,
+  };
+  historyChartData: ChartData<'line'> = { labels: [], datasets: [] };
+  readonly historyChartOptions = this.createHistoryChartOptions();
 
   readonly manualReadingForm = this.fb.nonNullable.group({
     temperatura: [
@@ -102,6 +114,8 @@ export class LecturasComponent implements OnInit, OnDestroy {
   isSaving = false;
 
   private autoRefreshSub?: Subscription;
+  private chartMotionSub?: Subscription;
+  private chartDashOffset = 0;
 
   constructor(
     private readonly lecturasService: LecturasService,
@@ -109,6 +123,7 @@ export class LecturasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.resolveCurrentRole();
     this.resetManualForm();
     this.resetComparisonForm();
     this.cargarCatalogoEquipos();
@@ -117,10 +132,15 @@ export class LecturasComponent implements OnInit, OnDestroy {
     this.autoRefreshSub = interval(5000).subscribe(() => {
       this.cargarDatos();
     });
+
+    this.chartMotionSub = interval(120).subscribe(() => {
+      this.animateHistoryChart();
+    });
   }
 
   ngOnDestroy(): void {
     this.autoRefreshSub?.unsubscribe();
+    this.chartMotionSub?.unsubscribe();
   }
 
   cargarDatos(): void {
@@ -136,6 +156,7 @@ export class LecturasComponent implements OnInit, OnDestroy {
         next: ({ ultima, historial }) => {
           this.ultimaLectura = ultima;
           this.lecturas = historial || [];
+          this.buildHistoryChart();
         },
         error: (err) => {
           console.error('Error cargando lecturas:', err);
@@ -169,6 +190,28 @@ export class LecturasComponent implements OnInit, OnDestroy {
   actualizarPanel(): void {
     this.cargarDatos();
     this.cargarCatalogoEquipos(true);
+  }
+
+  changeTab(tabName: 'historial' | 'comparativa' | 'registro'): void {
+    if (tabName === 'registro' && !this.canAccessManualTab) {
+      this.currentTab = 'historial';
+      return;
+    }
+
+    this.currentTab = tabName;
+  }
+
+  toggleMetric(metric: 'temperatura' | 'humedad' | 'corriente'): void {
+    if (this.selectedMetricCount === 1 && this.selectedMetrics[metric]) {
+      this.notificationService.info(
+        'Seleccion minima',
+        'Debes mantener al menos una metrica visible en la grafica.',
+      );
+      return;
+    }
+
+    this.selectedMetrics[metric] = !this.selectedMetrics[metric];
+    this.buildHistoryChart();
   }
 
   registrarLecturaManual(): void {
@@ -389,6 +432,10 @@ export class LecturasComponent implements OnInit, OnDestroy {
     return !!this.comparisonForm.errors?.['afterRangeOrder'] && this.comparisonSubmitted;
   }
 
+  get canAccessManualTab(): boolean {
+    return ['tecnico', 'supervisor'].includes(this.userRoleNormalized);
+  }
+
   get comparisonStatusLabel(): string {
     switch (this.comparisonResult?.status) {
       case 'improved':
@@ -402,6 +449,22 @@ export class LecturasComponent implements OnInit, OnDestroy {
       default:
         return 'Sin datos';
     }
+  }
+
+  get selectedMetricCount(): number {
+    return Object.values(this.selectedMetrics).filter(Boolean).length;
+  }
+
+  private get userRoleNormalized(): string {
+    return (this.userRole || '')
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
+  private resolveCurrentRole(): string {
+    return localStorage.getItem('userRole') || '';
   }
 
   private ensureSelectedEquipmentStillExists(): void {
@@ -428,5 +491,220 @@ export class LecturasComponent implements OnInit, OnDestroy {
     now.setHours(now.getHours() + hoursOffset);
     const timezoneOffset = now.getTimezoneOffset() * 60000;
     return new Date(now.getTime() - timezoneOffset).toISOString().slice(0, 16);
+  }
+
+  private buildHistoryChart(): void {
+    const sortedReadings = this.lecturas
+      .slice()
+      .sort((a, b) => new Date(a.fecha_hora).getTime() - new Date(b.fecha_hora).getTime());
+
+    const labels = sortedReadings.map((reading) => this.formatHourLabel(reading.fecha_hora));
+    const fullLabels = sortedReadings.map((reading) => this.formatearFecha(reading.fecha_hora));
+    const datasets: ChartDataset<'line'>[] = [];
+
+    if (this.selectedMetrics.temperatura) {
+      datasets.push(
+        this.createMetricDataset(
+          'Temperatura',
+          sortedReadings.map((reading) => Number(reading.temperatura ?? 0)),
+          '#53ddfc',
+          'yTemperatura',
+        ),
+      );
+    }
+
+    if (this.selectedMetrics.humedad) {
+      datasets.push(
+        this.createMetricDataset(
+          'Humedad',
+          sortedReadings.map((reading) => Number(reading.humedad ?? 0)),
+          '#69f6b8',
+          'yHumedad',
+        ),
+      );
+    }
+
+    if (this.selectedMetrics.corriente) {
+      datasets.push(
+        this.createMetricDataset(
+          'Corriente',
+          sortedReadings.map((reading) => Number(reading.corriente ?? 0)),
+          '#ffcf6d',
+          'yCorriente',
+        ),
+      );
+    }
+
+    this.historyChartData = {
+      labels,
+      datasets,
+    };
+
+    this.historyChartOptions.plugins = {
+      ...this.historyChartOptions.plugins,
+      tooltip: this.createHistoryTooltipOptions(fullLabels),
+    };
+  }
+
+  private createMetricDataset(
+    label: string,
+    data: number[],
+    color: string,
+    axisId: 'yTemperatura' | 'yHumedad' | 'yCorriente',
+  ): ChartDataset<'line'> {
+    return {
+      type: 'line',
+      label,
+      data,
+      yAxisID: axisId,
+      borderColor: color,
+      backgroundColor: `${color}20`,
+      tension: 0.34,
+      fill: false,
+      pointRadius: 2.8,
+      pointHoverRadius: 4.4,
+      pointBackgroundColor: color,
+      pointBorderWidth: 0,
+      borderWidth: 2.4,
+      borderDash: [10, 8],
+      borderDashOffset: this.chartDashOffset,
+    };
+  }
+
+  private createHistoryChartOptions(): ChartOptions<'line'> {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: '#cbd5e1',
+            usePointStyle: true,
+            boxWidth: 10,
+            boxHeight: 10,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#8f9dba',
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 8,
+          },
+          grid: {
+            display: false,
+          },
+        },
+        yTemperatura: {
+          type: 'linear',
+          position: 'left',
+          ticks: {
+            color: '#53ddfc',
+            callback: (value) => `${value} °C`,
+          },
+          grid: {
+            color: 'rgba(116, 128, 156, 0.16)',
+          },
+          title: {
+            display: true,
+            text: 'Temperatura',
+            color: '#53ddfc',
+          },
+        },
+        yHumedad: {
+          type: 'linear',
+          position: 'right',
+          ticks: {
+            color: '#69f6b8',
+            callback: (value) => `${value} %`,
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+          title: {
+            display: true,
+            text: 'Humedad',
+            color: '#69f6b8',
+          },
+        },
+        yCorriente: {
+          type: 'linear',
+          position: 'right',
+          offset: true,
+          ticks: {
+            color: '#ffcf6d',
+            callback: (value) => `${value} A`,
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+          title: {
+            display: true,
+            text: 'Corriente',
+            color: '#ffcf6d',
+          },
+        },
+      },
+    };
+  }
+
+  private createHistoryTooltipOptions(fullLabels: string[]): TooltipOptions<'line'> {
+    return {
+      backgroundColor: 'rgba(8, 14, 29, 0.95)',
+      titleColor: '#f5f7ff',
+      bodyColor: '#dbe5f8',
+      borderColor: 'rgba(83, 221, 252, 0.18)',
+      borderWidth: 1,
+      callbacks: {
+        title: (items: TooltipItem<'line'>[]) => fullLabels[items[0]?.dataIndex ?? 0] || '',
+        label: (item: TooltipItem<'line'>) =>
+          `${item.dataset.label}: ${item.formattedValue} ${this.getMetricSuffix(item.dataset.label || '')}`.trim(),
+      } as TooltipOptions<'line'>['callbacks'],
+    } as TooltipOptions<'line'>;
+  }
+
+  private getMetricSuffix(metricLabel: string): string {
+    switch ((metricLabel || '').toLowerCase()) {
+      case 'temperatura':
+        return '°C';
+      case 'humedad':
+        return '%';
+      case 'corriente':
+        return 'A';
+      default:
+        return '';
+    }
+  }
+
+  private formatHourLabel(value: string): string {
+    if (!value) {
+      return '-';
+    }
+
+    return new Intl.DateTimeFormat('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
+  }
+
+  private animateHistoryChart(): void {
+    if (!this.historyChartData.datasets.length || this.currentTab !== 'historial') {
+      return;
+    }
+
+    this.chartDashOffset -= 0.7;
+
+    this.historyChartData.datasets.forEach((dataset) => {
+      dataset.borderDashOffset = this.chartDashOffset;
+    });
+
+    this.historyChart?.update('none');
   }
 }

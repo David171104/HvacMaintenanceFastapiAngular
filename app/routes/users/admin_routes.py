@@ -40,10 +40,21 @@ async def update_user(user_id: int, user: User):
 @router.delete("/users/delete/{user_id}")
 async def delete_user(user_id: int):
     return adminController.delete_user(user_id)
+
+@router.put("/users/suspend/{user_id}")
+async def suspend_user(user_id: int):
+    return adminController.suspend_user(user_id)
+
+@router.put("/users/reactivate/{user_id}")
+async def reactivate_user(user_id: int):
+    return adminController.reactivate_user(user_id)
  
 @router.post("/admin/notifications/trigger-maintenances")
 async def trigger_maintenances(token_data: dict = Depends(verify_token)):
-    if token_data.get("role_name") != "administrador":
+    role_id = token_data.get("role_id")
+    role_name = str(token_data.get("role_name", "")).strip().lower()
+
+    if role_id != 1 and role_name != "administrador":
         raise HTTPException(status_code=403, detail="No autorizado. Se requiere rol de administrador.")
 
     await notification_service.process_pending_maintenances()

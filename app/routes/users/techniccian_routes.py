@@ -5,7 +5,7 @@ from app.models.services.service_model import Service
 from app.models.login.user_login_model import UserLogin
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from app.auth import verify_token 
+from app.auth import ensure_module_permission, verify_token 
 
 router = APIRouter()
 
@@ -26,6 +26,12 @@ def complete_service(service_id: int):
 
 @router.post("/reports")
 def create_report(report: dict, token_data: dict = Depends(verify_token)):
+    ensure_module_permission(
+        token_data,
+        "Reportes",
+        "can_create",
+        "No tienes permiso para crear reportes",
+    )
     return techniccianController.create_report(report, token_data)
 
 

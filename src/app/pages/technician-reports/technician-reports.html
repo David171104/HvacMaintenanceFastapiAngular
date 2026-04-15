@@ -38,7 +38,7 @@
   </section>
 
   <section class="technician-reports__cards" *ngIf="!loading">
-    <article class="technician-card">
+    <article class="technician-card" *ngIf="canCreateReports">
       <div class="technician-card__head">
         <span class="technician-card__badge">Generar</span>
         <h2>Generar Reporte</h2>
@@ -59,7 +59,7 @@
       </button>
     </article>
 
-    <article class="technician-card">
+    <article class="technician-card" *ngIf="canEditReports">
       <div class="technician-card__head">
         <span class="technician-card__badge">Editar</span>
         <h2>Editar Reporte</h2>
@@ -156,11 +156,20 @@
           </td>
           <td>
             <button
+              *ngIf="!hasReport(service.id) && canCreateReports"
               type="button"
               class="action-btn action-btn--primary"
               (click)="openReportModal(service)"
             >
-              {{ hasReport(service.id) ? 'Editar Reporte' : 'Generar Reporte' }}
+              Generar Reporte
+            </button>
+            <button
+              *ngIf="hasReport(service.id) && canEditReports"
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="openReportModal(service)"
+            >
+              Editar Reporte
             </button>
             <button
               *ngIf="hasReport(service.id)"
