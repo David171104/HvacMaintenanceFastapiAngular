@@ -16,6 +16,7 @@ import {
   trimFormValues,
 } from '../../shared/validation/form-utils';
 import { NotificationService } from '../../shared/notifications/notification.service';
+import { PermissionService, SessionPermission } from '../../shared/permissions/permission.service';
 
 /* declarar MSAL global */
 declare global {
@@ -60,6 +61,7 @@ export class LoginComponent implements OnInit {
     private readonly router: Router,
     private readonly http: HttpClient,
     private readonly notificationService: NotificationService,
+    private readonly permissionService: PermissionService,
   ) {}
 
   ngOnInit(): void {
@@ -104,6 +106,7 @@ export class LoginComponent implements OnInit {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     localStorage.removeItem('userLastName');
+    this.permissionService.clearPermissions();
     sessionStorage.clear();
 
     if (!window.msal) {
@@ -123,6 +126,7 @@ export class LoginComponent implements OnInit {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     localStorage.removeItem('userLastName');
+    this.permissionService.clearPermissions();
 
     msalInstance.logoutRedirect({
       postLogoutRedirectUri: 'http://localhost:4200',
@@ -154,6 +158,8 @@ export class LoginComponent implements OnInit {
     this.http
       .post<{
         access_token: string;
+        token_type: string;
+        permissions: SessionPermission[];
         user: {
           id: number;
           name: string;
@@ -183,12 +189,14 @@ export class LoginComponent implements OnInit {
           localStorage.removeItem('userRole');
           localStorage.removeItem('userName');
           localStorage.removeItem('userLastName');
+          this.permissionService.clearPermissions();
 
           localStorage.setItem('access_token', response.access_token);
           localStorage.setItem('user', JSON.stringify(response.user));
           localStorage.setItem('userRole', roleText);
           localStorage.setItem('userName', response.user.name);
           localStorage.setItem('userLastName', response.user.last_name);
+          this.permissionService.setPermissions(response.permissions ?? []);
 
           // Recordar correo para próximos inicios de sesión
           localStorage.setItem('climatech_saved_email', formValue.email);
