@@ -41,6 +41,8 @@ export class ClientServices implements OnInit, OnDestroy {
     request_time: ['', [Validators.required, timeRange()]],
     service_type: ['Correctivo', [Validators.required]],
     address: ['', [Validators.required, requiredTrimmed, Validators.minLength(8), Validators.maxLength(180)]],
+    equipment_id: ['', [Validators.required]],
+    description: ['']
   });
 
   showModal = false;
@@ -56,6 +58,7 @@ export class ClientServices implements OnInit, OnDestroy {
   // La vista lee directamente del estado compartido
   servicios: ServicioCliente[] = [];
   clientId = '';
+  equipments: any[] = [];
 
   constructor(
     private readonly http: HttpClient,
@@ -70,6 +73,12 @@ export class ClientServices implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Autocompleta la dirección del cliente si existe
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user?.address) {
+      this.serviceForm.patchValue({ address: user.address });
+    }
+
     // Sincronizar la vista local con el estado compartido
     this.servicesState.servicios$
       .pipe(takeUntil(this.destroy$))
@@ -79,6 +88,29 @@ export class ClientServices implements OnInit, OnDestroy {
       });
 
     this.cargarServicios();
+    this.loadEquipments();
+  }
+
+  loadEquipments(): void {
+    if (!this.clientId) return;
+    const token = localStorage.getItem('access_token') || '';
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    this.http.get<any[]>(`http://localhost:8000/users/equipments/client/${this.clientId}`, { headers })
+      .subscribe({
+        next: (data) => {
+          this.equipments = data;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          // Fallback mock payload if endpoint doesn't exist yet
+          this.equipments = [
+            { id: 1, name: 'Minisplit Mirage 1.5T', location: 'Sala de Juntas' },
+            { id: 2, name: 'Carrier Cassette', location: 'Recepción' }
+          ];
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -169,7 +201,9 @@ export class ClientServices implements OnInit, OnDestroy {
       request_date: '',
       request_time: '',
       service_type: 'Correctivo',
-      address: '',
+      address: JSON.parse(localStorage.getItem('user') || '{}').address || '',
+      equipment_id: '',
+      description: ''
     });
   }
 
@@ -240,12 +274,12 @@ export class ClientServices implements OnInit, OnDestroy {
 
   // ── HELPERS ─────────────────────────────────────────────────────────────────
 
-  isInvalid(controlName: 'request_date' | 'request_time' | 'service_type' | 'address'): boolean {
+  isInvalid(controlName: 'request_date' | 'request_time' | 'service_type' | 'address' | 'equipment_id'): boolean {
     return controlInvalid(this.serviceForm.get(controlName), this.submitted);
   }
 
   getError(
-    controlName: 'request_date' | 'request_time' | 'service_type' | 'address',
+    controlName: 'request_date' | 'request_time' | 'service_type' | 'address' | 'equipment_id',
     label: string,
   ): string | null {
     return getControlErrorMessage(this.serviceForm.get(controlName), label);

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs/operators';
@@ -20,8 +20,8 @@ interface ClientReportRow {
   recommendation: string | null;
   temperature_before: number | null;
   temperature_after: number | null;
-  voltage_before: number | null;
-  voltage_after: number | null;
+  amperage_before: number | null;
+  amperage_after: number | null;
   humidity_before: number | null;
   humidity_after: number | null;
   client_rating: number | null;
@@ -56,6 +56,7 @@ export class ClientReports implements OnInit {
     private readonly http: HttpClient,
     private readonly notificationService: NotificationService,
     private readonly sanitizer: DomSanitizer,
+    private readonly cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -80,15 +81,18 @@ export class ClientReports implements OnInit {
       .get<ClientReportRow[]>(`http://localhost:8000/users/reports/client/${this.clientId}`, {
         headers: this.buildAuthHeaders(),
       })
-      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (reports) => {
           this.reports = reports ?? [];
+          this.loading = false;
+          this.cd.detectChanges(); // Elimina el skeleton instantáneamente
         },
         error: (error) => {
           console.error('Error loading client reports:', error);
           this.error = error.error?.detail || 'No se pudieron cargar tus reportes.';
           this.reports = [];
+          this.loading = false;
+          this.cd.detectChanges();
         },
       });
   }
@@ -118,6 +122,7 @@ export class ClientReports implements OnInit {
           this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewObjectUrl);
           this.previewReportName = `reporte_${reportId}.pdf`;
           this.showPreviewModal = true;
+          this.cd.detectChanges(); // Fuerza pintar el modal al recibir el PDF
         },
         error: (error) => {
           console.error('Error downloading client report:', error);
@@ -125,6 +130,7 @@ export class ClientReports implements OnInit {
             'No se pudo abrir',
             error.error?.detail || 'No fue posible descargar el reporte.',
           );
+          this.cd.detectChanges();
         },
       });
   }
@@ -213,7 +219,6 @@ export class ClientReports implements OnInit {
         },
         { headers: this.buildAuthHeaders() },
       )
-      .pipe(finalize(() => (this.savingRating = false)))
       .subscribe({
         next: () => {
           const updatedReport: ClientReportRow = {
@@ -231,6 +236,9 @@ export class ClientReports implements OnInit {
             'Calificacion enviada',
             'Tu calificacion del servicio fue registrada correctamente.',
           );
+          
+          this.savingRating = false;
+          this.cd.detectChanges(); // Actualiza la UI de las estrellas y el modal
         },
         error: (error) => {
           console.error('Error saving client rating:', error);
@@ -238,6 +246,9 @@ export class ClientReports implements OnInit {
             'No se pudo guardar',
             error.error?.detail || 'No fue posible guardar tu calificacion.',
           );
+          
+          this.savingRating = false;
+          this.cd.detectChanges();
         },
       });
   }

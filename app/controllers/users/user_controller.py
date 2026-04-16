@@ -330,24 +330,7 @@ class UserController:
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
-      
-            cursor.execute("""
-                SELECT id 
-                FROM services
-                WHERE client_id = %s
-            """, (client_id,))
-
-            services = cursor.fetchall()
-
-            if not services:
-                return []  
-
-
-            service_ids = [s["id"] for s in services]
-            placeholders = ",".join(["%s"] * len(service_ids))
-
-
-            query = f"""
+            query = """
                 SELECT 
                 sr.id,
                 sr.service_id,
@@ -360,8 +343,8 @@ class UserController:
                 sr.recommendation,
                 sr.temperature_before,
                 sr.temperature_after,
-                sr.voltage_before,
-                sr.voltage_after,
+                sr.amperage_before,
+                sr.amperage_after,
                 sr.humidity_before,
                 sr.humidity_after,
                 sr.client_rating,
@@ -369,14 +352,13 @@ class UserController:
                 sr.created_at
                 FROM service_report sr
                 JOIN services s ON s.id = sr.service_id
-                JOIN users u 
-                ON u.id = s.technician_id
-                WHERE sr.service_id IN ({placeholders}) 
+                JOIN users u ON u.id = s.technician_id
+                WHERE s.client_id = %s 
                 AND sr.deleted_at IS NULL
                 ORDER BY sr.id DESC
             """
 
-            cursor.execute(query, service_ids)
+            cursor.execute(query, (client_id,))
             return cursor.fetchall()
 
         except mysql.connector.Error as e:
@@ -402,8 +384,8 @@ class UserController:
                 recommendation,
                 temperature_before,
                 temperature_after,
-                voltage_before,
-                voltage_after,
+                amperage_before,
+                amperage_after,
                 humidity_before,
                 humidity_after,
                 client_rating,
@@ -452,8 +434,8 @@ class UserController:
                     "recommendation": body.get("recommendation"),
                     "temperature_before": body.get("temperature_before"),
                     "temperature_after": body.get("temperature_after"),
-                    "voltage_before": body.get("voltage_before"),
-                    "voltage_after": body.get("voltage_after"),
+                    "amperage_before": body.get("amperage_before"),
+                    "amperage_after": body.get("amperage_after"),
                     "humidity_before": body.get("humidity_before"),
                     "humidity_after": body.get("humidity_after"),
                 }
@@ -466,8 +448,8 @@ class UserController:
                         recommendation = %s,
                         temperature_before = %s,
                         temperature_after = %s,
-                        voltage_before = %s,
-                        voltage_after = %s,
+                        amperage_before = %s,
+                        amperage_after = %s,
                         humidity_before = %s,
                         humidity_after = %s
                     WHERE id = %s
@@ -477,8 +459,8 @@ class UserController:
                     updates["recommendation"],
                     updates["temperature_before"],
                     updates["temperature_after"],
-                    updates["voltage_before"],
-                    updates["voltage_after"],
+                    updates["amperage_before"],
+                    updates["amperage_after"],
                     updates["humidity_before"],
                     updates["humidity_after"],
                     report_id
@@ -591,3 +573,40 @@ class UserController:
         finally:
             if cursor: cursor.close()
             if conn: conn.close()
+
+    def get_client_equipments(self, client_id: int):
+        conn = None
+        cursor = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("""
+                SELECT id, brand, capacity, model 
+                FROM client_equipment
+                WHERE user_id = %s AND deleted_at IS NULL AND status = 1
+            """, (client_id,))
+            
+            equipments = cursor.fetchall()
+            
+            payload = []
+            for eq in equipments:
+                # Sintetizamos un nombre usando brand, model y capacity
+                name_parts = [p for p in [eq['brand'], eq['model'], eq['capacity']] if p]
+                name = " ".join(name_parts) if name_parts else "Equipo de Climatización"
+                
+                payload.append({
+                    "id": eq['id'],
+                    "name": name,
+                    "location": "Ubicación genérica" # No soportado actualmente en el esquema original
+                })
+                
+            return payload
+            
+        except mysql.connector.Error as err:
+            raise HTTPException(status_code=500, detail=str(err))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

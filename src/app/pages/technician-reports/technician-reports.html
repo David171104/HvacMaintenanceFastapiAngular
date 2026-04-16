@@ -210,71 +210,96 @@
     </div>
 
     <form class="report-modal__form" [formGroup]="reportForm" (ngSubmit)="saveReport()">
-      <label class="report-field report-field--full">
-        <span>Descripcion del servicio</span>
-        <textarea rows="4" formControlName="service_description"></textarea>
-      </label>
+      
+      <!-- Sección 1: Diagnóstico Operativo -->
+      <fieldset class="report-section report-section--diagnostic">
+        <legend class="report-section__title">Diagnóstico Operativo</legend>
 
-      <label class="report-field">
-        <span>Duracion del servicio</span>
-        <div class="report-field__input-wrap">
-          <input type="text" formControlName="service_duration" placeholder="Ej: 2" />
-          <span class="report-field__unit">horas</span>
+        <label class="report-field report-field--full">
+          <span>Descripción del servicio</span>
+          <textarea rows="4" formControlName="service_description"></textarea>
+        </label>
+
+        <div class="report-section__row">
+          <label class="report-field">
+            <span>Duración del servicio</span>
+            <div class="report-field__input-wrap">
+              <input type="text" formControlName="service_duration" placeholder="Ej: 2" />
+              <span class="report-field__unit">horas</span>
+            </div>
+          </label>
+
+          <label class="report-field">
+            <span>Recomendación</span>
+            <input type="text" formControlName="recommendation" placeholder="Recomendación técnica" />
+          </label>
         </div>
-      </label>
+      </fieldset>
 
-      <label class="report-field">
-        <span>Recomendacion</span>
-        <input type="text" formControlName="recommendation" placeholder="Recomendacion tecnica" />
-      </label>
+      <!-- Sección 2: Auditoría de Rendimiento IoT -->
+      <fieldset class="report-section report-section--iot">
+        <legend class="report-section__title">Auditoría de Rendimiento IoT (Antes vs Después)</legend>
+        
+        <div class="report-iot-grid">
+          <!-- Antes -->
+          <div class="report-iot-column report-iot-column--before">
+            <h4 class="report-iot-column__header">🔴 Antes del Servicio (Inicial)</h4>
+            
+            <label class="report-field">
+              <span>Temperatura Inicial (Set a 20°C)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="temperature_before" />
+                <span class="report-field__unit">°C</span>
+              </div>
+            </label>
 
-      <label class="report-field">
-        <span>Temperatura antes</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="temperature_before" />
-          <span class="report-field__unit">°C</span>
+            <label class="report-field">
+              <span>Amperaje Inicial (A)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="amperage_before" />
+                <span class="report-field__unit">A</span>
+              </div>
+            </label>
+
+            <label class="report-field">
+              <span>Humedad Inicial (%)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="humidity_before" />
+                <span class="report-field__unit">%</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Después -->
+          <div class="report-iot-column report-iot-column--after">
+            <h4 class="report-iot-column__header">🟢 Después del Servicio (Rendimiento)</h4>
+            
+            <label class="report-field">
+              <span>Temperatura Final (Rendimiento)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="temperature_after" />
+                <span class="report-field__unit">°C</span>
+              </div>
+            </label>
+
+            <label class="report-field">
+              <span>Amperaje Final (A)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="amperage_after" />
+                <span class="report-field__unit">A</span>
+              </div>
+            </label>
+
+            <label class="report-field">
+              <span>Humedad Final (%)</span>
+              <div class="report-field__input-wrap">
+                <input type="number" step="0.01" formControlName="humidity_after" />
+                <span class="report-field__unit">%</span>
+              </div>
+            </label>
+          </div>
         </div>
-      </label>
-
-      <label class="report-field">
-        <span>Temperatura despues</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="temperature_after" />
-          <span class="report-field__unit">°C</span>
-        </div>
-      </label>
-
-      <label class="report-field">
-        <span>Voltaje antes</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="voltage_before" />
-          <span class="report-field__unit">V</span>
-        </div>
-      </label>
-
-      <label class="report-field">
-        <span>Voltaje despues</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="voltage_after" />
-          <span class="report-field__unit">V</span>
-        </div>
-      </label>
-
-      <label class="report-field">
-        <span>Humedad antes</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="humidity_before" />
-          <span class="report-field__unit">%</span>
-        </div>
-      </label>
-
-      <label class="report-field">
-        <span>Humedad despues</span>
-        <div class="report-field__input-wrap">
-          <input type="number" step="0.01" formControlName="humidity_after" />
-          <span class="report-field__unit">%</span>
-        </div>
-      </label>
+      </fieldset>
 
       <section class="client-feedback-panel" *ngIf="selectedReport">
         <div class="client-feedback-panel__header">

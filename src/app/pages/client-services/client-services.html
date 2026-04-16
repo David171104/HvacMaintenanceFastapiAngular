@@ -167,18 +167,53 @@
       </div>
 
       <div class="cs-form-group">
-        <label class="cs-label">Tipo de servicio *</label>
-        <select class="cs-control" formControlName="service_type">
-          <option value="Correctivo">Correctivo</option>
-          <option value="Preventivo">Preventivo</option>
+        <label class="cs-label">¿Qué tipo de servicio necesitas? *</label>
+        <div class="cs-radio-cards">
+          <label class="cs-radio-card" [class.cs-radio-card--active]="serviceForm.get('service_type')?.value === 'Correctivo'">
+            <input type="radio" formControlName="service_type" value="Correctivo">
+            <span class="cs-radio-card__icon">❄️</span>
+            <div class="cs-radio-card__text">
+              <strong>Mi equipo presenta una falla</strong>
+              <span>Reparación y diagnóstico urgente</span>
+            </div>
+          </label>
+          
+          <label class="cs-radio-card" [class.cs-radio-card--active]="serviceForm.get('service_type')?.value === 'Preventivo'">
+            <input type="radio" formControlName="service_type" value="Preventivo">
+            <span class="cs-radio-card__icon">📅</span>
+            <div class="cs-radio-card__text">
+              <strong>Mantenimiento de rutina</strong>
+              <span>Limpieza y prevención</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="cs-form-group">
+        <label class="cs-label">Equipo afectado *</label>
+        <select class="cs-control" formControlName="equipment_id">
+          <option value="" disabled selected>Selecciona tu equipo...</option>
+          <option *ngFor="let eq of equipments" [value]="eq.id">
+            {{ eq.name }} - {{ eq.location || 'Sin ubicación' }}
+          </option>
         </select>
-        <small class="cs-error" *ngIf="isInvalid('service_type')">
-          {{ getError('service_type', 'Tipo de servicio') }}
+        <small class="cs-error" *ngIf="isInvalid('equipment_id')">
+          {{ getError('equipment_id', 'Equipo') }}
         </small>
       </div>
 
       <div class="cs-form-group">
-        <label class="cs-label">Dirección *</label>
+        <label class="cs-label">Cuéntanos qué pasa (Opcional)</label>
+        <textarea
+          class="cs-control cs-control--textarea"
+          rows="3"
+          formControlName="description"
+          placeholder="Ej. El aire gotea, hace un ruido extraño, no enfría..."
+        ></textarea>
+      </div>
+
+      <div class="cs-form-group">
+        <label class="cs-label">Dirección del servicio *</label>
         <input
           class="cs-control"
           type="text"

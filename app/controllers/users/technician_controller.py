@@ -52,57 +52,48 @@ class PDF(FPDF):
         logo_path = "app/static/logo.jpeg"
 
         self.set_fill_color(9, 18, 35)
-        self.rect(0, 0, 210, 30, "F")
+        self.rect(0, 0, 210, 25, "F")
 
         if os.path.exists(logo_path):
-            self.image(logo_path, x=12, y=7, w=20)
+            self.image(logo_path, x=15, y=5, w=15)
 
-        self.set_xy(38, 8)
-        self.set_font("Arial", "B", 17)
-        self.set_text_color(103, 232, 249)
-        self.cell(0, 7, "ClimaTech", ln=True)
-
-        self.set_x(38)
-        self.set_font("Arial", "", 10)
-        self.set_text_color(226, 232, 240)
-        self.cell(0, 6, _pdf_text(f"Reporte tecnico de servicio #{self.service_id}"), ln=True)
-        self.ln(10)
+        self.set_xy(35, 9)
+        self.set_font("Arial", "B", 14)
+        self.set_text_color(255, 255, 255)
+        title = f"ClimaTech - Certificado de Servicio Técnico #{self.service_id}"
+        self.cell(0, 7, _pdf_text(title), 0, 1, "R")
+        self.ln(12)
 
     def footer(self):
-        self.set_y(-12)
+        self.set_y(-15)
         self.set_font("Arial", "I", 8)
         self.set_text_color(120, 130, 145)
         self.cell(0, 5, _pdf_text(f"Generado el {datetime.now().strftime('%Y-%m-%d %H:%M')}"), 0, 0, "L")
-        self.cell(0, 5, _pdf_text(f"Pagina {self.page_no()}"), 0, 0, "R")
+        self.cell(0, 5, _pdf_text(f"Página {self.page_no()}"), 0, 0, "R")
 
     def section_title(self, title):
-        self.ln(3)
-        self.set_font("Arial", "B", 12)
+        self.ln(5)
+        self.set_font("Arial", "B", 11)
         self.set_text_color(15, 23, 42)
-        self.set_fill_color(224, 242, 254)
-        self.cell(0, 9, _pdf_text(title), 0, 1, "L", True)
-        self.ln(2)
+        self.set_fill_color(230, 235, 240)
+        self.cell(0, 8, _pdf_text(f"  {title.upper()}"), 0, 1, "L", True)
+        self.ln(3)
 
     def detail_row(self, label, value, width=95):
-        self.set_font("Arial", "B", 10)
-        self.set_text_color(51, 65, 85)
-        self.cell(35, 8, _pdf_text(label), 0, 0)
-        self.set_font("Arial", "", 10)
-        self.set_text_color(15, 23, 42)
-        self.multi_cell(width, 8, _pdf_text(value), border=0, align="L")
+        pass # Replaced by custom grid in generate_pdf
 
     def metric_box(self, x, y, w, h, title, value):
-        self.set_fill_color(15, 23, 42)
-        self.set_draw_color(30, 41, 59)
-        self.rounded_rect(x, y, w, h, 4, style="DF")
-        self.set_xy(x + 4, y + 4)
-        self.set_font("Arial", "", 8)
-        self.set_text_color(148, 163, 184)
-        self.cell(w - 8, 4, _pdf_text(title), 0, 1)
-        self.set_x(x + 4)
-        self.set_font("Arial", "B", 13)
-        self.set_text_color(255, 255, 255)
-        self.cell(w - 8, 7, _pdf_text(value), 0, 1)
+        self.set_fill_color(241, 245, 249)
+        self.set_draw_color(203, 213, 225)
+        self.rounded_rect(x, y, w, h, 2, style="DF")
+        self.set_xy(x, y + 2)
+        self.set_font("Arial", "B", 8)
+        self.set_text_color(100, 116, 139)
+        self.cell(w, 4, _pdf_text(title.upper()), 0, 1, "C")
+        self.set_x(x)
+        self.set_font("Arial", "B", 11)
+        self.set_text_color(15, 23, 42)
+        self.cell(w, 6, _pdf_text(value), 0, 1, "C")
 
     def rounded_rect(self, x, y, w, h, r, style=""):
         self.rounded_rect_path(x, y, w, h, r)
@@ -140,8 +131,8 @@ class TechniccianController:
         "recommendation",
         "temperature_before",
         "temperature_after",
-        "voltage_before",
-        "voltage_after",
+        "amperage_before",
+        "amperage_after",
         "humidity_before",
         "humidity_after",
     )
@@ -292,7 +283,7 @@ class TechniccianController:
                 INSERT INTO service_report(
                     service_id, technician_id, service_description, 
                     service_duration, recommendation, temperature_before,
-                    temperature_after, voltage_before, voltage_after,
+                    temperature_after, amperage_before, amperage_after,
                     humidity_before, humidity_after, client_rating, 
                     client_comments, created_at, status
                 )
@@ -305,8 +296,8 @@ class TechniccianController:
                 data.get("recommendation"),
                 data.get("temperature_before"),
                 data.get("temperature_after"),
-                data.get("voltage_before"),
-                data.get("voltage_after"),
+                data.get("amperage_before"),
+                data.get("amperage_after"),
                 data.get("humidity_before"),
                 data.get("humidity_after"),
                 data.get("client_rating"),
@@ -354,8 +345,8 @@ class TechniccianController:
                     sr.recommendation,
                     sr.temperature_before,
                     sr.temperature_after,
-                    sr.voltage_before,
-                    sr.voltage_after,
+                    sr.amperage_before,
+                    sr.amperage_after,
                     sr.humidity_before,
                     sr.humidity_after,
                     sr.client_rating,
@@ -385,124 +376,6 @@ class TechniccianController:
 
     def generate_pdf(self, report_id: int):
         conn = None
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-
-            # ==============================
-            # 1. Obtener datos del reporte
-            # ==============================
-            cursor.execute("""
-                SELECT id, service_id, service_description, service_duration,
-                    recommendation, client_rating, client_comments, created_at
-                FROM service_report
-                WHERE id = %s
-            """, (report_id,))
-            report = cursor.fetchone()
-
-            if not report:
-                raise HTTPException(status_code=404, detail="Reporte no encontrado")
-
-            service_id = report["service_id"]
-
-            # ==============================
-            # 2. Buscar cliente en services
-            # ==============================
-            cursor.execute("""
-                SELECT client_id
-                FROM services
-                WHERE id = %s
-            """, (service_id,))
-            service = cursor.fetchone()
-
-            if not service:
-                raise HTTPException(status_code=404, detail="Servicio no encontrado")
-
-            client_id = service["client_id"]
-
-            # ==============================
-            # 3. Buscar nombre del cliente
-            # ==============================
-            cursor.execute("""
-                SELECT CONCAT(name, ' ', last_name) AS client_name
-                FROM users
-                WHERE id = %s
-            """, (client_id,))
-            client = cursor.fetchone()
-
-            client_name = client["client_name"] if client else "No registrado"
-
-            # ==============================
-            # 4. Crear PDF profesional
-            # ==============================
-            pdf = PDF(service_id=service_id)
-            pdf.add_page()
-
-            # Encabezados de tabla (columnas)
-            pdf.set_font("Arial", "B", 11)
-            pdf.set_fill_color(35, 55, 75)
-            pdf.set_text_color(255, 255, 255)
-
-            headers = [
-                "ID", "Cliente", "Descripción", "Duración",
-                "Recomendación", "Calificación", "Comentarios", "Fecha"
-            ]
-
-            col_widths = [8, 28, 30, 20, 31, 25, 30, 20]  
-
-
-            for width, title in zip(col_widths, headers):
-                pdf.cell(width, 10, title, 1, 0, "C", True)
-
-            pdf.ln()
-
-            # ==============================
-            # Fila con valores
-            # ==============================
-            pdf.set_font("Arial", "", 10)
-            pdf.set_text_color(30, 30, 30)
-            fecha_formateada = report["created_at"].strftime("%d/%m/%Y")
-
-            values = [
-                str(service_id),
-                client_name,
-                report["service_description"],
-                report["service_duration"],
-                report["recommendation"],
-                str(report["client_rating"]),
-                report["client_comments"],
-                fecha_formateada
-            ]
-
-            fill = False
-            pdf.set_fill_color(245, 245, 245)
-
-            for width, value in zip(col_widths, values):
-                pdf.cell(width, 10, str(value), 1, 0, "L", fill)
-
-            pdf.ln()
-
-            # Footer
-            pdf.ln(10)
-            pdf.set_font("Arial", "I", 10)
-            pdf.set_text_color(100, 100, 100)
-            pdf.cell(0, 10, f"Generado el {datetime.now().strftime('%Y-%m-%d %H:%M')}", 0, 0, "R")
-
-            pdf_bytes = bytes(pdf.output(dest="S"))
-
-            return StreamingResponse(
-                BytesIO(pdf_bytes),
-                media_type="application/pdf",
-                headers={"Content-Disposition": f"attachment; filename=reporte_{report_id}.pdf"}
-            )
-
-        finally:
-            if conn:
-                conn.close()
-
-
-    def generate_pdf(self, report_id: int):
-        conn = None
         cursor = None
         try:
             conn = get_db_connection()
@@ -517,8 +390,8 @@ class TechniccianController:
                     sr.recommendation,
                     sr.temperature_before,
                     sr.temperature_after,
-                    sr.voltage_before,
-                    sr.voltage_after,
+                    sr.amperage_before,
+                    sr.amperage_after,
                     sr.humidity_before,
                     sr.humidity_after,
                     sr.client_rating,
@@ -562,7 +435,9 @@ class TechniccianController:
             else:
                 hora_visita = "-"
 
-            pdf.section_title("Resumen ejecutivo")
+            pdf.section_title("Resumen Ejecutivo")
+            
+            # PASO 1 - Píldoras de resumen
             start_x = pdf.get_x()
             start_y = pdf.get_y()
             metric_width = 42
@@ -570,7 +445,7 @@ class TechniccianController:
             metrics = [
                 ("Servicio", f"#{report['service_id']}"),
                 ("Estado", report.get("current_status") or "-"),
-                ("Duracion", f"{report.get('service_duration') or '-'} horas"),
+                ("Duración", f"{report.get('service_duration') or '-'} horas"),
                 ("Fecha reporte", fecha_reporte),
             ]
 
@@ -579,54 +454,109 @@ class TechniccianController:
                     start_x + index * (metric_width + metric_gap),
                     start_y,
                     metric_width,
-                    18,
+                    14,
                     title,
                     value,
                 )
 
-            pdf.set_y(start_y + 24)
+            pdf.set_y(start_y + 18)
 
-            pdf.section_title("Datos del servicio")
-            pdf.detail_row("Cliente", report.get("client_name") or "No registrado")
-            pdf.detail_row("Tecnico", report.get("technician_name") or "No registrado")
-            pdf.detail_row("Tipo", report.get("service_type") or "-")
-            pdf.detail_row("Fecha visita", fecha_visita)
-            pdf.detail_row("Hora visita", hora_visita)
-            pdf.detail_row("Direccion", report.get("address") or "-")
-
-            pdf.section_title("Descripcion tecnica")
-            pdf.detail_row("Descripcion", report.get("service_description") or "Sin descripcion registrada")
-            pdf.detail_row("Recomendacion", report.get("recommendation") or "Sin recomendacion registrada")
-
-            pdf.section_title("Mediciones comparativas")
+            # PASO 2 - Grilla de Datos
+            pdf.section_title("Datos Operativos")
             pdf.set_font("Arial", "B", 10)
-            pdf.set_fill_color(15, 23, 42)
-            pdf.set_text_color(255, 255, 255)
-            pdf.cell(60, 10, "Variable", 1, 0, "C", True)
-            pdf.cell(60, 10, "Antes", 1, 0, "C", True)
-            pdf.cell(60, 10, "Despues", 1, 1, "C", True)
-
+            pdf.cell(18, 8, "Cliente:", border=0)
             pdf.set_font("Arial", "", 10)
-            pdf.set_text_color(15, 23, 42)
-            pdf.set_fill_color(248, 250, 252)
+            pdf.cell(72, 8, _pdf_text(report.get("client_name") or "No registrado"), border=0)
+            
+            pdf.set_font("Arial", "B", 10)
+            pdf.cell(35, 8, _pdf_text("Técnico Asignado:"), border=0)
+            pdf.set_font("Arial", "", 10)
+            pdf.cell(65, 8, _pdf_text(report.get("technician_name") or "No registrado"), border=0, ln=1)
 
+            pdf.set_font("Arial", "B", 10)
+            pdf.cell(18, 8, "Tipo:", border=0)
+            pdf.set_font("Arial", "", 10)
+            pdf.cell(72, 8, _pdf_text(report.get("service_type") or "-"), border=0)
+            
+            pdf.set_font("Arial", "B", 10)
+            pdf.cell(27, 8, "Fecha Visita:", border=0)
+            pdf.set_font("Arial", "", 10)
+            pdf.cell(65, 8, _pdf_text(f"{fecha_visita} a las {hora_visita}"), border=0, ln=1)
+
+            pdf.set_font("Arial", "B", 10)
+            pdf.cell(20, 8, _pdf_text("Dirección:"), border=0)
+            pdf.set_font("Arial", "", 10)
+            pdf.multi_cell(0, 8, _pdf_text(report.get("address") or "-"), border=0, align="L")
+
+            # PASO 3 - Textos (Bloqueo de 100%)
+            pdf.section_title("Descripción Técnica")
+            pdf.set_font("Arial", "", 10)
+            pdf.multi_cell(0, 6, _pdf_text(report.get("service_description") or "Sin descripción registrada"), border=0, align="J")
+            
+            pdf.section_title("Recomendaciones Técnicas")
+            pdf.set_font("Arial", "", 10)
+            pdf.multi_cell(0, 6, _pdf_text(report.get("recommendation") or "Sin recomendaciones"), border=0, align="L")
+
+            # PASO 4 - Tabla IoT
+            pdf.section_title("Asesoría de Rendimiento IoT")
+            
+            pdf.set_fill_color(15, 23, 42) # Dark Navy
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font("Arial", "B", 10)
+            col_w = 60
+            pdf.set_x(15)
+            pdf.cell(col_w, 10, "Variable Numérica", 1, 0, "C", True)
+            pdf.cell(col_w, 10, "Antes (Inicial)", 1, 0, "C", True)
+            pdf.cell(col_w, 10, _pdf_text("Después (Rendimiento)"), 1, 1, "C", True)
+
+            pdf.set_text_color(15, 23, 42)
+            pdf.set_font("Arial", "", 10)
+            
             measurement_rows = [
-                ("Temperatura", f"{report.get('temperature_before') or '-'} C", f"{report.get('temperature_after') or '-'} C"),
-                ("Voltaje", f"{report.get('voltage_before') or '-'} V", f"{report.get('voltage_after') or '-'} V"),
+                ("Temperatura", f"{report.get('temperature_before') or '-'} °C", f"{report.get('temperature_after') or '-'} °C"),
+                ("Amperaje", f"{report.get('amperage_before') or '-'} A", f"{report.get('amperage_after') or '-'} A"),
                 ("Humedad", f"{report.get('humidity_before') or '-'} %", f"{report.get('humidity_after') or '-'} %"),
             ]
-
+            
             fill = False
             for label, before, after in measurement_rows:
-                pdf.cell(60, 10, _pdf_text(label), 1, 0, "L", fill)
-                pdf.cell(60, 10, _pdf_text(before), 1, 0, "C", fill)
-                pdf.cell(60, 10, _pdf_text(after), 1, 1, "C", fill)
+                pdf.set_fill_color(248, 250, 252)
+                pdf.set_x(15)
+                pdf.cell(col_w, 10, _pdf_text(label), 1, 0, "C", fill)
+                pdf.cell(col_w, 10, _pdf_text(before), 1, 0, "C", fill)
+                pdf.cell(col_w, 10, _pdf_text(after), 1, 1, "C", fill)
                 fill = not fill
 
-            pdf.section_title("Cierre del reporte")
-            rating_value = report.get("client_rating")
-            pdf.detail_row("Calificacion cliente", rating_value if rating_value is not None else "Sin calificacion")
-            pdf.detail_row("Comentarios cliente", report.get("client_comments") or "Sin comentarios")
+            # PASO 5 - Cierre Institucional
+            pdf.ln(18)
+            if pdf.get_y() > 220:
+                pdf.add_page()
+                
+            pdf.set_draw_color(100, 116, 139)
+            sig_y = pdf.get_y() + 10
+            
+            pdf.line(30, sig_y, 85, sig_y)
+            pdf.set_xy(30, sig_y + 2)
+            pdf.set_font("Arial", "B", 9)
+            pdf.set_text_color(15, 23, 42)
+            pdf.cell(55, 5, _pdf_text("Firma del Técnico"), 0, 0, "C")
+            
+            pdf.line(125, sig_y, 180, sig_y)
+            pdf.set_xy(125, sig_y + 2)
+            pdf.cell(55, 5, _pdf_text("Conformidad del Cliente"), 0, 1, "C")
+
+            pdf.ln(14)
+            
+            rating = report.get('client_rating')
+            rating_text = f"{rating} Estrellas" if rating is not None else "Pendiente evaluacion"
+            comments = report.get('client_comments') or "Sin comentarios."
+            
+            pdf.set_fill_color(248, 250, 252) 
+            pdf.set_draw_color(203, 213, 225) 
+            pdf.set_font("Arial", "B", 9)
+            pdf.cell(0, 7, _pdf_text("Retroalimentación del Cliente"), "LRT", 1, "C", True)
+            pdf.set_font("Arial", "", 9)
+            pdf.multi_cell(0, 6, _pdf_text(f"Calificación: {rating_text}\nComentarios: {comments}"), "LRB", "L", True)
 
             pdf_bytes = bytes(pdf.output(dest="S"))
 
@@ -637,10 +567,8 @@ class TechniccianController:
             )
 
         finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
+            if cursor: cursor.close()
+            if conn: conn.close()
 
 
     def get_stats(self, technician_id: int):

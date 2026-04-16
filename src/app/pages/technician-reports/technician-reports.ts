@@ -34,8 +34,8 @@ interface TechnicianReportRow {
   recommendation: string | null;
   temperature_before: number | null;
   temperature_after: number | null;
-  voltage_before: number | null;
-  voltage_after: number | null;
+  amperage_before: number | null;
+  amperage_after: number | null;
   humidity_before: number | null;
   humidity_after: number | null;
   client_rating: number | null;
@@ -77,8 +77,8 @@ export class TechnicianReports implements OnInit {
     recommendation: ['', [Validators.required]],
     temperature_before: [''],
     temperature_after: [''],
-    voltage_before: [''],
-    voltage_after: [''],
+    amperage_before: [''],
+    amperage_after: [''],
     humidity_before: [''],
     humidity_after: [''],
   });
@@ -205,8 +205,8 @@ export class TechnicianReports implements OnInit {
       recommendation: this.selectedReport?.recommendation ?? '',
       temperature_before: this.toFormValue(this.selectedReport?.temperature_before),
       temperature_after: this.toFormValue(this.selectedReport?.temperature_after),
-      voltage_before: this.toFormValue(this.selectedReport?.voltage_before),
-      voltage_after: this.toFormValue(this.selectedReport?.voltage_after),
+      amperage_before: this.toFormValue(this.selectedReport?.amperage_before),
+      amperage_after: this.toFormValue(this.selectedReport?.amperage_after),
       humidity_before: this.toFormValue(this.selectedReport?.humidity_before),
       humidity_after: this.toFormValue(this.selectedReport?.humidity_after),
     });
@@ -222,8 +222,8 @@ export class TechnicianReports implements OnInit {
       recommendation: '',
       temperature_before: '',
       temperature_after: '',
-      voltage_before: '',
-      voltage_after: '',
+      amperage_before: '',
+      amperage_after: '',
       humidity_before: '',
       humidity_after: '',
     });
@@ -292,8 +292,8 @@ export class TechnicianReports implements OnInit {
       recommendation: raw.recommendation.trim(),
       temperature_before: this.toNullableNumber(raw.temperature_before),
       temperature_after: this.toNullableNumber(raw.temperature_after),
-      voltage_before: this.toNullableNumber(raw.voltage_before),
-      voltage_after: this.toNullableNumber(raw.voltage_after),
+      amperage_before: this.toNullableNumber(raw.amperage_before),
+      amperage_after: this.toNullableNumber(raw.amperage_after),
       humidity_before: this.toNullableNumber(raw.humidity_before),
       humidity_after: this.toNullableNumber(raw.humidity_after),
     };

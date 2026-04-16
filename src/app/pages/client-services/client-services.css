@@ -318,6 +318,61 @@
   text-transform: uppercase;
 }
 
+/* ── RADIO CARDS ───────────────────────────────────── */
+.cs-radio-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.cs-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-container-low);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.cs-radio-card:hover {
+  background: var(--surface-container-high);
+}
+
+.cs-radio-card--active {
+  background: rgba(83, 221, 252, 0.08);
+  border-color: var(--primary);
+}
+
+.cs-radio-card input[type="radio"] {
+  display: none;
+}
+
+.cs-radio-card__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.cs-radio-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cs-radio-card__text strong {
+  color: var(--on-surface-strong);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.cs-radio-card__text span {
+  color: var(--on-surface-soft);
+  font-size: 0.82rem;
+}
+
 /* ── INPUTS/SELECTS ────────────────────────────────── */
 .cs-control {
   width: 100%;

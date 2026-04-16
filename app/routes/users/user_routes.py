@@ -62,7 +62,17 @@ async def delete_service(service_id: int, token_data: dict = Depends(verify_toke
 
 
 @router.get("/users/reports/client/{client_id}")
-async def get_technician_reports(client_id: int, token_data: dict = Depends(verify_token)):
+async def get_technician_reports(client_id: int, current_user: dict = Depends(verify_token)):
+    role_id = current_user.get("role_id")
+    user_id = current_user.get("id")
+    
+    # Bloqueo IDOR
+    if role_id not in [1, 2] and int(user_id) != int(client_id):
+        raise HTTPException(
+            status_code=403, 
+            detail="Acceso denegado: No puedes ver los reportes de otro cliente"
+        )
+        
     return userController.get_reports_by_client(client_id)
 
 
@@ -87,3 +97,18 @@ async def update_report(report_id: int, body: dict, current_user: dict = Depends
 @router.get("/client/stats/{client_id}")
 def get_client_stats(client_id: int, token_data: dict = Depends(verify_token)):
     return userController.get_client_stats(client_id)
+
+@router.get("/users/equipments/client/{client_id}")
+async def get_client_equipments(client_id: int, current_user: dict = Depends(verify_token)):
+    role_id = current_user.get("role_id")
+    user_id = current_user.get("id")
+    
+    # Bloqueo IDOR (Zero Trust)
+    # Roles: 1 = Administrador, 2 = Técnico, 3 = Cliente
+    if role_id not in [1, 2] and int(user_id) != int(client_id):
+        raise HTTPException(
+            status_code=403, 
+            detail="Acceso denegado: No puedes ver los equipos de otro cliente"
+        )
+        
+    return userController.get_client_equipments(client_id)
